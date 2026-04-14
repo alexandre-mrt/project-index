@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataViz Perfume — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>DataViz Perfume</h1>
+    <p class="subtitle">Interactive perfume exploration and visualization for COM-480 Data Visualization at EPFL</p>
+
+    <div class="tags">
+      <span class="tag">JavaScript</span>
+      <span class="tag green">D3.js</span>
+      <span class="tag cyan">HTML/CSS</span>
+      <span class="tag orange">Data Visualization</span>
+      <span class="tag">EPFL</span>
+      <span class="tag green">COM-480</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Perfume is an invisible, multi-dimensional product that is nearly impossible to compare or discover without physically smelling it.</strong></p>
+      <p>With thousands of fragrances on the market, each described by abstract note pyramids (top, heart, base), scent families, brands, and subjective reviews, choosing a perfume is an overwhelming experience. Traditional e-commerce filters (price, brand) miss the most important dimension: how a perfume actually smells relative to others.</p>
+    </div>
+
+    <p>This COM-480 Data Visualization course project at EPFL builds an interactive web visualization that lets users explore the perfume landscape through multiple coordinated views: scent similarity maps, note composition breakdowns, brand comparisons, and recommendation paths based on fragrance profiles.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Multi-dimensional exploration</strong>: perfume data has hierarchical notes (top/heart/base), categorical families (floral, woody, oriental), continuous ratings, and temporal trends that need different visualization techniques to reveal.</li>
+      <li><strong>Coordinated views</strong>: brushing and linking between visualizations (selecting a scent family in one view highlights related perfumes in all others) enables discovery patterns that no single chart can show.</li>
+      <li><strong>Sensory data challenge</strong>: translating olfactory properties into visual encodings (color for scent family, size for intensity, position for similarity) is a genuine information design problem.</li>
+      <li><strong>Academic context</strong>: part of EPFL's COM-480 course, requiring both rigorous data analysis and effective storytelling through visualization.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Visualization Architecture</h3>
+    <div class="ascii-diagram"><code><span class="dim">DATA LAYER</span>                      <span class="dim">VISUALIZATION LAYER</span>
+
+Perfume dataset                  +----------------------------+
+  (name, brand, notes,           | <span class="hi">Scent Similarity Map</span>        |
+   family, rating, year)         |   2D projection of perfumes |
+       |                         |   by note composition        |
+       v                         |   Color = scent family       |
+<span class="cyn">Data Processing</span>                  +----------------------------+
+  Parse CSV/JSON                        |
+  Extract note hierarchies       +----------------------------+
+  Compute similarity             | <span class="grn">Note Composition Chart</span>       |
+  Normalize ratings              |   Stacked bar or treemap    |
+       |                         |   Top / Heart / Base notes   |
+       v                         +----------------------------+
+<span class="orn">D3.js Bindingss</span>                         |
+  data() -> enter() -> update    +----------------------------+
+  Scales, axes, transitions      | <span class="orn">Brand / Family Explorer</span>      |
+  Brush + link interactions      |   Filter by category        |
+       |                         |   Compare across dimensions  |
+       v                         +----------------------------+
+<span class="grn">Interactive Features</span>                    |
+  Tooltips on hover              +----------------------------+
+  Click to detail                | <span class="cyn">Recommendation Path</span>         |
+  Brush to filter                |   "If you like X, try Y"    |
+  Zoom and pan                   |   Similarity-based links     |
+                                 +----------------------------+</code></div>
+
+    <h3>Perfume Data Model</h3>
+    <div class="ascii-diagram"><code><span class="hi">PERFUME</span>
+  |
+  +-- name: "Santal 33"
+  +-- brand: "Le Labo"
+  +-- year: 2011
+  +-- rating: 4.2
+  +-- family: "Woody"
+  |
+  +-- <span class="cyn">NOTES</span>
+  |     +-- top:   [cardamom, violet, iris]
+  |     +-- heart: [ambrox, papyrus, leather]
+  |     +-- base:  [sandalwood, cedar, musk]
+  |
+  +-- <span class="grn">ACCORDS</span>
+        [woody, aromatic, warm spicy, leather, earthy]
+
+<span class="dim">Relationships between perfumes computed by:</span>
+  - Jaccard similarity on shared notes
+  - Cosine similarity on accord vectors
+  - Same-family clustering</code></div>
+
+    <h3>Interaction Flow</h3>
+    <div class="ascii-diagram"><code><span class="hi">USER ACTION</span>                     <span class="grn">SYSTEM RESPONSE</span>
+
+Hover over perfume dot  -------> Show tooltip (name, brand, top notes)
+Click perfume dot       -------> Expand detail panel
+                                 Highlight similar perfumes
+                                 Show note pyramid breakdown
+
+Select scent family     -------> Filter all views to family
+(e.g., "Floral")                 Update similarity map
+                                 Recompute statistics
+
+Brush region on map     -------> Select enclosed perfumes
+                                 Link to other views
+                                 Show aggregate statistics
+
+Search by note          -------> Highlight all perfumes
+(e.g., "sandalwood")             containing that note</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Visualization</td><td><code>D3.js</code></td><td>SVG-based charts, scales, transitions, brush+link</td></tr>
+      <tr><td>Markup</td><td><code>HTML5</code></td><td>Page structure, semantic sections</td></tr>
+      <tr><td>Styling</td><td><code>CSS3</code></td><td>Responsive layout, dark/light themes, transitions</td></tr>
+      <tr><td>Data</td><td><code>CSV/JSON</code></td><td>Perfume dataset with notes, families, ratings</td></tr>
+      <tr><td>Course</td><td><code>COM-480 EPFL</code></td><td>Data Visualization, Spring 2026</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>index.html              Main page with visualization containers
+css/
+  style.css             Layout, responsive design, theme
+js/
+  main.js               App initialization, data loading
+  similarity.js         Scent similarity map (2D projection)
+  notes.js              Note composition visualization
+  explorer.js           Brand and family filtering
+  recommend.js          Recommendation paths
+  utils.js              Shared helpers (scales, tooltips, transitions)
+data/
+  perfumes.csv          Core dataset (names, brands, notes, families)
+  notes.json            Note taxonomy and hierarchy
+assets/
+  images/               Brand logos, scent family icons</code></div>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Encoding the Invisible</h3>
+    <div class="highlight-box success">
+      <p><strong>The core design challenge is mapping olfactory properties to visual channels.</strong> Scent families map naturally to color hues (warm tones for oriental, cool for fresh). Note intensity maps to size or opacity. Similarity between perfumes maps to spatial proximity in 2D projections. The key insight is that perfume notes are hierarchical (top fades first, base lingers), which calls for layered or stacked visual encodings.</p>
+    </div>
+
+    <h3>Coordinated Multiple Views</h3>
+    <p>The visualization uses D3's brush and link pattern to connect all views. Selecting a region in the similarity map filters the note composition chart and the brand explorer simultaneously. This enables discovery of non-obvious patterns, like a cluster of affordable perfumes that share the same rare base note as a luxury brand.</p>
+
+    <h3>Perfume Recommendation</h3>
+    <div class="highlight-box">
+      <p>The recommendation view computes similarity between perfumes using Jaccard distance on their note sets and cosine similarity on their accord vectors. Given a selected perfume, it displays the top-N most similar fragrances as a linked graph, allowing users to "walk" through the scent space from one perfume to related ones.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Course</td><td>COM-480 Data Visualization, EPFL</td></tr>
+      <tr><td>Visualization framework</td><td>D3.js</td></tr>
+      <tr><td>Coordinated views</td><td>4 (similarity map, notes, explorer, recommendations)</td></tr>
+      <tr><td>Interaction types</td><td>5 (hover, click, brush, filter, search)</td></tr>
+      <tr><td>Visual encodings</td><td>Position, color, size, opacity, shape</td></tr>
+      <tr><td>Data dimensions</td><td>7+ (name, brand, year, rating, family, notes, accords)</td></tr>
+      <tr><td>Similarity metrics</td><td>2 (Jaccard on notes, cosine on accords)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

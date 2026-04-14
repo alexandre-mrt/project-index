@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Website — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Personal Website</h1>
+    <p class="subtitle">Developer portfolio with an immersive 3D Lord of the Rings easter egg</p>
+
+    <div class="tags">
+      <span class="tag">Next.js 16</span>
+      <span class="tag">React 19</span>
+      <span class="tag orange">TypeScript</span>
+      <span class="tag cyan">Three.js</span>
+      <span class="tag green">GSAP</span>
+      <span class="tag">Tailwind CSS v4</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Standing out as a developer requires more than a resume.</strong></p>
+      <p>In a field where everyone lists the same frameworks and buzzwords, a personal website needs to demonstrate craft, not just describe it.</p>
+    </div>
+
+    <p>A portfolio site is the first thing recruiters, collaborators, and hackathon judges look at. It needs to communicate identity, technical depth, and taste within seconds. The challenge is building something that is both functional (shows experience, projects, contact) and memorable (reflects personality and skill level beyond the content itself).</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Professional branding</strong>: a single page that consolidates identity, experience at EPFL, BSA presidency, hackathon wins, and blockchain projects into one cohesive narrative.</li>
+      <li><strong>Technical showcase</strong>: the site itself is a portfolio piece. Using Three.js, GSAP scroll-driven animations, and React Three Fiber demonstrates frontend mastery beyond standard React apps.</li>
+      <li><strong>Hidden depth</strong>: the <code>/moria</code> easter egg page reveals a full 3D journey through the Mines of Moria, showing the kind of creative engineering that a flat project list never could.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Main Portfolio Page</h3>
+    <p>A clean, sidebar-driven single-page layout. The left panel is fixed on desktop with name, title, navigation, and social links. The right panel scrolls through sections: Hero, About, Experience, Projects, Activity, and Contact. The sidebar uses <code>IntersectionObserver</code> to highlight the active section as the user scrolls.</p>
+
+    <div class="ascii-diagram"><code><span class="dim">Desktop Layout:</span>
+
++------------------+------------------------------------+
+|                  |                                    |
+|  <span class="hi">Fixed Sidebar</span>    |  <span class="grn">Scrollable Content</span>                |
+|                  |                                    |
+|  Alexandre       |  Hero (avatar + headline)          |
+|  Mourot          |  About                             |
+|                  |  Experience (BSA, Mistral, TUM...) |
+|  <span class="dim">--- nav ---</span>     |  Projects (featured + archive)     |
+|  About           |  Activity (GitHub)                 |
+|  Experience      |  Contact                           |
+|  Projects        |  Footer                            |
+|  Activity        |                                    |
+|  Contact         |                                    |
+|                  |                                    |
+|  <span class="dim">GH  LI  Mail</span>   |                                    |
++------------------+------------------------------------+</code></div>
+
+    <h3>The Moria Easter Egg</h3>
+    <p>Navigating to <code>/moria</code> reveals a password gate styled as the Doors of Durin. Typing "mellon" (the Elvish word for friend, as in Tolkien's Fellowship of the Ring) unlocks a fully immersive 3D experience.</p>
+
+    <p>The 3D scene is a scroll-driven journey through Moria, powered by React Three Fiber and GSAP ScrollTrigger. A <code>1000vh</code> scroll container maps to camera movement along a CatmullRom spline through six chapters:</p>
+
+    <div class="ascii-diagram"><code><span class="dim">Camera path through the mine:</span>
+
+  <span class="orn">Dead Marshes</span>  ->  <span class="hi">Doors of Durin</span>  ->  <span class="grn">Tunnels</span>
+       z=85             z=25              z=-30 to -210
+                                               |
+                                               v
+  <span class="orn">Bridge of</span>    <-  <span class="hi">Dwarrowdelf Hall</span>  <-  <span class="grn">S-curve between</span>
+  <span class="orn">Khazad-dum</span>       (pillars, stairs)      <span class="grn">pillar columns</span>
+    z=-560            z=-230 to -535</code></div>
+
+    <p>Post-processing (Bloom + Vignette) via <code>@react-three/postprocessing</code> creates cinematic lighting. Each environment (swamp, door arch, tunnel walls, pillar hall, staircase, bridge) is a separate component loaded with <code>Suspense</code> for progressive rendering.</p>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Framework</td><td><code>Next.js 16</code> (App Router)</td><td>SSR, routing, image optimization</td></tr>
+      <tr><td>UI</td><td><code>React 19</code> + <code>Tailwind CSS v4</code></td><td>Component architecture, utility-first styling</td></tr>
+      <tr><td>3D Engine</td><td><code>Three.js</code> + <code>@react-three/fiber</code></td><td>WebGL scene graph, camera, lighting</td></tr>
+      <tr><td>3D Utilities</td><td><code>@react-three/drei</code> + <code>postprocessing</code></td><td>Helpers, Bloom, Vignette effects</td></tr>
+      <tr><td>Animation</td><td><code>GSAP</code> + <code>ScrollTrigger</code></td><td>Scroll-driven camera progression</td></tr>
+      <tr><td>Typography</td><td><code>Inter</code>, <code>JetBrains Mono</code>, <code>Cinzel Decorative</code></td><td>Body, code, and elvish display fonts</td></tr>
+      <tr><td>Language</td><td><code>TypeScript</code> (strict)</td><td>Type safety across all components</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Structure</h2>
+
+    <pre><code>src/
+  app/
+    page.tsx              # Main portfolio (Sidebar + sections)
+    layout.tsx            # Root layout, fonts, metadata
+    globals.css           # CSS variables, animations, scrollbar
+    moria/page.tsx        # Easter egg gate + 3D loader
+  components/
+    ui/                   # Portfolio sections
+      Sidebar.tsx         # Fixed nav + social links
+      Hero.tsx            # Avatar, headline, tagline
+      About.tsx           # Bio section
+      Experience.tsx      # Timeline cards
+      Projects.tsx        # Featured grid + archive table
+      Skills.tsx          # Tech categories
+      Activity.tsx        # GitHub activity
+      Contact.tsx         # Contact form / info
+      Footer.tsx          # Footer
+      Navbar.tsx          # Mobile nav
+    journey/              # 3D Moria experience
+      MoriaJourney.tsx    # Canvas + ScrollTrigger orchestrator
+      Scene.tsx           # Camera spline + lighting
+      MoriaDoor.tsx       # Door arch environment
+      Tunnels.tsx         # Mine tunnel geometry
+      DwarrowdelfHall.tsx # Pillar hall + staircase
+      RivendellVista.tsx  # Exit vista
+      Atmosphere.tsx      # Fog, particles, ambient
+      ProjectStation.tsx  # In-scene project displays
+  data/
+    projects.ts           # 10 projects (4 featured)
+    experience.ts         # 5 experience entries
+    activity.ts           # Activity feed data</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Scroll-Driven 3D Without a Game Engine</h3>
+    <div class="highlight-box">
+      <p>The Moria journey maps browser scroll position to a CatmullRom camera spline using GSAP ScrollTrigger. A <code>1000vh</code> tall container gives fine-grained control. Camera movement is smoothed with a lerp factor (<code>0.05</code>) applied per frame, preventing jitter. This approach avoids the complexity of a full game loop while producing a cinematic result.</p>
+    </div>
+
+    <h3>Progressive 3D Loading</h3>
+    <p>The <code>/moria</code> route uses Next.js <code>dynamic()</code> with <code>ssr: false</code> to skip server-side rendering of the Three.js canvas. Each environment (door, tunnels, hall, vista) is wrapped in <code>Suspense</code> with a null fallback, so the scene loads incrementally as the user scrolls into new areas.</p>
+
+    <h3>Sidebar Navigation with IntersectionObserver</h3>
+    <p>The desktop sidebar highlights the current section using a native <code>IntersectionObserver</code> with a <code>-20% 0px -60% 0px</code> root margin. This asymmetric margin means a section becomes "active" when it enters the top 20% of the viewport, matching natural reading position rather than geometric center.</p>
+
+    <h3>Design System</h3>
+    <p>A consistent indigo accent (<code>#818cf8</code>) threads through the entire site: gradient text in the hero, nav indicator bars, hover states on project cards, skill pill borders, and the elvish door decorations. The dark background (<code>#0a0a0b</code>) with zinc text tones creates a developer-appropriate aesthetic without being harsh.</p>
+
+    <h3>Easter Egg as Portfolio Piece</h3>
+    <div class="highlight-box success">
+      <p>The <code>/moria</code> page is not just a gimmick. It demonstrates proficiency with WebGL, procedural geometry, scroll-based interaction design, and post-processing. The password gate ("mellon") ensures it rewards curiosity without cluttering the main portfolio experience.</p>
+    </div>
+
+  </div>
+</body>
+</html>

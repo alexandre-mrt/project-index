@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Guide — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.12);
+      --orange: #f59e0b;
+      --orange-soft: rgba(245, 158, 11, 0.12);
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.10);
+      --cyan: #06b6d4;
+      --cyan-soft: rgba(6, 182, 212, 0.12);
+      --rose: #f43f5e;
+      --rose-soft: rgba(244, 63, 94, 0.12);
+      --blue: #3b82f6;
+      --blue-soft: rgba(59, 130, 246, 0.12);
+      --amber: #f59e0b;
+      --emerald: #10b981;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); line-height: 1.55; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box.green { border-left-color: var(--green); background: var(--green-soft); }
+    .highlight-box.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .highlight-box.red { border-left-color: var(--red); background: var(--red-soft); }
+    .highlight-box.cyan { border-left-color: var(--cyan); background: var(--cyan-soft); }
+    .highlight-box.rose { border-left-color: var(--rose); background: var(--rose-soft); }
+    .highlight-box p { margin-bottom: 0; }
+    .highlight-box strong { font-size: 0.85rem; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+    .tag.nextjs { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.25); }
+    .tag.react { background: var(--cyan-soft); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.25); }
+    .tag.graph { background: var(--green-soft); color: var(--green); border: 1px solid rgba(34, 197, 94, 0.25); }
+    .tag.i18n { background: var(--orange-soft); color: var(--orange); border: 1px solid rgba(245, 158, 11, 0.25); }
+    .tag.ts { background: var(--blue-soft); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.25); }
+    .tag.tailwind { background: var(--rose-soft); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.25); }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.82rem; }
+    th { background: var(--surface); color: var(--text); font-weight: 600; }
+    td { color: var(--text-muted); }
+
+    .ascii-diagram {
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--accent);
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hl { color: var(--green); }
+    .ascii-diagram .warn { color: var(--orange); }
+    .ascii-diagram .rose { color: var(--rose); }
+
+    .deploy-link {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: var(--accent-soft);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .deploy-link:hover { background: rgba(99, 102, 241, 0.25); }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      text-align: center;
+    }
+    .stat-box .value { font-size: 1.4rem; font-weight: 700; color: var(--text); }
+    .stat-box .label { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Life Guide</h1>
+    <p class="subtitle">
+      Evidence-based decision guidance app. Interactive graph visualization of life situations
+      across relationships, career, emotions, and finances &mdash; with bilingual support (EN/FR).
+    </p>
+
+    <div class="tags">
+      <span class="tag nextjs">Next.js 15</span>
+      <span class="tag ts">TypeScript</span>
+      <span class="tag graph">@xyflow/react</span>
+      <span class="tag tailwind">Tailwind v4</span>
+      <span class="tag i18n">EN/FR i18n</span>
+      <span class="tag react">React 19</span>
+    </div>
+
+    <a class="deploy-link" href="https://life-guide-orcin.vercel.app" target="_blank">View Live &rarr; life-guide-orcin.vercel.app</a>
+
+    <!-- ===== STATS ===== -->
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="value">72</div>
+        <div class="label">Decision nodes</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">4</div>
+        <div class="label">Life domains</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">22</div>
+        <div class="label">Subcategories</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">2</div>
+        <div class="label">Languages</div>
+      </div>
+    </div>
+
+    <!-- ===== THE CHALLENGE ===== -->
+    <h2>The Challenge</h2>
+    <p>
+      Major life decisions &mdash; changing jobs, managing conflict, handling debt, processing grief &mdash;
+      are among the most consequential choices a person makes. Yet there is <strong>no tool that maps
+      decision trees with structured, evidence-based guidance</strong>. People rely on gut feeling,
+      scattered blog posts, or expensive professionals for situations that follow well-documented patterns.
+    </p>
+    <div class="highlight-box red">
+      <p><strong>Core problem:</strong> Life decisions are complex, interconnected, and high-stakes.
+      Without a structured framework, people repeat the same mistakes, miss consequences they could
+      have anticipated, and fail to see how one decision cascades into others.</p>
+    </div>
+    <p>
+      Psychology research, behavioral economics, and conflict resolution literature contain
+      evidence-based guidance for most common life situations. But this knowledge is locked in
+      academic papers and 400-page books &mdash; not in a format anyone can use when they actually
+      need it.
+    </p>
+
+    <!-- ===== WHY IT MATTERS ===== -->
+    <h2>Why It Matters</h2>
+    <ul>
+      <li><strong>Visual decision mapping</strong> &mdash; interactive graph shows how situations
+        connect across domains, revealing cascading consequences before they happen</li>
+      <li><strong>Evidence-based options</strong> &mdash; each decision node includes multiple reaction
+        options with short-term and long-term consequences, backed by cited academic sources</li>
+      <li><strong>Severity and importance scoring</strong> &mdash; nodes are rated by severity
+        (low to critical) and importance (1-10), helping users prioritize what matters most</li>
+      <li><strong>Bilingual support (EN/FR)</strong> &mdash; every situation, context, and option is
+        available in both English and French, with locale switching built into the UI</li>
+      <li><strong>Life ELO system</strong> &mdash; a gamified scoring model (baseline 1200) that
+        computes penalties from active situations and recoveries from applying recommended moves,
+        with tiers from "Thriving" (S+) down to "Cooked" (F)</li>
+      <li><strong>Recommended moves</strong> &mdash; each node highlights the evidence-backed best
+        option, making expert guidance instantly accessible</li>
+    </ul>
+
+    <!-- ===== HOW IT WORKS ===== -->
+    <h2>How It Works</h2>
+
+    <pre><code class="ascii-diagram">
+<span class="dim">                        User lands on dashboard</span>
+<span class="dim">                               |</span>
+<span class="dim">                               v</span>
+<span class="warn">                    +-------------------+</span>
+<span class="warn">                    |    NEXT.JS APP    |</span>
+<span class="warn">                    |  (App Router SSR) |</span>
+<span class="warn">                    +--------+----------+</span>
+<span class="dim">                             |</span>
+<span class="dim">         loadAllNodes() reads JSON at build time</span>
+<span class="dim">                             |</span>
+<span class="dim">     +-----------+-----------+-----------+-----------+</span>
+<span class="dim">     |           |           |           |           |</span>
+<span class="dim">     v           v           v           v           v</span>
+<span class="rose"> /dashboard</span>  <span class="hl">/graph</span>    <span class="hl">/search</span>   <span class="hl">/node/[id]</span>  <span class="warn">/elo</span>
+<span class="dim">  stats +     ReactFlow   full-text   detail +     life score</span>
+<span class="dim">  domains    interactive  bilingual   options +    ELO gauge</span>
+<span class="dim">  top nodes   graph viz    search     sources      + tiers</span>
+<span class="dim">     |           |           |           |           |</span>
+<span class="dim">     +-----------+-----------+-----------+-----------+</span>
+<span class="dim">                             |</span>
+<span class="dim">                             v</span>
+<span class="warn">                  +---------------------+</span>
+<span class="warn">                  |    DATA LAYER       |</span>
+<span class="warn">                  |  src/data/nodes/    |</span>
+<span class="warn">                  +---------------------+</span>
+<span class="dim">                    |    |    |    |</span>
+<span class="hl">             relationships  career  emotions  finances</span>
+<span class="dim">               .json     .json    .json     .json</span>
+<span class="dim">              (18 nodes each = 72 total)</span>
+<span class="dim">                             |</span>
+<span class="dim">                             v</span>
+<span class="hl">                    i18n (en/fr)</span>
+<span class="dim">              BilingualText on every field</span>
+</code></pre>
+
+    <div class="highlight-box cyan">
+      <p><strong>Graph visualization:</strong> The <code>@xyflow/react</code> graph groups nodes
+      by subcategory using dagre auto-layout. Groups are collapsible. Cross-node edges show
+      how decisions in one area affect others. Click any node to see full detail with options,
+      consequences, and academic sources.</p>
+    </div>
+
+    <h3>Data Model</h3>
+    <table>
+      <tr><th>Entity</th><th>Key Fields</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>DecisionNode</code></td>
+        <td>id, domain, subcategory, importance, severity, situation, context, options, sources, connectedNodes</td>
+        <td>Core unit: a life situation with evidence-based options</td>
+      </tr>
+      <tr>
+        <td><code>ReactionOption</code></td>
+        <td>label, description, consequences (shortTerm + longTerm), leadsTo</td>
+        <td>One possible response to a situation, with projected outcomes</td>
+      </tr>
+      <tr>
+        <td><code>Source</code></td>
+        <td>type (paper/book/article), title, authors, year, doi/url, relevance</td>
+        <td>Academic citation backing the guidance</td>
+      </tr>
+      <tr>
+        <td><code>BilingualText</code></td>
+        <td>en, fr</td>
+        <td>Every user-facing string in both languages</td>
+      </tr>
+    </table>
+
+    <h3>Four Life Domains</h3>
+    <table>
+      <tr><th>Domain</th><th>Subcategories</th><th>Nodes</th></tr>
+      <tr>
+        <td style="color: var(--rose);">Relationships</td>
+        <td>couple, family, workplace, friendship, communication, life-transitions</td>
+        <td>18</td>
+      </tr>
+      <tr>
+        <td style="color: var(--blue);">Career</td>
+        <td>job-change, negotiation, well-being, leadership, growth, decisions</td>
+        <td>18</td>
+      </tr>
+      <tr>
+        <td style="color: var(--amber);">Emotions</td>
+        <td>anxiety-stress, habits, self-image, grief-loss, motivation, coping</td>
+        <td>18</td>
+      </tr>
+      <tr>
+        <td style="color: var(--emerald);">Finances</td>
+        <td>investing, debt, budgeting, risk, major-purchases, planning</td>
+        <td>18</td>
+      </tr>
+    </table>
+
+    <!-- ===== TECH STACK ===== -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Component</th><th>Technology</th><th>Purpose</th></tr>
+      <tr>
+        <td>Framework</td>
+        <td>Next.js 15 (App Router, Turbopack)</td>
+        <td>SSR pages, file-based routing, <code>/node/[id]</code> dynamic routes</td>
+      </tr>
+      <tr>
+        <td>Graph Engine</td>
+        <td>@xyflow/react v12 + dagre</td>
+        <td>Interactive node graph with auto-layout, minimap, controls, filtering</td>
+      </tr>
+      <tr>
+        <td>UI</td>
+        <td>Tailwind CSS v4, Radix UI, lucide-react</td>
+        <td>Dark/light theme (next-themes), accessible components, design tokens</td>
+      </tr>
+      <tr>
+        <td>Language</td>
+        <td>TypeScript strict</td>
+        <td>Full type safety, immutable data model with <code>readonly</code> throughout</td>
+      </tr>
+      <tr>
+        <td>Data</td>
+        <td>JSON files (4 domain files)</td>
+        <td>72 decision nodes loaded at build time via <code>fs.readFileSync</code></td>
+      </tr>
+      <tr>
+        <td>i18n</td>
+        <td>Custom <code>BilingualText</code> + LocaleProvider</td>
+        <td>All content in EN/FR, locale context hook for runtime switching</td>
+      </tr>
+      <tr>
+        <td>Scoring</td>
+        <td>Custom ELO engine (<code>lib/elo.ts</code>)</td>
+        <td>Gamified life score: penalties per situation, recovery per recommended move</td>
+      </tr>
+      <tr>
+        <td>Testing</td>
+        <td>Vitest + Playwright</td>
+        <td>Unit tests + end-to-end browser tests</td>
+      </tr>
+      <tr>
+        <td>Tooling</td>
+        <td>Bun, Biome</td>
+        <td>Package management + lint/format in one command</td>
+      </tr>
+      <tr>
+        <td>Deployment</td>
+        <td>Vercel</td>
+        <td>Auto-deploy from main branch</td>
+      </tr>
+    </table>
+
+    <!-- ===== PROJECT STRUCTURE ===== -->
+    <h2>Project Structure</h2>
+
+    <pre><code>src/
+  app/
+    page.tsx              # Dashboard: stats, domain cards, top situations
+    graph/page.tsx        # Interactive decision graph (ReactFlow)
+    search/page.tsx       # Full-text bilingual search
+    node/[id]/page.tsx    # Node detail: options, sources, connected nodes
+    elo/page.tsx          # Life ELO score page
+    chat/page.tsx         # Chat interface
+    api/nodes/route.ts    # API endpoint for node data
+  components/
+    graph/                # DecisionGraph, DecisionNodeCard, GraphFilterBar, dagre layout
+    dashboard/            # Dashboard, DomainCard, Stats, TopSituations
+    node/                 # NodeDetail, OptionCard, SourceItem, Breadcrumb
+    search/               # SearchBar (Cmd+K), FilterPanel, SearchResults
+    sidebar/              # Navigation sidebar with domain tree
+    elo/                  # EloPanel, EloGauge
+    ui/                   # Badge, Button, Card, Header, Accordion, Sheet...
+  data/
+    types.ts              # DecisionNode, ReactionOption, Source, BilingualText
+    domains.ts            # 4 domain configs with colors and subcategories
+    subcategories.ts      # 22 subcategory definitions
+    loader.ts             # JSON loader with caching, filters, search
+    nodes/                # 4 JSON files (18 nodes each)
+  hooks/
+    LocaleProvider.tsx    # Locale context (en/fr switching)
+    useTranslation.ts     # Translation hook
+    useSearch.ts          # Search logic hook
+  i18n/
+    config.ts             # Supported locales, default locale
+    translations.ts       # UI string translations
+  lib/
+    elo.ts                # ELO scoring: penalties, tiers, breakdown
+    design-tokens.ts      # Domain themes, severity themes
+    matcher.ts            # Search matching logic
+    utils.ts              # cn() utility</code></pre>
+
+    <!-- ===== KEY INSIGHTS ===== -->
+    <h2>Key Insights</h2>
+
+    <div class="highlight-box green">
+      <p><strong>Decision graphs over decision lists.</strong>
+      Life decisions do not exist in isolation. A career change affects finances, which affects
+      relationship stress, which affects emotional health. The graph visualization makes these
+      cascading connections visible and navigable, turning abstract complexity into something
+      you can actually explore.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Evidence-based, not opinion-based.</strong>
+      Every node cites academic sources &mdash; papers, books, articles with DOIs and ISBNs.
+      Each option includes projected short-term and long-term consequences. The recommended
+      option is not a guess; it is the approach most supported by research.</p>
+    </div>
+
+    <div class="highlight-box cyan">
+      <p><strong>Bilingual from the data model up.</strong>
+      Instead of bolting on i18n as an afterthought, every string in the data layer is a
+      <code>BilingualText { en, fr }</code>. The locale provider switches the entire app
+      &mdash; situations, options, consequences, subcategory labels &mdash; in one click.</p>
+    </div>
+
+    <div class="highlight-box orange">
+      <p><strong>Gamification through Life ELO.</strong>
+      The ELO scoring system (baseline 1200) turns abstract life management into a measurable
+      score. Active situations subtract points based on severity and importance. Applying
+      recommended moves recovers 60% of the penalty. Tiers from "Thriving" (S+) to "Cooked" (F)
+      make progress tangible and motivating.</p>
+    </div>
+
+    <div class="highlight-box rose">
+      <p><strong>Subcategory grouping with dagre auto-layout.</strong>
+      The graph engine groups 72 nodes into collapsible subcategory clusters, auto-positioned
+      by dagre. Filter by domain, subcategory, or minimum importance. Desktop gets full
+      ReactFlow with minimap; mobile gets a responsive card list. No manual positioning needed.</p>
+    </div>
+
+  </div>
+</body>
+</html>

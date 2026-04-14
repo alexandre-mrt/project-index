@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Research — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Security Research</h1>
+    <p class="subtitle">White-hat smart contract security research, protocol analysis, and bug bounty hunting across DeFi</p>
+
+    <div class="tags">
+      <span class="tag red">Security</span>
+      <span class="tag">Solidity</span>
+      <span class="tag cyan">Sui Move</span>
+      <span class="tag orange">Bug Bounty</span>
+      <span class="tag green">White-Hat</span>
+      <span class="tag">DeFi</span>
+      <span class="tag">EVM</span>
+      <span class="tag red">Exploit Analysis</span>
+      <span class="tag cyan">Protocol Audits</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>DeFi protocols hold billions in TVL, and attackers are industrializing their operations.</strong></p>
+      <p>Q1 2026 saw $450M lost across 145 incidents. Smart contract exploits declined 89% year-over-year, but social engineering and infrastructure attacks filled the gap. One $282M phishing attack accounted for 63% of all Q1 losses. DPRK-linked actors executed a $285M six-month infiltration of Drift Protocol. The code got better, the humans did not.</p>
+    </div>
+
+    <p>This project is a systematic white-hat security research operation. It combines deep protocol analysis (54 detailed reports), source code auditing of cloned repositories (16 protocol codebases), and automated bug bounty hunting with a triple-verification pipeline. The goal: find real vulnerabilities before black-hats do, and submit them through responsible disclosure programs.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>54 protocol analysis reports</strong>: in-depth security assessments covering Aave V4, Morpho Blue, Lido V3, DeepBook V3, Hyperliquid, EigenLayer, Uniswap V4, and 47 more protocols.</li>
+      <li><strong>16 cloned codebases</strong>: actual source code from Morpho Blue, Lido, DeepBook V3, Berachain, Uniswap V4, and others, locally analyzed for vulnerabilities.</li>
+      <li><strong>30+ bug bounty findings</strong>: 10 critical, 10 high, 10+ medium severity findings across Usual, Sui DeepBook, Lido V3, Polymarket, Sky, and others.</li>
+      <li><strong>Triple verification pipeline</strong>: 91% attrition rate through 3 verification loops ensures only real, exploitable, payable bugs get submitted.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Research Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="dim">PHASE 1: RECONNAISSANCE</span>            <span class="dim">PHASE 2: DEEP ANALYSIS</span>             <span class="dim">PHASE 3: BOUNTY</span>
+
++-------------------+              +-------------------+              +------------------+
+| <span class="hi">Protocol Selection</span> |              | <span class="cyn">Source Code Audit</span>  |              | <span class="grn">Finding Report</span>    |
+| - TVL ranking     |              | - Clone repo      |              | - Severity       |
+| - Bounty size     |              | - Read contracts  |              | - PoC plan       |
+| - Attack surface  |              | - Map state flow  |              | - Bounty value   |
++-------------------+              | - Find invariants |              +------------------+
+        |                          +-------------------+                      |
+        v                                  |                                  v
++-------------------+              +-------------------+              +------------------+
+| <span class="orn">Landscape Report</span>  |              | <span class="orn">Vulnerability ID</span>   |              | <span class="red">Triple Verify</span>     |
+| - Attack vectors  |              | - Math overflow   |              |                  |
+| - Incident review |              | - Access control  |              | Loop 1: Feasible?|
+| - Trend analysis  |              | - Oracle manip    |              | Loop 2: Code OK? |
+| - DPRK tracking   |              | - Reentrancy      |              | Loop 3: Payable? |
++-------------------+              | - Logic errors    |              +------------------+
+                                   +-------------------+                      |
+                                                                              v
+                                                                     <span class="grn">SUBMIT</span> / <span class="orn">HOLD</span> / <span class="red">DROP</span></code></div>
+
+    <h3>Triple Verification Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="hi">34 Initial Findings</span> (CRITICAL + HIGH)
+  |
+  v
+<span class="cyn">LOOP 1: FEASIBILITY</span>
+  |  "Can the attacker do this NOW?"
+  |  Filter: admin-key / centralization assumptions
+  |  <span class="red">14 findings killed</span>
+  |  20 survive
+  v
+<span class="orn">LOOP 2: CODE GROUND TRUTH</span>
+  |  "Does the code actually say that?"
+  |  Read source line by line
+  |  <span class="red">2 false positives caught</span>
+  |    - Usual rounding direction WRONG
+  |    - Hyperliquid uint64 widening SAFE
+  |  25/33 confirmed
+  v
+<span class="grn">LOOP 3: BOUNTY ELIGIBILITY</span>
+  |  "Would they actually pay?"
+  |  Filter: in scope? Novel? Severity match?
+  |  <span class="red">22 dropped as not payable</span>
+  v
+<span class="grn">3 SUBMIT</span>  |  <span class="orn">5 HOLD</span>  |  <span class="red">26 DROP</span>
+  |
+  |  <span class="dim">91% attrition rate = system working as designed</span>
+  v
++-----------------------------------------------+
+| <span class="grn">DeepBook u64 overflow</span>     -> HackenProof ($1M) |
+| <span class="grn">DeepBook governance lock</span>  -> HackenProof ($1M) |
+| <span class="grn">Ethena delegation stuck</span>  -> Immunefi          |
++-----------------------------------------------+</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Analysis</td><td><code>Solidity + Sui Move</code></td><td>Smart contract source code reading and vulnerability identification</td></tr>
+      <tr><td>Reports</td><td><code>Markdown</code></td><td>54 structured analysis reports with attack vector breakdowns</td></tr>
+      <tr><td>Codebases</td><td><code>Cloned repositories</code></td><td>16 protocol codebases for local line-by-line audit</td></tr>
+      <tr><td>Verification</td><td><code>Bounty Hunter System</code></td><td>Automated 3-loop verification pipeline (feasibility, code truth, eligibility)</td></tr>
+      <tr><td>Platforms</td><td><code>Immunefi, HackenProof</code></td><td>Bug bounty submission platforms</td></tr>
+      <tr><td>Intelligence</td><td><code>PeckShield, Halborn, Chainalysis</code></td><td>Threat intelligence and incident data sources</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Protocols Analyzed</h2>
+
+    <table>
+      <tr><th>Protocol</th><th>Category</th><th>Findings</th></tr>
+      <tr><td>Sui DeepBook V3</td><td>DEX (Sui)</td><td>2 CRITICAL (u64 overflow, governance lock)</td></tr>
+      <tr><td>Usual Protocol</td><td>Stablecoin</td><td>5 CRITICAL (rug-pull, lockup bypass, overflow DoS, rounding drain, flow manipulation)</td></tr>
+      <tr><td>Lido V3</td><td>Liquid Staking</td><td>1 CRITICAL + 3 HIGH (pause bypass, stale oracle, ownership, underflow)</td></tr>
+      <tr><td>Polymarket V2</td><td>Prediction Market</td><td>2 HIGH (nonce race, zero delay)</td></tr>
+      <tr><td>Sky (MakerDAO)</td><td>Stablecoin/DAO</td><td>2 HIGH + 2 MEDIUM (permanent ward, invisible migration)</td></tr>
+      <tr><td>Morpho Blue</td><td>Lending</td><td>3 MEDIUM (staleness, bad debt, inflation)</td></tr>
+      <tr><td>EigenLayer</td><td>Restaking</td><td>1 MEDIUM (delay invariant)</td></tr>
+      <tr><td>Ethena (USDe)</td><td>Synthetic Dollar</td><td>1 HIGH (delegation stuck at PENDING)</td></tr>
+      <tr><td>Aave V4</td><td>Lending</td><td>1 MEDIUM (staleness check)</td></tr>
+      <tr><td>Uniswap V4</td><td>DEX</td><td>1 MEDIUM (deprecated functions)</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>security-research/
+  2026-04-14/
+    q1_2026_security_landscape_report.md   Quarterly threat landscape overview
+    aave_v4_report.md                      Protocol-specific analysis (54 reports)
+    morpho_blue_report.md                  ...
+    hyperliquid_security_report.md         ...
+    deepbook_v3_1_report.md                ...
+    drift_protocol_exploit_report.md       Incident post-mortems
+    dprk_threat_landscape_report.md        Nation-state threat analysis
+    bridge_exploits_q1_2026_report.md      Cross-chain bridge attack patterns
+    ai_smart_contract_exploits_report.md   AI-assisted exploit techniques
+    bug-bounty-findings/                   Actionable findings
+      FINDINGS_SUMMARY.md                    30+ findings ranked by severity
+      VERIFIED_FINDINGS.md                   3 SUBMIT after triple verification
+      VERIFICATION_LOOP1_FEASIBILITY.md      Loop 1 results
+      VERIFICATION_LOOP2_CODE_TRUTH.md       Loop 2 results
+      VERIFICATION_LOOP3_ELIGIBILITY.md      Loop 3 results
+      aave_v4_findings.md                    Per-protocol finding details
+      morpho_blue_findings.md                ...
+      sui_ecosystem_findings.md              ...
+    morpho-blue/                           Cloned codebases (16 repos)
+    morpho-blue-bundlers/                  ...
+    lido-core/                             ...
+    lido-dual-governance/                  ...
+    deepbookv3/                            ...
+    berachain-contracts/                   ...
+    v4-core/                               Uniswap V4
+    v4-periphery/                          ...</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Smart Contract Exploits Are Declining</h3>
+    <div class="highlight-box success">
+      <p><strong>Smart contract vulnerability losses dropped 89% year-over-year in Q1 2026.</strong> The industry's investment in formal verification, audit coverage, and battle-tested code (OpenZeppelin, Solady) is paying off. But attackers adapted: social engineering now accounts for 63% of total losses. The attack surface shifted from code to people.</p>
+    </div>
+
+    <h3>The Triple Verification Funnel Works</h3>
+    <p>Out of 34 initial CRITICAL/HIGH findings, only 3 survived all three verification loops (91% attrition). This is by design. Loop 1 kills findings that assume admin key compromise. Loop 2 catches false positives by re-reading the actual code line by line. Loop 3 filters findings that are technically valid but not payable (out of scope, known issue, or below severity threshold). The high attrition rate means submitted findings have extremely high acceptance probability.</p>
+
+    <h3>DPRK Threat Industrialization</h3>
+    <div class="highlight-box warning">
+      <p>The Drift Protocol incident ($285M, April 2026) confirmed that DPRK-linked actors now run six-month infiltration campaigns. They embed operatives as employees or contractors, gain access to signing infrastructure, and extract funds in a single coordinated operation. No smart contract audit can defend against an insider with legitimate key access.</p>
+    </div>
+
+    <h3>Cross-Chain and Move Ecosystem Gaps</h3>
+    <p>The two submitted DeepBook findings (u64 overflow and governance underflow) highlight that the Sui Move ecosystem, despite Move's safety guarantees around ownership and resource management, still has arithmetic vulnerability patterns. The u64 cumulative overflow can permanently poison a pool's DEEP price feed, and the governance underflow can permanently lock user stakes. Both are permissionless triggers requiring no admin access.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Protocol analysis reports</td><td>54 detailed Markdown reports</td></tr>
+      <tr><td>Cloned codebases</td><td>16 protocol repositories</td></tr>
+      <tr><td>Total findings</td><td>30+ (10 critical, 10 high, 10+ medium)</td></tr>
+      <tr><td>Verified for submission</td><td>3 (after 91% triple-verification attrition)</td></tr>
+      <tr><td>Estimated bounty value</td><td>$20M+ (if all confirmed and accepted)</td></tr>
+      <tr><td>Q1 2026 incidents tracked</td><td>145 ($450M total losses)</td></tr>
+      <tr><td>Attack vectors analyzed</td><td>5 (social engineering, contract exploits, key compromise, infrastructure, oracle)</td></tr>
+      <tr><td>Chains covered</td><td>EVM (Ethereum, Polygon, Arbitrum), Sui, Solana</td></tr>
+      <tr><td>Bug bounty platforms</td><td>Immunefi, HackenProof</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

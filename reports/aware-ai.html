@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aware.ai — AI Safety Education Platform</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.12);
+      --orange: #f59e0b;
+      --orange-soft: rgba(245, 158, 11, 0.12);
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.10);
+      --cyan: #06b6d4;
+      --cyan-soft: rgba(6, 182, 212, 0.12);
+      --swiss-red: #FF0000;
+      --swiss-red-soft: rgba(255, 0, 0, 0.10);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); line-height: 1.55; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box.green { border-left-color: var(--green); background: var(--green-soft); }
+    .highlight-box.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .highlight-box.red { border-left-color: var(--red); background: var(--red-soft); }
+    .highlight-box.cyan { border-left-color: var(--cyan); background: var(--cyan-soft); }
+    .highlight-box p { margin-bottom: 0; }
+    .highlight-box strong { font-size: 0.85rem; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+    .tag.react { background: var(--cyan-soft); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.25); }
+    .tag.vite { background: rgba(168, 85, 247, 0.12); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.25); }
+    .tag.tailwind { background: var(--cyan-soft); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25); }
+    .tag.framer { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.25); }
+    .tag.shadcn { background: var(--green-soft); color: var(--green); border: 1px solid rgba(34, 197, 94, 0.25); }
+    .tag.swiss { background: var(--swiss-red-soft); color: var(--swiss-red); border: 1px solid rgba(255, 0, 0, 0.2); }
+    .tag.router { background: var(--orange-soft); color: var(--orange); border: 1px solid rgba(245, 158, 11, 0.25); }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.82rem; }
+    th { background: var(--surface); color: var(--text); font-weight: 600; }
+    td { color: var(--text-muted); }
+
+    .ascii-diagram {
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--accent);
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hl { color: var(--green); }
+    .ascii-diagram .warn { color: var(--orange); }
+    .ascii-diagram .danger { color: var(--red); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Aware.ai</h1>
+    <p class="subtitle">
+      Switzerland's national platform for safe onboarding into LLMs.
+      Interactive learning journeys that teach citizens to identify AI-generated
+      deception, phishing, and social engineering through hands-on scenarios.
+    </p>
+
+    <div class="tags">
+      <span class="tag react">React 18</span>
+      <span class="tag vite">Vite 4</span>
+      <span class="tag tailwind">Tailwind CSS</span>
+      <span class="tag framer">Framer Motion</span>
+      <span class="tag shadcn">shadcn/ui</span>
+      <span class="tag router">React Router 6</span>
+      <span class="tag swiss">Swiss Initiative</span>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Endorsed by EPFL, ETH Zurich, HES-SO &amp; the Swiss Confederation</strong></p>
+      <p>No real AI backend. All responses are mocked locally for safe, controlled learning.</p>
+    </div>
+
+    <!-- ===== THE CHALLENGE ===== -->
+    <h2>The Challenge</h2>
+    <p>
+      LLMs are mainstream, but most users cannot distinguish between legitimate AI
+      assistance and AI-generated deception. Phishing emails now powered by GPT are
+      <strong>10x more convincing</strong> than traditional attempts. Deepfake voices
+      clone real people with <strong>3 seconds of audio</strong>. Samsung engineers
+      leaked chip fabrication source code by pasting it into ChatGPT.
+    </p>
+    <div class="highlight-box red">
+      <p><strong>The gap:</strong> 77% of employees use personal AI tools for work
+      containing confidential data. 34.8% of data pasted into public AI tools is
+      classified as sensitive. GDPR fines for AI data leakage reached 1.2B EUR across
+      Europe in 2024.</p>
+    </div>
+    <p>
+      People lack the mental models to recognize when they are being manipulated by or
+      through AI. Traditional security training does not address the new attack surface
+      that LLMs create: social engineering at scale, PII harvesting through casual
+      conversation, and cognitive dependency on AI-generated answers.
+    </p>
+
+    <!-- ===== WHY IT MATTERS ===== -->
+    <h2>Why It Matters</h2>
+    <p>
+      Switzerland positions itself as a leader in responsible AI adoption. Aware.ai is the
+      national platform for <strong>AI safety literacy</strong>, designed to protect three
+      distinct populations: corporate professionals handling sensitive data, students whose
+      cognitive skills are at risk, and individuals navigating deepfakes, voice cloning,
+      and smart assistant surveillance.
+    </p>
+    <div class="highlight-box green">
+      <p><strong>Impact:</strong> Every user completes a personalized learning journey and
+      earns an AI Safety Certificate endorsed by Switzerland's leading institutions.
+      The platform proves that AI safety education can be interactive, engaging, and
+      immediately actionable.</p>
+    </div>
+
+    <!-- ===== HOW IT WORKS ===== -->
+    <h2>How It Works</h2>
+
+    <h3>Learning Journey Flow</h3>
+    <pre class="ascii-diagram"><code><span class="dim">The main journey follows a 5-step pipeline per role:</span>
+
+<span class="hl">+-------------------+     +-------------------+     +-------------------+</span>
+<span class="hl">|  Role Selection   |---->| Level Assessment  |---->|    Use Cases      |</span>
+<span class="hl">| Corporate / Stud- |     | Quiz + slider     |     | 4 interactive     |</span>
+<span class="hl">| ent / Individual  |     | questions per role |     | risk scenarios    |</span>
+<span class="hl">+-------------------+     +-------------------+     +-------------------+</span>
+         <span class="dim">|                                                        |</span>
+         <span class="dim">|  Storytelling overlays with typewriter effect            |</span>
+         <span class="dim">|  between each step (intro + post-assessment)            v</span>
+         <span class="dim">|</span>                                              <span class="hl">+-------------------+</span>
+         <span class="dim">|</span>                                              <span class="hl">|    Prevention     |</span>
+         <span class="dim">|</span>                                              <span class="hl">| Checklists, self- |</span>
+         <span class="dim">|</span>                                              <span class="hl">| assessment, rules |</span>
+         <span class="dim">|</span>                                              <span class="hl">+--------+----------+</span>
+         <span class="dim">|</span>                                                       <span class="dim">|</span>
+         <span class="dim">|                                                        v</span>
+         <span class="dim">|</span>                                              <span class="hl">+-------------------+</span>
+         <span class="dim">|</span>                                              <span class="hl">|  Certification    |</span>
+         <span class="dim">+----------------------------------------------| Swiss-endorsed    |</span>
+                   <span class="dim">restart loop</span>                       <span class="hl">| certificate + PDF |</span>
+                                                       <span class="hl">+-------------------+</span></code></pre>
+
+    <h3>Trap Page: The "Aha" Moment</h3>
+    <pre class="ascii-diagram"><code><span class="dim">A separate experience that tricks users into sharing PII:</span>
+
+<span class="warn">+------------------+</span>     <span class="warn">+------------------+</span>     <span class="danger">+------------------+</span>
+<span class="warn">|   Chat Phase     |---->|   PII Detection  |---->|   Revelation     |</span>
+<span class="warn">| Mock AI asks     |     | Regex-based:     |     | "YOUR DATA HAS   |</span>
+<span class="warn">| extractive Qs    |     | emails, phones,  |     |  BEEN EXPOSED"   |</span>
+<span class="warn">| (gets personal)  |     | SSNs, medical,   |     | Risk gauge +     |</span>
+<span class="warn">|                  |     | salary, names... |     | timeline + facts |</span>
+<span class="warn">+------------------+</span>     <span class="warn">+------------------+</span>     <span class="danger">+--------+---------+</span>
+                                                          <span class="dim">|</span>
+                                                          <span class="dim">v</span>
+                                                 <span class="hl">+------------------+</span>
+                                                 <span class="hl">| Guided Scenarios |</span>
+                                                 <span class="hl">| 4 real-world     |</span>
+                                                 <span class="hl">| choices: safe /  |</span>
+                                                 <span class="hl">| risky / partial  |</span>
+                                                 <span class="hl">+------------------+</span>
+
+<span class="dim">Trigger: 5 user messages OR cumulative PII risk score >= 50</span></code></pre>
+
+    <h3>Mock AI Escalation Strategy</h3>
+    <pre class="ascii-diagram"><code><span class="dim">The mock AI progressively pushes for more personal data:</span>
+
+<span class="hl">Phase 1</span> <span class="dim">(msg 1):</span>     Warm greeting, encourage sharing context
+<span class="warn">Phase 2</span> <span class="dim">(msg 2-4):</span>   Helpful but probing: "What company?", "Exact figures?"
+<span class="danger">Phase 3</span> <span class="dim">(msg 5+):</span>    Extractive: "Full name?", "Account number?", "Salary?"
+
+<span class="dim">Task-specific branches: email, document, review, cover letter, financial</span></code></pre>
+
+    <!-- ===== ARCHITECTURE ===== -->
+    <h2>Architecture</h2>
+    <pre class="ascii-diagram"><code><span class="dim">6 routes, zero API calls, everything client-side:</span>
+
+<span class="hl">/</span> <span class="dim">(Demo)</span>          Landing page with platform overview
+<span class="hl">/journey</span>          5-step learning journey (role-based)
+<span class="hl">/trap</span>             PII trap chat + revelation + guided scenarios
+<span class="hl">/dangers</span>          Research-backed page on cognitive costs of AI
+<span class="hl">/chat</span>             Standalone AI chat demo
+<span class="hl">/about</span>            About the initiative
+
+<span class="dim">src/</span>
+  <span class="hl">components/</span>
+    <span class="dim">journey/</span>      RoleSelection, LevelAssessment, UseCases, Prevention, Certification
+    <span class="dim">trap/</span>         GuidedScenarios (4 scenarios), Revelation (PII exposure report)
+    <span class="dim">dangers/</span>      IntellectualRegression, StudentCheating, SocialImpact, WhatWeCanDo
+    <span class="dim">ui/</span>           shadcn/ui primitives (button, card, dialog, progress, tabs...)
+  <span class="hl">lib/</span>
+    <span class="warn">mockAI.js</span>     Phased response engine (greeting -> probing -> extractive)
+    <span class="warn">piiDetector.js</span> 12-category PII regex detection + risk scoring (0-100)
+  <span class="hl">data/</span>
+    <span class="dim">pathContent.js</span> Full content for all 3 roles (assessment, use cases, prevention, cert)</code></pre>
+
+    <!-- ===== PII DETECTION ===== -->
+    <h2>PII Detection Engine</h2>
+    <p>
+      Client-side regex engine that scans every user message for <strong>12 categories</strong>
+      of personally identifiable information. No data leaves the browser.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Severity</th>
+          <th>Weight</th>
+          <th>Real-world Risk</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>SSN</td><td style="color: var(--red);">Critical</td><td>30</td><td>Identity theft, tax fraud</td></tr>
+        <tr><td>Credit Card</td><td style="color: var(--red);">Critical</td><td>30</td><td>Unauthorized charges, card cloning</td></tr>
+        <tr><td>IBAN</td><td style="color: var(--red);">Critical</td><td>30</td><td>Wire fraud, unauthorized debits</td></tr>
+        <tr><td>Medical Info</td><td style="color: var(--red);">Critical</td><td>30</td><td>Insurance discrimination, blackmail</td></tr>
+        <tr><td>Credentials</td><td style="color: var(--red);">Critical</td><td>30</td><td>Account takeover, lateral movement</td></tr>
+        <tr><td>Email</td><td style="color: var(--orange);">High</td><td>20</td><td>Phishing, account enumeration</td></tr>
+        <tr><td>Phone</td><td style="color: var(--orange);">High</td><td>20</td><td>SIM swapping, social engineering</td></tr>
+        <tr><td>Salary</td><td style="color: var(--orange);">High</td><td>20</td><td>Extortion, fraud targeting</td></tr>
+        <tr><td>Name</td><td style="color: #eab308;">Medium</td><td>10</td><td>Spear phishing, impersonation</td></tr>
+        <tr><td>Company</td><td style="color: #eab308;">Medium</td><td>10</td><td>Corporate espionage</td></tr>
+        <tr><td>Address</td><td style="color: #eab308;">Medium</td><td>10</td><td>Surveillance, stalking</td></tr>
+        <tr><td>IP Address</td><td style="color: var(--accent);">Low</td><td>5</td><td>Geolocation, network scanning</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ===== INTERACTIVE SCENARIOS ===== -->
+    <h2>Interactive Scenarios</h2>
+    <p>
+      Four guided scenarios in the Trap flow and four use cases per role in the Journey flow.
+      Each presents realistic workplace or personal situations with branching outcomes.
+    </p>
+
+    <h3>Trap Flow Scenarios</h3>
+    <table>
+      <thead>
+        <tr><th>Scenario</th><th>Risky Choice</th><th>Safe Choice</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>The Confidential Contract</td>
+          <td style="color: var(--red);">Paste full contract into ChatGPT</td>
+          <td style="color: var(--green);">Use approved internal tool</td>
+        </tr>
+        <tr>
+          <td>The Angry Client Email</td>
+          <td style="color: var(--red);">Forward full email with account details</td>
+          <td style="color: var(--green);">Ask AI for generic template only</td>
+        </tr>
+        <tr>
+          <td>The Medical Question</td>
+          <td style="color: var(--red);">Share full medical history</td>
+          <td style="color: var(--green);">Ask generically or use certified platform</td>
+        </tr>
+        <tr>
+          <td>The Thesis Shortcut</td>
+          <td style="color: var(--red);">Have AI write the introduction</td>
+          <td style="color: var(--green);">Use AI for outline, write yourself</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Three Role-Based Paths</h3>
+    <div class="highlight-box cyan">
+      <p><strong>Corporate Professional:</strong> Contract summarization, HR performance reviews,
+      customer email responses, proprietary code debugging. Focus on GDPR, NDA compliance,
+      data classification.</p>
+    </div>
+    <div class="highlight-box">
+      <p><strong>Student:</strong> Essay writing, coding assignments, exam preparation, group
+      projects. Focus on academic integrity, skill preservation, cognitive dependency.</p>
+    </div>
+    <div class="highlight-box green">
+      <p><strong>Individual:</strong> AI health consultation, deepfake detection, social
+      engineering via AI, smart assistant privacy. Focus on personal data protection,
+      the 3-second rule.</p>
+    </div>
+
+    <!-- ===== DANGERS PAGE ===== -->
+    <h2>Research-Backed Dangers Module</h2>
+    <p>
+      A long-form educational page presenting peer-reviewed research on the cognitive
+      costs of AI dependency:
+    </p>
+    <ul>
+      <li><strong>83%</strong> of LLM users cannot recall their own writing (MIT Media Lab, 2025)</li>
+      <li><strong>47%</strong> lower brain connectivity in active AI users</li>
+      <li><strong>57.5% vs 68.5%</strong> retention: ChatGPT users vs traditional study</li>
+      <li>The GPS parallel: greater AI use correlates with worse cognitive performance, unnoticed by the user</li>
+      <li>Interactive self-assessment: "Can you still do this without AI?"</li>
+    </ul>
+
+    <!-- ===== KEY INSIGHTS ===== -->
+    <h2>Key Insights</h2>
+
+    <div class="highlight-box orange">
+      <p><strong>Mocked AI for safe learning.</strong> The entire platform runs with zero
+      real API calls. The mock AI engine uses phased response strategies that simulate
+      increasingly extractive behavior, teaching users to recognize social engineering
+      patterns without any actual risk.</p>
+    </div>
+
+    <div class="highlight-box green">
+      <p><strong>The "trap" pedagogy.</strong> Users interact with what feels like a
+      helpful AI assistant. After 5 messages or a risk score of 50+, the system reveals
+      exactly what PII they exposed, highlighted in their own messages, with a risk gauge
+      and real-world impact labels. The emotional shock drives lasting behavioral change.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Scenario-based education over lectures.</strong> Every concept is taught
+      through a decision: paste the contract or use an internal tool? Share your medical
+      history or ask generically? Each choice shows consequences backed by real incidents
+      and statistics (Samsung leak, GDPR fines, re-identification attacks).</p>
+    </div>
+
+    <div class="highlight-box cyan">
+      <p><strong>Swiss institutional credibility.</strong> Endorsed by EPFL, ETH Zurich,
+      HES-SO, and the Swiss Confederation. Certifications carry institutional weight and
+      are designed to serve as proof of AI safety literacy for employers and universities.</p>
+    </div>
+
+    <!-- ===== TECH STACK ===== -->
+    <h2>Tech Stack</h2>
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Framework</td><td>React 18</td><td>Component-based UI</td></tr>
+        <tr><td>Build</td><td>Vite 4</td><td>Fast HMR, ESM-native bundling</td></tr>
+        <tr><td>Styling</td><td>Tailwind CSS 3.3</td><td>Utility-first CSS, Swiss dark theme</td></tr>
+        <tr><td>Components</td><td>shadcn/ui + Radix UI</td><td>Accessible primitives (dialog, tabs, progress, radio)</td></tr>
+        <tr><td>Animation</td><td>Framer Motion 10</td><td>Page transitions, typewriter effects, confetti</td></tr>
+        <tr><td>Routing</td><td>React Router 6</td><td>Client-side SPA routing (6 pages)</td></tr>
+        <tr><td>Icons</td><td>Lucide React</td><td>Consistent icon system</td></tr>
+        <tr><td>Testing</td><td>Vitest + Testing Library</td><td>Component and unit tests</td></tr>
+        <tr><td>Package Manager</td><td>Bun</td><td>Fast installs and scripts</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ===== COMMANDS ===== -->
+    <h2>Dev Commands</h2>
+    <pre><code>bun install       # install dependencies
+bun run dev       # start dev server at localhost:3000
+bun run build     # production build
+bun test          # watch mode tests
+bun run test:run  # single test run (CI)</code></pre>
+
+  </div>
+</body>
+</html>

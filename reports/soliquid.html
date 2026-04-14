@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoLiquid — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>SoLiquid</h1>
+    <p class="subtitle">Bottle recycling rewards platform on Solana: scan QR codes on bottles, earn $SLIQ tokens, redeem partner coupons</p>
+
+    <div class="tags">
+      <span class="tag">Rust / Anchor</span>
+      <span class="tag green">Solana</span>
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Bun</span>
+      <span class="tag cyan">Hono</span>
+      <span class="tag orange">React Native</span>
+      <span class="tag orange">Expo</span>
+      <span class="tag">Drizzle ORM</span>
+      <span class="tag cyan">SQLite</span>
+      <span class="tag red">SPL Token</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Bottle recycling lacks tangible, immediate incentives.</strong></p>
+      <p>Existing recycling programs offer vague environmental goodwill but no real-time reward loop. Deposit systems require physical return stations. There is no way to instantly reward someone for recycling a bottle, track their impact, or let local businesses participate as reward partners.</p>
+    </div>
+
+    <p>Building an incentive layer on top of physical recycling requires solving several hard problems: preventing double-scan fraud (one bottle scanned twice), verifying QR authenticity without a centralized server bottleneck, minting fungible rewards that users can trade or spend, and creating a marketplace where local businesses offer real coupons. SoLiquid puts the trust layer on Solana and the UX in a mobile app.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Scan-to-earn loop</strong>: scan a QR code on a bottle, instantly receive 10 $SLIQ tokens minted on Solana. The entire flow takes seconds.</li>
+      <li><strong>On-chain fraud prevention</strong>: each bottle ID creates a unique PDA (Program Derived Address). Attempting to scan the same bottle twice fails at the Solana program level.</li>
+      <li><strong>Cryptographic QR verification</strong>: QR codes contain an ed25519-signed payload (bottle_id + nonce). The Solana program verifies the signature on-chain using the instructions sysvar.</li>
+      <li><strong>Partner coupon marketplace</strong>: local businesses deposit coupons on-chain. Users burn $SLIQ to redeem. Fully decentralized, no intermediary takes a cut.</li>
+      <li><strong>Full-stack dApp</strong>: Anchor smart contract + Bun/Hono backend + React Native/Expo mobile app, all sharing types.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>System Architecture</h3>
+    <div class="ascii-diagram"><code><span class="dim">MOBILE APP</span>                   <span class="dim">BACKEND</span>                     <span class="dim">BLOCKCHAIN</span>
+
++-------------------+        +---------------------+       +----------------------+
+| <span class="hi">React Native</span>      |        | <span class="cyn">Bun + Hono</span>          |       | <span class="grn">Solana Program</span>       |
+| (Expo)            |        | REST API            |       | (Anchor / Rust)      |
+|                   |        |                     |       |                      |
+| QR Scanner -------+------->| POST /scan          |       | <span class="grn">scan_bottle()</span>        |
+|   (expo-camera)   |        |   verify QR         |------>|   verify ed25519 sig |
+|                   |        |   build tx           |       |   check daily limit  |
+| Wallet -----------+------->| POST /auth          |       |   mint $SLIQ tokens  |
+|   (SecureStore)   |        |   JWT auth          |       |   emit event         |
+|                   |        |                     |       |                      |
+| Rewards ----------+------->| GET /coupons        |       | <span class="grn">create_coupon()</span>      |
+|   Marketplace     |        | POST /coupons/redeem|------>| <span class="grn">redeem_coupon()</span>      |
+|                   |        |                     |       |   burn $SLIQ         |
+| Leaderboard ------+------->| GET /leaderboard    |       |                      |
+|                   |        |   cached aggregation|       | <span class="grn">transfer_tokens()</span>   |
+| Profile ----------+------->| GET /user           |       |   P2P $SLIQ transfer |
+|                   |        |                     |       |                      |
++-------------------+        +---------------------+       +----------------------+
+                                     |                              |
+                              +------v------+               +-------v-------+
+                              | <span class="orn">SQLite</span>      |               | <span class="orn">Solana Devnet</span> |
+                              | (Drizzle)   |               | PDAs:         |
+                              | users, scans|               |  config, mint |
+                              | sessions    |               |  scan_record  |
+                              +-------------+               |  daily_tracker|
+                                                            |  partner      |
+                                                            |  coupon       |
+                                                            |  redemption   |
+                                                            +---------------+</code></div>
+
+    <h3>QR Scan Flow</h3>
+    <div class="ascii-diagram"><code><span class="dim">User scans bottle QR code</span>
+      |
+      v
+<span class="hi">1. QR DECODE</span>
+      |  Extract: bottle_id + nonce + ed25519 signature (64 bytes)
+      |  Server signed this payload when generating QR codes
+      v
+<span class="hi">2. BACKEND VERIFICATION</span>
+      |  POST /api/v1/scan { bottle_id, nonce, signature }
+      |  Validate JWT auth token
+      |  Build Solana transaction with ed25519 verify instruction
+      v
+<span class="hi">3. ON-CHAIN VERIFICATION</span>
+      |  Ed25519 instruction verifies QR signature against server pubkey
+      |  PDA [b"scan", bottle_id] -> if exists, bottle already scanned (fail)
+      |  PDA [b"daily", user] -> check scans_today &lt; 50 daily limit
+      v
+<span class="hi">4. TOKEN MINT</span>
+      |  Mint 10 $SLIQ (10 * 10^9 lamports) to user's ATA
+      |  PDA [b"config"] is mint authority (program-owned)
+      |  Update global stats: total_scans++, total_tokens_minted += 10
+      v
+<span class="hi">5. EVENT EMISSION</span>
+      |  Emit <span class="grn">BottleScannedEvent</span> { user, bottle_id, tokens_earned, timestamp }
+      |  Backend indexes events for leaderboard aggregation
+      v
+<span class="orn">6. RESPONSE</span>
+      |  Return scan confirmation + updated $SLIQ balance to mobile app</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Smart Contract</td><td><code>Rust + Anchor 0.32</code></td><td>Solana program: token mint, scan registry, coupon vault</td></tr>
+      <tr><td>Blockchain</td><td><code>Solana Devnet</code></td><td>SPL Token ($SLIQ), PDAs for state, ed25519 sig verification</td></tr>
+      <tr><td>Backend Runtime</td><td><code>Bun</code></td><td>Fast TS runtime, .env loading, SQLite via better-sqlite3</td></tr>
+      <tr><td>Backend Framework</td><td><code>Hono</code></td><td>Lightweight REST API with CORS, error handling, route mounting</td></tr>
+      <tr><td>Database</td><td><code>SQLite + Drizzle ORM</code></td><td>Off-chain user data, sessions, scan cache, leaderboard</td></tr>
+      <tr><td>Auth</td><td><code>jose (JWT)</code></td><td>Stateless authentication for mobile app</td></tr>
+      <tr><td>QR Generation</td><td><code>qrcode + tweetnacl</code></td><td>Ed25519-signed QR codes with bottle_id + nonce</td></tr>
+      <tr><td>Mobile App</td><td><code>React Native + Expo</code></td><td>QR scanner, wallet, marketplace, leaderboard, profile</td></tr>
+      <tr><td>Camera</td><td><code>expo-camera</code></td><td>QR code scanning on iOS/Android</td></tr>
+      <tr><td>Key Storage</td><td><code>Expo SecureStore</code></td><td>Wallet private key storage on device</td></tr>
+      <tr><td>Linter</td><td><code>Biome</code></td><td>Lint + format for all TypeScript code</td></tr>
+      <tr><td>Testing</td><td><code>Mocha + Chai / Vitest</code></td><td>Anchor integration tests + backend unit tests</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>On-Chain Accounts</h2>
+
+    <table>
+      <tr><th>Account (PDA)</th><th>Seeds</th><th>Purpose</th></tr>
+      <tr><td>ProgramConfig</td><td><code>[b"config"]</code></td><td>Authority pubkey, mint address, global scan/token counters</td></tr>
+      <tr><td>Mint ($SLIQ)</td><td><code>[b"mint"]</code></td><td>SPL Token mint (9 decimals), authority = config PDA</td></tr>
+      <tr><td>ScanRecord</td><td><code>[b"scan", bottle_id]</code></td><td>One per bottle: scanner, timestamp, tokens earned (prevents double-scan)</td></tr>
+      <tr><td>DailyTracker</td><td><code>[b"daily", user]</code></td><td>Per-user daily scan counter, resets each day (max 50/day)</td></tr>
+      <tr><td>Partner</td><td><code>[b"partner", partner_id]</code></td><td>Registered business: name, authority wallet, active status</td></tr>
+      <tr><td>Coupon</td><td><code>[b"coupon", coupon_id]</code></td><td>Partner offer: title, $SLIQ cost, quantity remaining</td></tr>
+      <tr><td>Redemption</td><td><code>[b"redemption", user, coupon]</code></td><td>Proof of redemption: user, coupon, $SLIQ spent, timestamp</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>soliquid/
+  programs/soliquid/src/
+    lib.rs              Anchor program: 5 instructions, 7 account types, 10 errors
+  server/
+    src/
+      index.ts            Hono app: CORS, routes, error handler
+      types.ts            ApiResponse&lt;T&gt; envelope type
+      routes/
+        auth.ts             JWT login/registration
+        scan.ts             QR verification + Solana tx submission
+        coupons.ts          Coupon listing + redemption
+        leaderboard.ts      Cached on-chain event aggregation
+        user.ts             Profile + balance queries
+        transfer.ts         P2P $SLIQ transfer
+      services/
+        auth.ts             JWT token issuance (jose)
+        qr.ts               QR code generation (ed25519-signed)
+        solana.ts           Anchor client + tx builders
+        wallet.ts           Wallet management
+      db/
+        schema.ts           Drizzle schema (users, scans, sessions)
+        index.ts            Database connection
+        migrate.ts          Migration runner
+      lib/
+        constants.ts        API prefix, default port
+        errors.ts           AppError class
+  app/
+    app/
+      _layout.tsx         Expo Router root layout
+      (auth)/
+        login.tsx           Wallet creation/import
+        onboarding.tsx      First-time user flow
+      (tabs)/
+        index.tsx           Home: balance + recent scans
+        scan.tsx            QR scanner (expo-camera)
+        rewards.tsx         Coupon marketplace
+        profile.tsx         User stats + settings
+      leaderboard.tsx     Top recyclers ranking
+      transfer.tsx        P2P token transfer
+    lib/
+      api.ts              Backend API client
+      auth.ts             JWT token management
+      hooks.ts            React hooks (useBalance, useScans, useCoupons)
+      storage.ts          SecureStore wallet persistence
+  shared/                 Shared types and constants
+  scripts/                QR generation, deployment, seeding
+  tests/                  Anchor integration tests</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>On-Chain Double-Scan Prevention</h3>
+    <div class="highlight-box success">
+      <p><strong>The PDA seed <code>[b"scan", bottle_id]</code> makes double-scanning impossible at the protocol level.</strong> When a user scans a bottle, Anchor's <code>init</code> constraint creates a new ScanRecord account. If that bottle was already scanned, the PDA already exists and the transaction fails. No database check needed, the blockchain enforces uniqueness.</p>
+    </div>
+
+    <h3>Ed25519 QR Verification</h3>
+    <p>QR codes are signed by the server's ed25519 keypair. The Solana program uses the <code>instructions_sysvar</code> to verify that a preceding <code>ed25519_program</code> instruction validated the signature. This proves the QR was generated by the authorized server without storing a secret on-chain. The verification parses the ed25519 instruction data layout byte-by-byte.</p>
+
+    <h3>Daily Rate Limiting On-Chain</h3>
+    <div class="highlight-box">
+      <p>Each user has a <code>DailyTracker</code> PDA that counts scans per day. The day boundary is computed as <code>unix_timestamp / 86400</code>. When the day rolls over, <code>scans_today</code> resets to 0. The hard cap of 50 scans/day prevents Sybil farming while allowing genuine high-volume recyclers.</p>
+    </div>
+
+    <h3>Burn-to-Redeem Economics</h3>
+    <p>Coupon redemption burns $SLIQ tokens permanently via <code>token::burn()</code>. This creates deflationary pressure: tokens are continuously minted through recycling but destroyed when users claim rewards. Partners set their own $SLIQ price per coupon, creating a market-driven reward economy.</p>
+
+    <h3>Checked Arithmetic Everywhere</h3>
+    <p>All arithmetic in the Solana program uses <code>checked_add</code>, <code>checked_mul</code>, and explicit <code>Overflow</code> error codes. No unchecked operations exist in the codebase. This prevents the class of integer overflow vulnerabilities common in smart contracts.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Solana instructions</td><td>5 (initialize, add_partner, scan_bottle, create_coupon, redeem_coupon, transfer_tokens)</td></tr>
+      <tr><td>On-chain account types</td><td>7 (ProgramConfig, Mint, ScanRecord, DailyTracker, Partner, Coupon, Redemption)</td></tr>
+      <tr><td>Custom error codes</td><td>10</td></tr>
+      <tr><td>On-chain events</td><td>3 (BottleScanned, CouponRedeemed, Transfer)</td></tr>
+      <tr><td>$SLIQ per scan</td><td>10 tokens (9 decimals)</td></tr>
+      <tr><td>Daily scan limit</td><td>50 per user</td></tr>
+      <tr><td>API routes</td><td>6 (auth, scan, coupons, leaderboard, user, transfer)</td></tr>
+      <tr><td>Mobile screens</td><td>7 (home, scan, rewards, profile, leaderboard, transfer, onboarding)</td></tr>
+      <tr><td>Backend dependencies</td><td>8 (hono, drizzle-orm, @coral-xyz/anchor, @solana/web3.js, jose, qrcode, tweetnacl, uuid)</td></tr>
+      <tr><td>Token standard</td><td>SPL Token (Solana Program Library)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iceland Trip — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Iceland Trip</h1>
+    <p class="subtitle">Epic 18-day Iceland ring road trip companion: Leaflet map with animated route, day-by-day itinerary with activity images, Icelandic history section, and packing guide</p>
+
+    <div class="tags">
+      <span class="tag">HTML</span>
+      <span class="tag cyan">CSS</span>
+      <span class="tag orange">Vanilla JS</span>
+      <span class="tag green">Leaflet.js</span>
+      <span class="tag">Playfair Display</span>
+      <span class="tag cyan">Inter Font</span>
+      <span class="tag">Wikimedia</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>An Iceland ring road trip covers 3,000 km through some of the most extreme landscapes on Earth. Standard travel tools do not capture the scale or the detail.</strong></p>
+      <p>You need to know which F-roads require a 4x4, where to find hot springs after a glacier hike, how to plan around unpredictable weather, and where to camp in a van. Google Maps shows roads but not context. Travel blogs bury practical info under paragraphs of prose. This site puts everything in one interactive, visually stunning package.</p>
+    </div>
+
+    <p>This single-page application covers an 18-day van road trip around Iceland. It features a Playfair Display serif-driven editorial design with glacier-blue accents on icy backgrounds. The Leaflet map shows the full ring road route with animated playback. Each of the 18 days gets an expanded card with activity rows, hover-to-preview side images, and tagged categories. A collapsible history section spans 1,100 years of Icelandic history from Viking colonization to modern volcanic eruptions.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>18-day ring road itinerary</strong>: approximately 3,000 km in a 4x4 van, covering the Golden Circle, south coast, Eastfjords, Myvatn, Westfjords, and Snaefellsnes peninsula.</li>
+      <li><strong>Rich visual identity</strong>: Playfair Display serif for headings, Inter for body text. Volcanic dark (#1A1A2E), glacier blue (#4CC9F0), aurora green (#06D6A0), lava red (#E84545). The design evokes fire and ice.</li>
+      <li><strong>Activity-level granularity</strong>: each day card lists individual stops with icons (adventure, culture, food, drive, worship), and hovering shows a side image with a description overlay.</li>
+      <li><strong>Icelandic history timeline</strong>: 6 eras from Viking settlement (874) through the Althing (930), foreign domination, the catastrophic Laki eruption (1783), independence (1944), to modern volcanic activity. Illustrated with Wikimedia Commons photos.</li>
+      <li><strong>Highlights gallery</strong>: curated photo cards of the most dramatic stops with hover-zoom effects.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Page Layout</h3>
+    <div class="ascii-diagram"><code>+-------------------------------+
+| <span class="hi">NAV</span> (fixed, backdrop blur)     |
+| ICE<span class="cyn">LAND</span> + section links        |
++-------------------------------+
+| <span class="orn">HERO</span>                          |
+| Kirkjufell photo backdrop     |
+| "Land of Fire & Ice" tag      |
+| "Road Trip <span class="cyn">Iceland</span>"           |
+| Stats: 18 days, ~3000 km,    |
+|   2-3 adventurers, 1 van 4x4 |
+| CTA: Explorer / Histoire      |
++-------------------------------+
+| <span class="hi">HISTORY</span> (hidden, toggle)      |
+| 6 eras: 874 -> present        |
+| Illustrated with Wikimedia    |
+| Close button                   |
++-------------------------------+
+| <span class="cyn">MAP SECTION</span>                   |
+| +--------+------------+       |
+| | Leaflet| Side Panel |       |
+| | Map    | Photo +    |       |
+| | (route)| Day info   |       |
+| +--------+------------+       |
+| Slider + Play/Pause           |
+| Day dots (D1-D18)             |
+| Legend: overnight/adv/culture  |
++-------------------------------+
+| <span class="grn">ITINERARY</span>                     |
+| 18 day cards with:            |
+|   Full-bleed photos           |
+|   Activity rows + side imgs   |
+|   Category tags               |
++-------------------------------+
+| <span class="red">HIGHLIGHTS</span>                    |
+| Photo grid, hover zoom        |
++-------------------------------+
+| <span class="dim">PRACTICAL INFO</span>                |
+| Weather, driving, camping     |
++-------------------------------+
+| <span class="dim">PACKING LIST</span>                  |
+| Categorized gear checklist    |
++-------------------------------+</code></div>
+
+    <h3>Map Animation System</h3>
+    <div class="ascii-diagram"><code><span class="hi">Route Data</span> (coordinates array for 18 days)
+      |
+      v
+<span class="cyn">Leaflet Polyline</span>
+      |  Drawn on map as gradient line (volcanic -> glacier)
+      |
+      +----> <span class="orn">Slider</span>: maps position [0-100] to route coordinate
+      |        Moves car icon marker along polyline
+      |        Updates side panel with current day/stop
+      |
+      +----> <span class="grn">Day Dots</span>: 18 buttons (D1-D18)
+      |        Click jumps slider to day start position
+      |        Map zooms to fit day's waypoints
+      |
+      +----> <span class="red">Play Button</span>: auto-advance with setInterval
+               Smooth interpolation between waypoints
+               Pauses when user interacts with slider</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Structure</td><td><code>Single HTML file (1,085 lines)</code></td><td>Self-contained page with inline CSS and embedded JS</td></tr>
+      <tr><td>Map</td><td><code>Leaflet.js 1.9.4 (CDN)</code></td><td>Route polylines, circle markers, car icon animation</td></tr>
+      <tr><td>Tiles</td><td><code>CartoDB Voyager</code></td><td>Clean map tiles (free, no API key)</td></tr>
+      <tr><td>Typography</td><td><code>Playfair Display + Inter</code></td><td>Serif headings for editorial feel, sans-serif body</td></tr>
+      <tr><td>Images</td><td><code>Wikimedia Commons</code></td><td>Free destination and history photos</td></tr>
+      <tr><td>Icons</td><td><code>Inline emoji + CSS</code></td><td>Activity type indicators (adventure, culture, food, etc.)</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>iceland-trip/
+  index.html             Single-page application (1,085 lines)
+                           CSS: ~200 lines
+                             Variables: volcanic, glacier, aurora, ice, dark, basalt, lava
+                             Components: nav, hero, map, itinerary, highlights, history, packing
+                             Responsive: mobile breakpoint at 900px
+                           HTML: ~300 lines
+                             Sections: hero, history (6 eras), map, itinerary (18 days),
+                             highlights, practical info, packing
+                           JS: ~585 lines (embedded at end of file)
+                             Route data: 18 days of coordinates and stop details
+                             Map initialization: Leaflet with custom dark popups
+                             Slider + playback: animated car icon along polyline
+                             Day cards: activity rows with side image hover
+                             History toggle: show/hide section
+                             Nav scroll detection: transparent -> solid</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Fire and Ice Design Language</h3>
+    <div class="highlight-box success">
+      <p><strong>The color palette mirrors Iceland's geological duality.</strong> Volcanic dark (#1A1A2E) for backgrounds, glacier blue (#4CC9F0) for accents and CTAs, aurora green (#06D6A0) for culture markers, lava red (#E84545) for adventure markers. The Playfair Display serif typeface adds an editorial gravitas that matches the epic scale of the landscape.</p>
+    </div>
+
+    <h3>Day Cards with Side Image Preview</h3>
+    <p>Each of the 18 day cards shows a full-width hero photo at the top, then splits into two columns: activity rows on the left and a side image panel on the right. Hovering over an activity row swaps the side image and shows a description overlay. This pattern keeps cards compact (no vertical scroll needed per day) while providing visual context for every stop.</p>
+
+    <h3>1,100 Years of History</h3>
+    <div class="highlight-box">
+      <p>The collapsible history section covers 6 eras: Viking colonization (874), the Althing parliament (930), Norwegian/Danish domination (1262-1550), the catastrophic Laki eruption (1783), independence (1944), and modern Iceland (Cod Wars, 2008 crash, Eyjafjallajokull, Fagradalsfjall). Each era has a Wikimedia photo and an alternating left-right layout for visual rhythm.</p>
+    </div>
+
+    <h3>Responsive Without a Framework</h3>
+    <p>A single <code>@media (max-width: 900px)</code> breakpoint restructures the map panel from horizontal to vertical, hides the nav links for mobile, and adjusts the timeline and card layouts. No Tailwind, no Bootstrap, no media query library. Just 20 lines of CSS overrides that handle the mobile experience cleanly.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Trip duration</td><td>18 days, ~3,000 km ring road</td></tr>
+      <tr><td>Total lines</td><td>1,085 (single index.html)</td></tr>
+      <tr><td>Build dependencies</td><td>0 (no package.json, no bundler)</td></tr>
+      <tr><td>External dependencies</td><td>3 (Leaflet CDN, Google Fonts x2)</td></tr>
+      <tr><td>Day cards</td><td>18 fully detailed itinerary cards</td></tr>
+      <tr><td>History eras</td><td>6 (874, 930, 1262-1550, 1783, 1944, modern)</td></tr>
+      <tr><td>Activity types</td><td>5 (adventure, culture, food, drive, worship)</td></tr>
+      <tr><td>Color palette</td><td>Volcanic (#1A1A2E), Glacier (#4CC9F0), Aurora (#06D6A0), Lava (#E84545)</td></tr>
+      <tr><td>Typography</td><td>Playfair Display (headings) + Inter (body)</td></tr>
+      <tr><td>Responsive breakpoint</td><td>900px</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

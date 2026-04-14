@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Georgia Trip — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Georgia Trip</h1>
+    <p class="subtitle">Interactive road trip companion for a Georgia (Caucasus) adventure: Leaflet map with animated route, accordion itinerary, highlights gallery, and printable cheatsheet</p>
+
+    <div class="tags">
+      <span class="tag">HTML</span>
+      <span class="tag cyan">CSS</span>
+      <span class="tag orange">Vanilla JS</span>
+      <span class="tag green">Leaflet.js</span>
+      <span class="tag">PWA</span>
+      <span class="tag red">Service Worker</span>
+      <span class="tag">Inter Font</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Planning a road trip through Georgia requires a companion that works offline in mountain valleys with no signal.</strong></p>
+      <p>Google Maps can plan a route, but it cannot show you a curated itinerary with cultural context, food recommendations, and photo previews for each stop. Travel guides are static PDFs. What is needed is an interactive, offline-capable web app that serves as map, itinerary, and travel companion in one.</p>
+    </div>
+
+    <p>This single-page application packs an entire Georgia road trip into one HTML file. A Leaflet map with animated route playback shows the journey day by day. An accordion-style itinerary presents each day's activities with side-panel images that change on hover. A highlights gallery showcases the best stops. A history section covers Georgia from ancient Colchis to modern independence. A printable cheatsheet view reformats everything for paper. And a service worker makes it all work offline.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Single HTML file architecture</strong>: everything (CSS, JS, data) is embedded in one 1,880-line HTML file. No build tools, no bundler, no dependencies beyond Leaflet CDN.</li>
+      <li><strong>Offline-first via PWA</strong>: a service worker (sw.js) caches the page, Leaflet tiles, and Wikipedia images. Once loaded, the site works entirely offline in remote Georgian valleys.</li>
+      <li><strong>Animated route playback</strong>: a slider control with play/pause animates a car icon along the route. Day dots below the slider let you jump to any day. The map panel updates with stop details, photos, and activity tags.</li>
+      <li><strong>Dual-view design</strong>: toggle between the full interactive site and a printable cheatsheet view. The cheatsheet strips all visuals and reformats the itinerary for A4 printing with Google Maps links for each day.</li>
+      <li><strong>Georgian wine-and-gold palette</strong>: wine (#722F37) and gold (#D4A843) on cream (#F5F0E8) backgrounds. The color scheme reflects Georgian culture: wine country, gold-domed churches, warm stone buildings.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Page Sections</h3>
+    <div class="ascii-diagram"><code>+---------------------------+
+| <span class="hi">NAV</span> (fixed, scrolled style)|
+| Logo + Section links      |
+| + View Toggle button      |
++---------------------------+
+| <span class="orn">HERO</span>                      |
+| Tbilisi photo backdrop    |
+| "Road Trip Georgia"       |
+| Stats: days, km, people   |
+| CTA: Explore / History    |
++---------------------------+
+| <span class="cyn">MAP SECTION</span>               |
+| +--------+-----------+    |
+| | Leaflet| Side      |    |
+| | Map    | Panel     |    |
+| | (route,| (photo,   |    |
+| |  stops)| details)  |    |
+| +--------+-----------+    |
+| Slider + Play/Pause       |
+| Day dots navigation       |
+| Map legend                 |
++---------------------------+
+| <span class="grn">ITINERARY</span>                 |
+| Timeline with day cards   |
+| Accordion expand/collapse |
+| Activities + side images  |
+| Google Maps links per day |
++---------------------------+
+| <span class="red">HIGHLIGHTS</span>                |
+| Photo grid of best stops  |
++---------------------------+
+| <span class="hi">HISTORY</span> (toggle)          |
+| Georgia from antiquity    |
+| to modern era             |
++---------------------------+
+| <span class="dim">PRACTICAL INFO</span>            |
+| Currency, visa, food tips |
++---------------------------+
+| <span class="dim">PACKING LIST</span>              |
++---------------------------+</code></div>
+
+    <h3>Map Interaction Flow</h3>
+    <div class="ascii-diagram"><code><span class="hi">User Interaction</span>
+      |
+      +----> <span class="cyn">Drag slider</span> ----> Update map position + side panel
+      |                        Animate car icon along route polyline
+      |
+      +----> <span class="cyn">Click day dot</span> ---> Jump slider to day start
+      |                        Zoom map to day's stops
+      |                        Update panel photo + details
+      |
+      +----> <span class="cyn">Click stop</span> ------> Highlight on map with popup
+      |                        Scroll panel to stop details
+      |
+      +----> <span class="cyn">Play button</span> ----> Auto-advance slider
+      |                        Smooth animation along route
+      |                        Panel updates at each stop
+      |
+      +----> <span class="grn">Hover activity</span> -> Side image changes
+                                Description tooltip appears</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Structure</td><td><code>Single HTML file (1,880 lines)</code></td><td>Self-contained page with embedded CSS and JS</td></tr>
+      <tr><td>Map</td><td><code>Leaflet.js 1.9.4 (CDN)</code></td><td>Interactive map with polyline routes, circle markers, custom popups</td></tr>
+      <tr><td>Tiles</td><td><code>CartoDB Voyager</code></td><td>Clean, readable map tiles (free, no API key)</td></tr>
+      <tr><td>Offline</td><td><code>Service Worker (sw.js)</code></td><td>Cache-first strategy for HTML, tiles, and images</td></tr>
+      <tr><td>PWA</td><td><code>Web App Manifest (inline)</code></td><td>Add to home screen support, standalone display mode</td></tr>
+      <tr><td>Images</td><td><code>Wikimedia Commons</code></td><td>Free, high-quality destination photos</td></tr>
+      <tr><td>Font</td><td><code>Inter (Google Fonts)</code></td><td>Clean sans-serif for readability</td></tr>
+      <tr><td>Print</td><td><code>CSS @media print</code></td><td>Cheatsheet view formatted for A4 paper</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>georgia-trip/
+  index.html          Single-page application (1,880 lines)
+                        CSS:  ~300 lines (custom properties, responsive)
+                        HTML: ~400 lines (hero, map, itinerary, highlights, practical, packing)
+                        JS:   ~1,100 lines (Leaflet map, route data, interactions, cheatsheet)
+  sw.js               Service worker (147 lines)
+                        Cache-first strategy
+                        Caches: page, Leaflet CDN, Google Fonts, Wikimedia images
+                        Offline fallback for all assets</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Zero Build, Maximum Portability</h3>
+    <div class="highlight-box success">
+      <p><strong>The entire app is a single HTML file.</strong> No build step, no bundler, no package.json. You can email it, open it from a USB drive, or host it on any static server. The only external dependency is Leaflet from CDN, and even that gets cached by the service worker for offline use.</p>
+    </div>
+
+    <h3>Accordion Itinerary with Side Images</h3>
+    <p>Each day card in the itinerary starts collapsed, showing just the day number, title, and a preview of stops. Clicking expands it to reveal the full activity list. Each activity row has an icon (adventure, culture, food, drive, worship) and hovering over a row changes the side panel image to show that specific location. This hover-to-preview pattern keeps the page compact while providing visual richness.</p>
+
+    <h3>Animated Route Playback</h3>
+    <div class="highlight-box">
+      <p>The route slider is not just a progress bar. It drives a car icon smoothly along the actual polyline path on the map. The side panel updates in real time with the current stop's photo, title, description, and activity tags. Clicking play auto-advances the slider with interpolated animation between waypoints. Day dots below the slider provide quick jumps.</p>
+    </div>
+
+    <h3>PWA Offline Strategy</h3>
+    <p>The service worker uses a cache-first strategy with a versioned cache name. On first load, it pre-caches the HTML page, Leaflet library, fonts, and all Wikimedia images referenced in the trip data. Subsequent visits work entirely offline. The inline web app manifest enables "Add to Home Screen" on mobile, making it feel like a native app in the Georgian mountains.</p>
+
+    <h3>Print-Ready Cheatsheet</h3>
+    <p>The view toggle button switches between the full interactive site and a clean cheatsheet view. The cheatsheet strips all maps, images, and interactivity, reformatting the itinerary as a compact day-by-day list with Google Maps links. CSS <code>@media print</code> rules hide the nav, hero, and footer, producing a clean A4 document.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Total lines</td><td>1,880 (index.html) + 147 (sw.js)</td></tr>
+      <tr><td>Build dependencies</td><td>0 (no package.json, no bundler)</td></tr>
+      <tr><td>External dependencies</td><td>2 (Leaflet CDN, Google Fonts)</td></tr>
+      <tr><td>Sections</td><td>7 (hero, map, itinerary, highlights, history, practical, packing)</td></tr>
+      <tr><td>Color palette</td><td>Wine (#722F37), Gold (#D4A843), Cream (#F5F0E8)</td></tr>
+      <tr><td>Activity types</td><td>5 (adventure, culture, food, drive, worship)</td></tr>
+      <tr><td>Map features</td><td>Animated route, car icon, day dots, stop popups, legend</td></tr>
+      <tr><td>Offline support</td><td>Full PWA with service worker caching</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

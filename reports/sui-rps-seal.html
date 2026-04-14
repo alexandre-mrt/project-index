@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sui RPS Seal — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .vs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .vs-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .vs-card h3 { margin-top: 0; color: var(--accent); font-size: 0.95rem; }
+    .vs-card p, .vs-card li { font-size: 0.82rem; }
+
+    @media (max-width: 600px) {
+      .vs-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>sui-rps-seal</h1>
+    <p class="subtitle">Provably fair Rock Paper Scissors on Sui &mdash; comparing Seal encryption vs Nautilus TEE for hidden moves</p>
+
+    <div class="tags">
+      <span class="tag">Sui Move</span>
+      <span class="tag">TypeScript</span>
+      <span class="tag">Rust</span>
+      <span class="tag cyan">Seal IBE</span>
+      <span class="tag cyan">BLS12-381</span>
+      <span class="tag green">Nautilus TEE</span>
+      <span class="tag orange">Ed25519</span>
+      <span class="tag">Next.js</span>
+    </div>
+
+    <!-- ───────────────────── THE CHALLENGE ───────────────────── -->
+
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>On-chain games are transparent.</strong> Every transaction is public. In a naive RPS contract, your opponent can read your move from the transaction data before they commit theirs &mdash; making the game trivially exploitable.</p>
+    </div>
+
+    <p>The fundamental problem: blockchains provide integrity and availability, but not confidentiality. Any game requiring simultaneous secret commitment (poker, RPS, auctions) needs a mechanism to hide data until a reveal condition is met.</p>
+
+    <p>This project implements <strong>two distinct solutions</strong> to the same problem, deployed side by side on Sui testnet, enabling a direct architectural comparison.</p>
+
+    <!-- ───────────────────── WHY IT MATTERS ───────────────────── -->
+
+    <h2>Why It Matters</h2>
+
+    <p>Two fundamentally different cryptographic approaches to on-chain privacy, each with distinct trust assumptions:</p>
+
+    <div class="vs-grid">
+      <div class="vs-card">
+        <h3>V1 &mdash; Seal Decryption</h3>
+        <ul>
+          <li>Moves encrypted client-side with <strong>Seal IBE</strong> (identity-based encryption)</li>
+          <li>On-chain <code>seal_approve</code> gates decryption &mdash; keys released only after both players commit</li>
+          <li>Resolver decrypts off-chain, submits plaintext + salts</li>
+          <li>Contract verifies <code>sha3_256(move || salt)</code> matches stored hash</li>
+          <li><strong>Trust</strong>: Seal key servers (threshold BLS12-381)</li>
+        </ul>
+      </div>
+      <div class="vs-card">
+        <h3>V2 &mdash; Nautilus TEE</h3>
+        <ul>
+          <li>Same Seal encryption for move commitment</li>
+          <li>Decryption happens inside an <strong>AWS Nitro Enclave</strong></li>
+          <li>Enclave computes winner, signs result with Ed25519</li>
+          <li>Contract verifies signature + freshness (5 min window)</li>
+          <li><strong>Trust</strong>: TEE attestation + registered enclave key</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ───────────────────── HOW IT WORKS ───────────────────── -->
+
+    <h2>How It Works</h2>
+
+    <pre><code>
+  V1: Seal On-Chain Resolution            V2: Nautilus TEE Resolution
+  ============================            ===========================
+
+  Player1        Player2                  Player1        Player2
+     |              |                        |              |
+     |-- create --->|                        |-- create --->|
+     |    (stake)   |                        |    (stake)   |
+     |              |-- join -->              |              |-- join -->
+     |              |   (match stake)         |              |   (match stake)
+     |              |                        |              |
+     +-- commit --->+                        +-- commit --->+
+     | Seal-encrypt | Seal-encrypt           | Seal-encrypt | Seal-encrypt
+     | + sha3 hash  | + sha3 hash            |              |
+     |              |                        |              |
+     +----- seal_approve -----+              +----- seal_approve -----+
+     | (both committed? OK)   |              | (both committed? OK)   |
+     |                        |              |                        |
+     v                        v              v                        v
+  +-----------+                           +---------------------------+
+  |  Resolver |                           |     Nautilus Enclave      |
+  | decrypts  |                           |  1. Fetch Seal keys       |
+  | both via  |                           |  2. Decrypt both moves    |
+  | Seal keys |                           |  3. Compute winner        |
+  +-----------+                           |  4. Ed25519 sign result   |
+       |                                  +---------------------------+
+       v                                         |
+  +------------------+                    +------------------+
+  | resolve()        |                    | resolve_with_tee |
+  | verify hash1     |                    | verify Ed25519   |
+  | verify hash2     |                    | check freshness  |
+  | compute winner   |                    | check winner     |
+  | settle stakes    |                    | settle stakes    |
+  +------------------+                    +------------------+
+    </code></pre>
+
+    <h3>Game Lifecycle (shared)</h3>
+
+    <ol>
+      <li><strong>Create</strong> &mdash; Player1 deposits stake (SUI), sets timeout (1 min to 24 hrs)</li>
+      <li><strong>Join</strong> &mdash; Player2 matches stake exactly (self-join blocked)</li>
+      <li><strong>Commit</strong> &mdash; Both players submit Seal-encrypted moves; game advances to <code>COMMITTED</code></li>
+      <li><strong>Resolve</strong> &mdash; Decrypted moves verified, winner computed, stakes settled</li>
+      <li><strong>Cancel</strong> &mdash; After timeout: full refund if no opponent, 50/50 split if unresolved</li>
+    </ol>
+
+    <!-- ───────────────────── TECH STACK ───────────────────── -->
+
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      <tr><td>Smart Contracts</td><td>Sui Move (2 packages)</td><td>Game state, stake escrow, access control</td></tr>
+      <tr><td>Encryption</td><td>Seal IBE (BLS12-381)</td><td>Identity-based encryption with on-chain policy</td></tr>
+      <tr><td>TEE</td><td>Nautilus (AWS Nitro)</td><td>Verifiable off-chain computation in V2</td></tr>
+      <tr><td>Enclave Server</td><td>Rust (axum + fastcrypto)</td><td>BCS encoding, Ed25519 signing, game logic</td></tr>
+      <tr><td>SDK</td><td>TypeScript (@mysten/sui, @mysten/seal)</td><td>Transaction builders, encryption helpers</td></tr>
+      <tr><td>Frontend</td><td>Next.js 15 + Tailwind + dapp-kit</td><td>Wallet connection, game UI</td></tr>
+    </table>
+
+    <h3>Project Structure</h3>
+
+    <pre><code>
+  contracts/
+    v1/sources/rps_v1.move    Seal decryption + sha3 hash verification
+    v2/sources/rps_v2.move    TEE signature verification + EnclaveRegistry
+  enclave/src/
+    main.rs                   Axum server with Ed25519 ephemeral keypair
+    rps.rs                    Winner computation, BCS IntentMessage signing
+    common.rs                 Health check, attestation endpoints
+  sdk/src/
+    v1.ts                     V1 transaction builders (commit with hash)
+    v2.ts                     V2 transaction builders (resolve_with_tee)
+    seal.ts                   Seal encrypt/decrypt helpers
+    queries.ts                On-chain game state queries
+  frontend/
+    app/                      Next.js pages (create, join, play)
+    components/               GameCard, MoveSelector, WalletProvider
+    lib/                      Hooks, config, types
+    </code></pre>
+
+    <!-- ───────────────────── KEY INSIGHTS ───────────────────── -->
+
+    <h2>Key Insights</h2>
+
+    <h3>V1 vs V2 Tradeoffs</h3>
+
+    <table>
+      <tr><th>Dimension</th><th>V1 (Seal + Hash)</th><th>V2 (Seal + TEE)</th></tr>
+      <tr><td>Resolution cost</td><td>Higher &mdash; sha3 hash verification x2</td><td>Lower &mdash; single Ed25519 verify</td></tr>
+      <tr><td>Trust model</td><td>Seal key servers (threshold)</td><td>TEE hardware attestation</td></tr>
+      <tr><td>Move privacy</td><td>Plaintext moves hit chain at resolve</td><td>Only winner hits chain (moves in TEE)</td></tr>
+      <tr><td>Infrastructure</td><td>None (resolver is any client)</td><td>Requires running Nautilus enclave</td></tr>
+      <tr><td>Replay protection</td><td>Salt uniqueness in hash</td><td>Timestamp freshness (5 min window)</td></tr>
+      <tr><td>Contract complexity</td><td>Simpler (no registry, no admin)</td><td>EnclaveRegistry + AdminCap + init()</td></tr>
+    </table>
+
+    <h3>Security Patterns</h3>
+
+    <div class="highlight-box success">
+      <p><strong>Defense in depth (V1)</strong>: Moves are Seal-encrypted AND sha3-hashed with a random 32-byte salt. Even if Seal were compromised, the resolver cannot submit fake moves &mdash; the hash binds move+salt cryptographically.</p>
+    </div>
+
+    <div class="highlight-box success">
+      <p><strong>Defense in depth (V2)</strong>: The contract re-computes the winner from declared moves and asserts it matches the TEE-signed winner field. Even a compromised enclave cannot declare an inconsistent result.</p>
+    </div>
+
+    <ul>
+      <li><strong>seal_approve gate</strong> &mdash; Seal key servers run a dry-run of this function before releasing decryption keys. Decryption is blocked until both players have committed, preventing early reveal.</li>
+      <li><strong>IntentMessage&lt;T&gt; pattern</strong> &mdash; All TEE payloads are wrapped in a typed intent envelope with scope discriminant + timestamp, preventing cross-context signature reuse.</li>
+      <li><strong>Timeout bounds</strong> &mdash; Minimum 60s (prevents griefing), maximum 24h (prevents permanent fund locking). Cancel splits stakes 50/50 if both joined.</li>
+      <li><strong>Self-join blocked</strong> &mdash; Contract rejects Player1 joining their own game.</li>
+    </ul>
+
+    <h3>On-Chain Game Design Lessons</h3>
+
+    <ul>
+      <li>Shared objects work well for 2-player games &mdash; both players and the resolver can interact with the same Game object</li>
+      <li>Seal IBE with game object ID as identity creates natural per-game encryption scoping</li>
+      <li>The BCS encoding between Rust enclave and Move contract must match exactly &mdash; field order in structs is the serialization order</li>
+      <li>Ephemeral keypairs in the enclave mean key rotation is just a redeploy + <code>register_enclave</code> call</li>
+    </ul>
+
+    <!-- ───────────────────── DEPLOYED ───────────────────── -->
+
+    <h2>Deployed (Testnet)</h2>
+
+    <table>
+      <tr><th>Object</th><th>ID</th></tr>
+      <tr><td>V1 Package</td><td><code>0x3bf1...fdfc</code></td></tr>
+      <tr><td>V2 Package</td><td><code>0xf548...bf0</code></td></tr>
+      <tr><td>EnclaveRegistry</td><td><code>0xc6bf...01f3</code></td></tr>
+      <tr><td>AdminCap</td><td><code>0x28ca...df84</code></td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

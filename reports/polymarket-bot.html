@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polymarket Bot — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Polymarket Bot</h1>
+    <p class="subtitle">Autonomous multi-strategy trading bot for prediction markets</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Bun</span>
+      <span class="tag cyan">Polymarket CLOB</span>
+      <span class="tag orange">Claude API</span>
+      <span class="tag">Ethers.js</span>
+      <span class="tag green">SQLite</span>
+      <span class="tag">Zod</span>
+      <span class="tag cyan">WebSocket</span>
+      <span class="tag orange">Ink TUI</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Prediction markets offer real alpha, but manual trading cannot scale.</strong></p>
+      <p>Arbitrage windows last 2.7 seconds on average. News moves prices before a human can react. Emotional bias leads to overexposure. Tracking whale wallets, scanning hundreds of markets, and sizing positions with Kelly criterion all demand automation.</p>
+    </div>
+
+    <p>Polymarket hosts hundreds of active binary markets on politics, crypto, sports, and world events. Each market has a CLOB order book with real-time pricing. Profitable edges exist in mispriced outcomes, near-certain "bond" positions, news catalysts, and whale consensus, but exploiting them requires continuous scanning, sub-second execution, and disciplined risk management that no human can sustain 24/7.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>9 concurrent strategies</strong>: arbitrage, bonds, copy-trading, news-driven, Claude edge, longshot attention, time decay, fade, and rewards, all running in parallel every 30 seconds.</li>
+      <li><strong>AI probability assessment</strong>: Claude API reads full market descriptions and news signals to estimate true probabilities, catching edges that pure price analysis misses.</li>
+      <li><strong>Kelly-optimal sizing</strong>: quarter-Kelly criterion with fee-adjusted effective prices ensures mathematically sound position sizing.</li>
+      <li><strong>Kill switch protection</strong>: automatic circuit breaker on 20% drawdown, manual SIGINT trigger, and emergency order cancellation.</li>
+      <li><strong>Paper + live modes</strong>: full simulation with realistic fee modeling before committing real capital.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Core Loop</h3>
+    <div class="ascii-diagram"><code><span class="dim">Every 30 seconds:</span>
+
++------------------+     +-------------------+     +------------------+
+| <span class="hi">Market Scanner</span>   |---->| <span class="hi">Strategy Engine</span>  |---->| <span class="hi">Risk Management</span> |
+| Gamma API fetch  |     | 9 strategies      |     | Kelly sizing     |
+| Filter active    |     | Parallel evaluate |     | Position limits  |
+| Subscribe WS     |     | Deduplicate sigs  |     | Kill switch      |
++------------------+     +-------------------+     +------------------+
+                                                          |
+        +------------------+     +-------------------+    |
+        | <span class="grn">Polymarket API</span>   |<----| <span class="orn">Order Execution</span>  |<---+
+        | CLOB orders      |     | Paper or Live     |
+        | EIP-712 auth     |     | DB persistence    |
+        | Fill tracking    |     | Callback notify   |
+        +------------------+     +-------------------+</code></div>
+
+    <h3>Data Flow</h3>
+    <div class="ascii-diagram"><code><span class="dim">REAL-TIME FEEDS</span>                    <span class="dim">ANALYSIS</span>                  <span class="dim">EXECUTION</span>
+
++----------------+               +------------------+        +----------------+
+| <span class="cyn">Polymarket WS</span>  |--+            | <span class="hi">StrategyRunner</span>  |        | <span class="orn">Executor</span>       |
+| Order book     |  |            |  .runCycle()     |        | Paper/Live     |
++----------------+  |            |                  |        | Fee compute    |
++----------------+  |  +------+ |  ArbitrageStrat   |  +---+ | Position mgmt  |
+| <span class="cyn">CryptoPanic</span>    |--+->|<span class="grn">AGGR</span>  |>|  BondsStrat      |->|<span class="orn">SIG</span>|>| DB write       |
+| News feed      |  |  +------+ |  CopyTradingStrat |  +---+ +----------------+
++----------------+  |     |      |  NewsDrivenStrat  |             |
++----------------+  |     |      |  ClaudeEdgeStrat  |             v
+| <span class="cyn">RSS Feeds</span>      |--+     |      |  LongshotStrat   |       +----------------+
+| Reuters, AP    |        |      |  TimeDecayStrat  |       | <span class="grn">Portfolio</span>      |
++----------------+        |      |  FadeStrat       |       | PnL snapshots  |
+                          v      |  RewardsStrat    |       | Exposure check |
+                    <span class="grn">priceMap</span>     +------------------+       +----------------+
+                    <span class="grn">newsBuffer</span></code></div>
+
+    <!-- ================================================ -->
+    <h2>Strategies</h2>
+
+    <table>
+      <tr><th>Strategy</th><th>Edge Source</th><th>Key Params</th></tr>
+      <tr><td>Arbitrage</td><td>YES + NO &lt; $1.00 (minus fees)</td><td>Min edge: 0.5%, 2.7s avg window</td></tr>
+      <tr><td>Bonds</td><td>High-probability outcomes &gt;95c near resolution</td><td>Max 7 days to expiry, $10K min volume</td></tr>
+      <tr><td>Copy Trading</td><td>Whale wallet consensus (5-10 wallets)</td><td>80% consensus threshold</td></tr>
+      <tr><td>News-Driven</td><td>File-based signals from external news agent</td><td>Min 5% edge, 30s poll cycle</td></tr>
+      <tr><td>Claude Edge</td><td>AI probability vs. market price on extreme markets</td><td>Full description analysis required</td></tr>
+      <tr><td>Longshot Attention</td><td>Buy cheap outcomes, sell before resolution hype</td><td>Attention-based exit timing</td></tr>
+      <tr><td>Time Decay</td><td>Theta extraction near expiry</td><td>Max 7 days, $5K min volume</td></tr>
+      <tr><td>Fade</td><td>Mean reversion on sharp moves</td><td>Min 10% move, 55% confidence</td></tr>
+      <tr><td>Rewards</td><td>Liquidity provision for maker rebates</td><td>Min price 92c</td></tr>
+    </table>
+
+    <div class="highlight-box">
+      <p><strong>Strategy pattern</strong>: all strategies implement <code>BaseStrategy</code> with <code>evaluate(context)</code> returning <code>TradeSignal[]</code>. The <code>StrategyRunner</code> executes all enabled strategies in parallel via <code>Promise.all</code> and deduplicates signals by tokenId + side, keeping the highest confidence.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Risk Management</h2>
+
+    <div class="ascii-diagram"><code><span class="hi">Quarter-Kelly Sizing</span>
+  f = 0.25 * (p - effectivePrice) / (1 - effectivePrice)
+
+  <span class="dim">where:</span>
+    p              = estimated true probability
+    effectivePrice = market price + taker fee
+    taker fee      = feeRate * sqrt(price * (1 - price))
+
+<span class="orn">Position Limits</span>
+  Max per market:     10% of bankroll
+  Max total exposure: 50% of bankroll
+  Max drawdown:       20% (triggers kill switch)
+
+<span class="red">Kill Switch</span>
+  Drawdown &gt;= 20%  --&gt; cancel all orders, halt loop
+  SIGINT received   --&gt; emergency stop
+  Manual activate   --&gt; immediate halt + callback chain</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Runtime</td><td><code>Bun</code></td><td>Fast TS runtime, built-in SQLite, auto .env, WebSocket</td></tr>
+      <tr><td>Language</td><td><code>TypeScript (strict)</code></td><td>Immutable types, readonly arrays, Zod validation</td></tr>
+      <tr><td>Exchange</td><td><code>@polymarket/clob-client</code></td><td>Official CLOB client for order placement</td></tr>
+      <tr><td>Auth</td><td><code>ethers v6</code></td><td>EIP-712 wallet signing, HMAC-SHA256 L2 headers</td></tr>
+      <tr><td>AI</td><td><code>@anthropic-ai/sdk</code></td><td>Probability estimation and news analysis</td></tr>
+      <tr><td>Data</td><td><code>Gamma + Data API</code></td><td>Market metadata, leaderboard, on-chain positions</td></tr>
+      <tr><td>Real-time</td><td><code>WebSocket</code></td><td>Order book streaming (10s heartbeat, auto-reconnect)</td></tr>
+      <tr><td>News</td><td><code>CryptoPanic + RSS</code></td><td>60s/120s poll cycles, sentiment tagging</td></tr>
+      <tr><td>Storage</td><td><code>bun:sqlite</code></td><td>Trades, positions, PnL snapshots, whale profiles</td></tr>
+      <tr><td>Dashboard</td><td><code>Ink + React</code></td><td>Terminal TUI with portfolio, positions, alerts</td></tr>
+      <tr><td>Linter</td><td><code>Biome</code></td><td>Lint + format in single pass</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>src/
+  core/           Config, types, constants, logger, database
+  auth/           EIP-712 wallet signing, API key generation
+  clients/        CLOB wrapper, Gamma client, Data API client
+  data/           Real-time ingestion
+    polymarket-ws.ts   Order book WebSocket
+    cryptopanic.ts     Crypto news feed (60s poll)
+    rss.ts             Reuters, AP (120s poll)
+    aggregator.ts      Unified event bus
+  strategies/     9 strategy implementations
+    base.ts            AbstractStrategy + interface
+    runner.ts          Parallel execution + dedup
+    arbitrage.ts       Sum-to-one mispricing
+    bonds.ts           High-probability scanner
+    copy-trading.ts    Whale basket consensus
+    news-driven.ts     File-based news signals
+    claude-edge.ts     AI probability assessment
+    longshot-attention.ts  Cheap outcome + hype exit
+    time-decay.ts      Theta near expiry
+    fade.ts            Mean reversion
+    rewards.ts         Maker rebate capture
+  execution/      Order management
+    executor.ts        Paper/live execution engine
+    fill-tracker.ts    Order fill monitoring
+  risk/           Position management
+    kelly.ts           Quarter-Kelly sizing + fee model
+    kill-switch.ts     Circuit breaker (drawdown/SIGINT)
+    portfolio.ts       Exposure tracking, PnL snapshots
+  whales/         Whale intelligence
+    discovery.ts       Leaderboard scraping
+    tracker.ts         Position monitoring (300s poll)
+  analysis/       AI layer
+    llm.ts             Claude API probability estimation
+  dashboard/      Terminal UI (Ink/React)
+  index.ts        Main entry, orchestrates everything</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Multi-Strategy Parallelism</h3>
+    <div class="highlight-box success">
+      <p><strong>All 9 strategies evaluate in parallel every 30 seconds.</strong> The <code>StrategyRunner</code> wraps each in a try/catch so one failure never blocks the others. Signals are deduplicated by tokenId + side before reaching the executor.</p>
+    </div>
+
+    <h3>Resolution Condition Safety</h3>
+    <div class="highlight-box warning">
+      <p><strong>Never trade on the market title alone.</strong> The bot reads full <code>description</code> fields from the Gamma API to check exact resolution criteria, deadlines, 50-50 fallback clauses, and conditional market traps ("X before Y" resolves 50-50 if neither happens). A 95c outcome is only a "bond" if resolution conditions are unambiguous.</p>
+    </div>
+
+    <h3>Fee-Aware Kelly Sizing</h3>
+    <p>The Kelly criterion incorporates Polymarket's dynamic taker fee curve: <code>fee = feeRate * sqrt(price * (1 - price))</code>, peaking at ~1.80% for 50c outcomes. The bot never overestimates its edge on mid-priced markets where fees eat the most.</p>
+
+    <h3>Graceful Shutdown</h3>
+    <p>On SIGTERM/SIGINT, the bot follows a strict teardown sequence: stop scan loop, cancel all open orders via CLOB API, stop data feeds and whale tracker, dispose kill switch listeners, close SQLite database. A double-SIGINT forces immediate exit.</p>
+
+    <h3>Paper Trading Fidelity</h3>
+    <div class="highlight-box">
+      <p>Paper mode simulates realistic taker fees at 150 bps, writes trades to the same SQLite schema as live mode, and runs the full portfolio/risk pipeline. Strategy validation happens without capital at risk while maintaining identical code paths.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Trading strategies</td><td>9 (arbitrage, bonds, copy, news, AI, longshot, decay, fade, rewards)</td></tr>
+      <tr><td>Data sources</td><td>4 (Polymarket WS, CryptoPanic, RSS, Gamma API)</td></tr>
+      <tr><td>Scan interval</td><td>30 seconds</td></tr>
+      <tr><td>Source files</td><td>50+ TypeScript modules</td></tr>
+      <tr><td>Test suites</td><td>10 (arbitrage, bonds, config, db, executor, gamma, kelly, kill-switch, portfolio, runner)</td></tr>
+      <tr><td>Auth method</td><td>EIP-712 signature + HMAC-SHA256 L2 headers</td></tr>
+      <tr><td>Risk model</td><td>Quarter-Kelly, 10% max/market, 50% max exposure, 20% drawdown kill</td></tr>
+      <tr><td>Dashboard</td><td>Ink terminal TUI (portfolio, positions, trades, alerts)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

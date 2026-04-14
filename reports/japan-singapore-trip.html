@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Japan x Singapore Trip — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Japan x Singapore</h1>
+    <p class="subtitle">20-day trip planner: ETHTokyo conference, Japanese Alps road trip, Osaka food tour, and Singapore exploration with interactive Leaflet map, budget tracker, and packing checklist</p>
+
+    <div class="tags">
+      <span class="tag">HTML</span>
+      <span class="tag cyan">CSS</span>
+      <span class="tag orange">Vanilla JS</span>
+      <span class="tag green">Leaflet.js</span>
+      <span class="tag">Inter Font</span>
+      <span class="tag red">Unsplash</span>
+      <span class="tag">Vercel</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>A 20-day trip spanning two countries, four phases, and mixing a blockchain conference with tourism requires a single source of truth.</strong></p>
+      <p>The trip combines ETHTokyo (conference + hackathon), a rental car road trip through the Japanese Alps, an Osaka food and culture segment, and a Singapore finale. Each phase has different logistics, budgets, and packing needs. Spreadsheets fragment the planning. This site unifies everything into one shareable, interactive companion.</p>
+    </div>
+
+    <p>This multi-file vanilla web app (HTML + CSS + JS) presents the full 20-day journey on an interactive Leaflet map with a horizontal sticky timeline bar. Clicking a day pill updates the map view and shows the detail panel with activities, photos, and logistics. Separate sections cover budget breakdown by phase, weather expectations, and a persistent packing checklist with localStorage. A Singapore history modal adds cultural context. Two alternative road trip routes (A and B) are available with different itineraries loaded from separate data files.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>4-phase color-coded journey</strong>: Tokyo (#5B6ABF), Road Trip (#C4813D), Osaka (#D4644E), Singapore (#3A8F7B). Each phase has its own accent color reflected in the timeline pills, map markers, and detail panel.</li>
+      <li><strong>Dual route options</strong>: Route A and Route B for the road trip phase, loaded from separate JS data files. Different stops, different experiences, same start/end points.</li>
+      <li><strong>Countdown timer</strong>: live countdown to departure date (Sept 22, 2026) displayed in the hero section.</li>
+      <li><strong>Persistent packing checklist</strong>: checkboxes saved to localStorage. Pack your bags over multiple sessions without losing progress.</li>
+      <li><strong>Budget breakdown</strong>: per-phase cost estimates with totals, displayed in a clean card layout.</li>
+      <li><strong>Singapore history modal</strong>: timeline from 1299 (Singapura legend) through colonial era, Japanese occupation, independence, Lee Kuan Yew era, to modern city-state.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Application Layout</h3>
+    <div class="ascii-diagram"><code>+----------------------------------+
+| <span class="hi">NAV</span> (fixed, 56px)                |
+| "Japan x Singapore" + links      |
++----------------------------------+
+| <span class="orn">HERO</span>                             |
+| Full-bleed Japan photo            |
+| "Japan x Singapore"              |
+| Sept 22 - Oct 11, 2026           |
+| Countdown: XX days to go         |
++----------------------------------+
+| <span class="cyn">MAP SECTION</span>                      |
+| +------------------------------+ |
+| | <span class="hi">Timeline Bar</span> (sticky, scroll)| |
+| | [D1][D2]...[D20] day pills  | |
+| +------------------------------+ |
+| +------------------+-----------+ |
+| | Leaflet Map      | Detail    | |
+| | (2/3 width)      | Panel     | |
+| | CircleMarkers    | (1/3)     | |
+| | Dashed polylines | Photo     | |
+| | POI toggle       | Activities| |
+| +------------------+-----------+ |
++----------------------------------+
+| <span class="dim">--- Section Divider (photo) ---</span>  |
++----------------------------------+
+| <span class="grn">BUDGET</span>                           |
+| Per-phase cost cards              |
++----------------------------------+
+| <span class="orn">WEATHER</span>                          |
+| Temperature + rain expectations   |
++----------------------------------+
+| <span class="red">PACKING CHECKLIST</span>                |
+| Categories with localStorage      |
++----------------------------------+
+| <span class="dim">FOOTER</span>                           |
++----------------------------------+
+| <span class="hi">HISTORY MODAL</span> (Singapore)        |
+| 1299 -> modern, timeline entries  |
++----------------------------------+</code></div>
+
+    <h3>4-Phase Timeline</h3>
+    <div class="ascii-diagram"><code><span class="hi">Sept 22</span>            <span class="orn">Sept 28</span>          <span class="red">Oct 5</span>         <span class="grn">Oct 8</span>    <span class="dim">Oct 11</span>
+  |                   |                 |               |          |
+  v                   v                 v               v          v
++--<span class="hi">TOKYO</span>-----------+--<span class="orn">ROAD TRIP</span>------+--<span class="red">OSAKA</span>------+--<span class="grn">SINGAPORE</span>-+
+| D1: Arrive NRT    | D7: Rent car    | D14: Dotonbori| D18: Fly |
+| D2: ETHTokyo D1   | D8: Alps drive  | D15: Nara     | D19: MBS |
+| D3: ETHTokyo D2   | D9: Shirakawa   | D16: Kobe     | D20: Fly |
+| D4: Hackathon     | D10: Matsumoto  | D17: Fly SIN  |   home   |
+| D5: Hack + explore| D11: Mt Fuji    |               |          |
+| D6: Hack finals   | D12: Kamakura   |               |          |
+|                   | D13: Return car |               |          |
++-------------------+-----------------+---------------+----------+
+  <span class="hi">#5B6ABF</span>              <span class="orn">#C4813D</span>            <span class="red">#D4644E</span>          <span class="grn">#3A8F7B</span></code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Structure</td><td><code>HTML + CSS + JS (3 files + 2 route data)</code></td><td>Clean separation: structure, style, logic, data</td></tr>
+      <tr><td>Map</td><td><code>Leaflet.js 1.9.4 (CDN)</code></td><td>Interactive map with circleMarkers, dashed polylines, POI toggle</td></tr>
+      <tr><td>Tiles</td><td><code>CartoDB Voyager Light</code></td><td>Light warm map tiles matching off-white design</td></tr>
+      <tr><td>Storage</td><td><code>localStorage</code></td><td>Packing checklist persistence across sessions</td></tr>
+      <tr><td>Images</td><td><code>Unsplash</code></td><td>High-quality destination photos via URL parameters</td></tr>
+      <tr><td>Font</td><td><code>Inter (Google Fonts)</code></td><td>Clean sans-serif matching light warm aesthetic</td></tr>
+      <tr><td>Deploy</td><td><code>Vercel</code></td><td>Auto-deploy on GitHub push</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>japan-singapore-trip/
+  index.html                  Page structure (125 lines)
+                                Nav, hero, map section, budget, weather, checklist, footer
+                                Singapore history modal
+  style.css                   Styling (1,043 lines)
+                                CSS custom properties (--bg, --tokyo, --roadtrip, --osaka, --singapore)
+                                Responsive layout, nav, hero, map, timeline, detail panel
+                                Budget cards, weather cards, checklist styling
+                                History modal with timeline entries
+  app.js                      Application logic (1,193 lines)
+                                TRIP_DATA: 20 days across 4 phases with coordinates
+                                Map initialization: Leaflet with CartoDB Voyager light tiles
+                                Timeline bar: horizontal scrollable day pills
+                                Detail panel: photo + activity list + phase info
+                                Budget calculator: per-phase and total breakdown
+                                Weather data: temperature and precipitation by phase
+                                Packing checklist: categories with localStorage persistence
+                                Countdown timer: days until departure
+                                POI toggle: show/hide points of interest
+                                Singapore history: modal with timeline entries
+  route-b-data.js             Alternative road trip route B data
+  route-tokyo-takayama.js     Tokyo-Takayama route variant data</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Phase-Based Color System</h3>
+    <div class="highlight-box success">
+      <p><strong>Each of the 4 trip phases has a distinct color that permeates the entire UI.</strong> Tokyo days appear in indigo (#5B6ABF), road trip days in warm amber (#C4813D), Osaka in terracotta (#D4644E), and Singapore in teal (#3A8F7B). The timeline pills, map markers, detail panel accents, and budget cards all respect phase colors. This makes it instantly clear which phase you are viewing.</p>
+    </div>
+
+    <h3>Conference + Tourism Hybrid</h3>
+    <p>This is not a pure tourism site. The Tokyo phase mixes ETHTokyo conference days (keynotes, workshops, networking) with hackathon days (build sprints, demos) and exploration days (temples, vintage districts). The data model supports this mix naturally, treating conference sessions and tourist activities as equal first-class entries in the day's activity list.</p>
+
+    <h3>Dual Route Options</h3>
+    <div class="highlight-box">
+      <p>The road trip phase offers two alternative routes loaded from separate JS data files (<code>route-b-data.js</code> and <code>route-tokyo-takayama.js</code>). Route A goes through the Japanese Alps via Shirakawa-go and Matsumoto. Route B takes an alternative path via Takayama. Users can switch between routes to compare itineraries before committing.</p>
+    </div>
+
+    <h3>Light Warm Aesthetic</h3>
+    <p>Unlike the dark-themed Georgia and Iceland trip sites, Japan x Singapore uses a light warm palette: off-white (#FAFAF8) background, subtle borders (#E5E3DE), clean shadows. The design references Japanese minimalism. No hero overlay darkness, no dramatic gradients. Just clean Inter typography on warm paper tones.</p>
+
+    <h3>Persistent Packing Checklist</h3>
+    <p>The packing checklist uses localStorage to remember checked items across browser sessions. Categories (clothing, electronics, documents, toiletries) each have their own section. This practical feature turns the site from a planning tool into an active trip companion you use while actually packing your bags.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Trip duration</td><td>20 days (Sept 22 - Oct 11, 2026)</td></tr>
+      <tr><td>Countries</td><td>2 (Japan, Singapore)</td></tr>
+      <tr><td>Trip phases</td><td>4 (Tokyo, Road Trip, Osaka, Singapore)</td></tr>
+      <tr><td>Total lines</td><td>2,361 across 3 core files + 2 route data files</td></tr>
+      <tr><td>Build dependencies</td><td>0 (vanilla HTML/CSS/JS)</td></tr>
+      <tr><td>Phase colors</td><td>Tokyo #5B6ABF, Road #C4813D, Osaka #D4644E, Singapore #3A8F7B</td></tr>
+      <tr><td>Map features</td><td>CircleMarkers, dashed polylines, POI toggle, day selection</td></tr>
+      <tr><td>Persistent storage</td><td>Packing checklist via localStorage</td></tr>
+      <tr><td>Route alternatives</td><td>2 road trip route data files</td></tr>
+      <tr><td>History entries</td><td>Singapore timeline (1299 - present)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

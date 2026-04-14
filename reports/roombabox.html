@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoombaBox — Project Report</title>
+  <style>
+    :root { --bg: #0a0a0f; --surface: #13131a; --surface-hover: #1a1a25; --border: #2a2a3a; --text: #e4e4ef; --text-muted: #8888a0; --accent: #6366f1; --accent-soft: rgba(99,102,241,0.15); --green: #22c55e; --green-soft: rgba(34,197,94,0.15); --orange: #f59e0b; --orange-soft: rgba(245,158,11,0.15); --pink: #ec4899; --cyan: #06b6d4; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; line-height: 1.6; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; margin: 1rem 0 0.5rem; }
+    .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
+    h2 { font-size: 1.3rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 1.05rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
+    p { color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.92rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.3rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; overflow-x: auto; margin: 1rem 0; font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; font-size: 0.82rem; color: var(--green); line-height: 1.5; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; color: var(--green); }
+    strong { color: var(--text); }
+    .tag { display: inline-block; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 500; margin-right: 0.3rem; }
+    .tag-lang { background: var(--accent-soft); color: var(--accent); }
+    .tag-blockchain { background: var(--green-soft); color: var(--green); }
+    .tag-infra { background: var(--orange-soft); color: var(--orange); }
+    .highlight-box { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1rem 0; }
+    .highlight-box p { margin-bottom: 0; }
+    .stats { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; text-align: center; min-width: 100px; }
+    .stat-value { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>RoombaBox</h1>
+    <p class="subtitle">Tamper-proof black box for robots, powered by Walrus + Sui</p>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Move Contracts</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">10 Hz</div>
+        <div class="stat-label">Sensor Rate</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">30s</div>
+        <div class="stat-label">Anchor Interval</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">14</div>
+        <div class="stat-label">Sensor Channels</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">SHA-256</div>
+        <div class="stat-label">Hash Algorithm</div>
+      </div>
+    </div>
+
+    <span class="tag tag-lang">Sui Move</span>
+    <span class="tag tag-lang">TypeScript</span>
+    <span class="tag tag-lang">React</span>
+    <span class="tag tag-blockchain">Sui Testnet</span>
+    <span class="tag tag-blockchain">Walrus</span>
+    <span class="tag tag-infra">Bun</span>
+    <span class="tag tag-infra">Vite</span>
+
+    <!-- The Challenge -->
+    <h2>The Challenge</h2>
+
+    <p>Your Roomba maps your home every day. It knows the layout of your rooms, where you spend your time, when you're away. That data sits on a corporation's cloud server: unverifiable, mutable, and out of your control.</p>
+
+    <p>The core problem is <strong>trust in IoT data</strong>. There is no way to prove that robot sensor recordings have not been altered after the fact. An insurance company cannot trust a robot's cleaning log. A homeowner cannot prove their robot was operating normally before an incident. A fleet manager cannot audit autonomous behavior with certainty.</p>
+
+    <div class="highlight-box">
+      <p><strong>RoombaBox makes robot data tamper-proof.</strong> It captures sensor snapshots locally, anchors cryptographic hashes on-chain, and stores raw data on decentralized storage. If even a single byte is altered, verification fails. Guaranteed.</p>
+    </div>
+
+    <!-- Why It Matters -->
+    <h2>Why It Matters</h2>
+
+    <h3>Use Cases</h3>
+    <ul>
+      <li><strong>Insurance claims</strong> &mdash; Prove a robot vacuum was operating within normal parameters before a reported incident. Immutable sensor logs serve as evidence.</li>
+      <li><strong>Fleet management</strong> &mdash; Operators of commercial cleaning robots can audit every session with cryptographic guarantees. No data can be silently deleted or modified.</li>
+      <li><strong>Consumer data sovereignty</strong> &mdash; Users own their robot's data on decentralized storage instead of trusting a vendor's cloud. Data persists even if the company shuts down.</li>
+      <li><strong>Regulatory compliance</strong> &mdash; As autonomous robots enter homes and workplaces, regulators will demand auditable behavior logs. RoombaBox provides that infrastructure.</li>
+    </ul>
+
+    <h3>Who Benefits</h3>
+    <p>Homeowners who want control over their IoT data. Insurance companies that need verifiable robot behavior logs. Robot manufacturers who want to offer trust-by-default. Regulators building frameworks for autonomous device accountability.</p>
+
+    <!-- How It Works -->
+    <h2>How It Works</h2>
+
+    <h3>Architecture Overview</h3>
+<pre>
+                          +------------------+
+                          |    Sui Chain     |
+                          |  (hash anchors,  |
+                          |   BlackBox NFT)  |
+                          +--------+---------+
+                                   ^
+                                   | 3. anchor hash
+                                   |
+ +----------+    1. sensor   +-----+-------+   2. upload blob   +----------+
+ |  Roomba  +---------------> Edge Agent   +-------------------->  Walrus  |
+ |  (sim)   |    snapshots   | (Bun / TS)  |                    | (blobs)  |
+ +----------+    @ 10Hz      +-----+-------+                    +----------+
+                                   |                                  ^
+                                   | 4. live WebSocket                |
+                                   v                                  |
+                          +--------+---------+   5. verify blob       |
+                          |    Dashboard     +------------------------+
+                          | (React + Vite)   |
+                          +------------------+
+</pre>
+
+    <h3>Data Flow: Capture, Seal, Verify</h3>
+
+    <p><strong>1. Capture</strong> &mdash; The edge agent runs a Roomba simulator at 10Hz, producing rich sensor snapshots: position (x,y), heading, speed, battery level, left/right bumper contacts, four cliff sensors, dirt detection, charging state, cleaning mode, and coverage percentage.</p>
+
+    <p><strong>2. Seal</strong> &mdash; Every 30 seconds, the agent collects the snapshot buffer, serializes it with deterministic sorted-key JSON, computes a SHA-256 hash, uploads raw data to Walrus (decentralized blob storage), and anchors the hash on Sui via the BlackBox smart contract. Once anchored, the record is immutable.</p>
+
+    <p><strong>3. Verify</strong> &mdash; Anyone can download the blob from Walrus, recompute the SHA-256 hash, and compare it against the on-chain anchor. If even one byte was altered, the hashes diverge and tampering is detected.</p>
+
+<pre>
+  Snapshot Buffer (300 snapshots @ 10Hz x 30s)
+       |
+       v
+  serializeForHash()         -- deterministic JSON (sorted keys)
+       |
+       v
+  SHA-256 hash               -- "a3f8c1..."
+       |
+       +--> Walrus PUT /v1/blobs  --> blobId "0xabc..."
+       |
+       +--> Sui anchor_hash(session_id, hash, blob_id)
+                |
+                v
+          On-chain AnchorEntry { data_hash, walrus_blob_id, timestamp }
+</pre>
+
+    <h3>Tamper Detection Demo</h3>
+    <div class="highlight-box">
+      <p>A standalone script (<code>demo-tamper.ts</code>) proves the integrity pipeline end-to-end: generate 50 mock snapshots, upload to Walrus, download and verify (PASS), flip a single byte, re-verify (FAIL). The entire demo runs in about 10 seconds.</p>
+    </div>
+
+    <!-- Smart Contracts -->
+    <h2>Smart Contracts (Sui Move)</h2>
+
+    <h3>Three Modules</h3>
+    <ul>
+      <li><strong>robot_nft</strong> &mdash; Mints a <code>RobotNFT</code> representing a physical robot. Stores name, model, owner, and creation timestamp. Serves as the authorization key for all BlackBox operations.</li>
+      <li><strong>blackbox</strong> &mdash; The core contract. A shared <code>BlackBox</code> object linked to a <code>RobotNFT</code>. Manages sessions (start/close), stores <code>AnchorEntry</code> records (data_hash + walrus_blob_id + timestamp), and provides on-chain <code>verify_hash()</code>. Only the NFT holder can write.</li>
+      <li><strong>session_registry</strong> &mdash; Global registry mapping robot IDs to their BlackBox addresses. Initialized on deploy as a shared object with a <code>Table&lt;ID, address&gt;</code>.</li>
+    </ul>
+
+<pre>
+  RobotNFT (owned)              BlackBox (shared)              Registry (shared)
+  +----------------+            +---------------------+        +------------------+
+  | id: UID        |            | id: UID             |        | id: UID          |
+  | name: String   |---auth--->| robot_id: ID        |        | blackboxes:      |
+  | model: String  |            | sessions: Vec&lt;Rec&gt;  |&lt;------| Table&lt;ID, addr&gt;  |
+  | owner: address |            | session_count: u64  |        +------------------+
+  +----------------+            +---------------------+
+                                        |
+                                  SessionRecord
+                                  +-------------------+
+                                  | session_id: u64   |
+                                  | start_time: u64   |
+                                  | end_time: u64     |
+                                  | anchors: Vec&lt;Anc&gt; |
+                                  | is_closed: bool   |
+                                  +-------------------+
+</pre>
+
+    <!-- Simulator -->
+    <h2>Roomba Simulator</h2>
+
+    <p>The edge agent includes a full physics-based Roomba simulator with a state machine implementing five cleaning modes:</p>
+
+<pre>
+  SPIRAL --> WALL_FOLLOW --> RANDOM_BOUNCE --> CROSS_ROOM --> SPIRAL (repeat)
+                                                    |
+                                              (low battery)
+                                                    v
+                                            RETURN_TO_DOCK --> CHARGING --> SPIRAL
+</pre>
+
+    <ul>
+      <li><strong>Spiral</strong> &mdash; Outward spiral from current position, growing radius at 0.02m per revolution</li>
+      <li><strong>Wall follow</strong> &mdash; Right-hand rule along walls and obstacles for up to 30 seconds</li>
+      <li><strong>Random bounce</strong> &mdash; Straight lines with 120-180 degree bounces on collision</li>
+      <li><strong>Cross room</strong> &mdash; Direct navigation to a random unvisited area at 0.5 m/s</li>
+      <li><strong>Return to dock</strong> &mdash; Triggered below 15% battery, navigates to dock position</li>
+    </ul>
+
+    <p>Coverage is tracked on a 10cm grid. Collision detection handles both rectangular and circular obstacles. 14 sensor channels are emitted per snapshot.</p>
+
+    <!-- Dashboard -->
+    <h2>Dashboard</h2>
+
+    <p>A React + Vite frontend with <code>@mysten/dapp-kit</code> for wallet integration. Features include:</p>
+
+    <ul>
+      <li><strong>Live map</strong> &mdash; Real-time Roomba position via WebSocket from the edge agent</li>
+      <li><strong>Session list</strong> &mdash; Browse on-chain sessions fetched from the BlackBox object</li>
+      <li><strong>Integrity verification</strong> &mdash; Select any session, click "Verify", and the dashboard downloads the Walrus blob, recomputes SHA-256, and compares with the on-chain hash. Displays VERIFIED or TAMPERED with full hash details.</li>
+      <li><strong>Wallet connect</strong> &mdash; Standard Sui wallet connection for on-chain reads</li>
+    </ul>
+
+    <!-- Tech Stack -->
+    <h2>Tech Stack</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; margin: 1rem 0;">
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Smart Contracts</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">Sui Move (BlackBox NFT, session registry, hash anchoring)</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Edge Agent</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">TypeScript / Bun (sensor sim, SHA-256 hashing, Walrus HTTP client, Sui TX builder)</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Dashboard</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">React + Vite + @mysten/dapp-kit (live visualization, verification panel)</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Storage</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">Walrus (decentralized blob storage on Sui)</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Blockchain</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">Sui testnet (cryptographic proof anchoring, sub-second finality)</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Tooling</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">Bun (runtime + package manager), Biome (lint/format), Sui CLI</div>
+    </div>
+
+    <!-- Key Insights -->
+    <h2>Key Insights</h2>
+
+    <div class="highlight-box">
+      <p><strong>Walrus + Sui is a natural fit for IoT data integrity.</strong> Walrus handles the volume (raw sensor blobs at high frequency) while Sui handles the trust (immutable hash anchors with sub-second finality). The separation means you never put large payloads on-chain, but you still get cryptographic guarantees over every byte.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Deterministic serialization is critical.</strong> The hasher uses sorted-key JSON serialization so that identical sensor data always produces identical bytes, and therefore identical SHA-256 hashes. Without this, verification would be non-deterministic and useless.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>NFT-gated access control is elegant.</strong> The RobotNFT serves as both identity and authorization. Only the holder of the NFT linked to a BlackBox can write anchor entries or close sessions. Ownership transfer is just a standard Sui object transfer.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>The simulator is production-grade.</strong> Five cleaning modes with realistic physics, collision detection against walls and obstacles, coverage tracking on a 10cm grid, battery management with dock return, and 14 sensor channels. This is not a toy mock; it produces data that closely mirrors real Roomba behavior.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>End-to-end tamper detection in 10 seconds.</strong> The demo-tamper script proves the entire pipeline: generate data, upload to Walrus, verify (PASS), flip one byte, re-verify (FAIL). A compelling, runnable proof of concept that requires no setup beyond Bun and network access.</p>
+    </div>
+
+  </div>
+</body>
+</html>

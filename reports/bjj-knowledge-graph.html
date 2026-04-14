@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BJJ Knowledge Graph — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+    .ascii-diagram .red { color: var(--red); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>BJJ Knowledge Graph</h1>
+    <p class="subtitle">Interactive knowledge graph mapping Brazilian Jiu-Jitsu positions, techniques, and transitions</p>
+
+    <div class="tags">
+      <span class="tag orange">TypeScript</span>
+      <span class="tag cyan">D3.js</span>
+      <span class="tag">Vite</span>
+      <span class="tag green">Bun</span>
+      <span class="tag">Biome</span>
+      <span class="tag red">Gi + No-Gi</span>
+    </div>
+
+    <p style="margin-top: 0.5rem;"><a href="https://bjj-knowledge-graph.vercel.app" target="_blank">bjj-knowledge-graph.vercel.app</a></p>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>BJJ has thousands of techniques, but no structured way to see how they connect.</strong></p>
+      <p>Knowledge lives in scattered YouTube videos, instructional DVDs, and personal notebooks. There is no visual map of the art.</p>
+    </div>
+
+    <p>Brazilian Jiu-Jitsu is a positional martial art. Every move starts from a position and either leads to another position or ends the match. Closed Guard leads to Triangle Choke, which transitions to Mount or Armbar. Half Guard opens into Deep Half, Dogfight, or Back Take. These relationships form a massive directed graph, but practitioners have no tool to explore it.</p>
+
+    <p>Instructors teach techniques in isolation. Students memorize moves without understanding the web of transitions connecting them. The result: fragmented knowledge with no global picture of how positions relate to each other across the entire art.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Learning path visualization</strong> — see which positions unlock which techniques. A beginner can trace the path from Closed Guard to Back Control and understand every transition along the way.</li>
+      <li><strong>Technique discovery</strong> — click any position node to see all submissions, sweeps, escapes, and passes available from there. Find techniques you did not know existed from positions you already play.</li>
+      <li><strong>Relationship mapping</strong> — understand that Guard Passing leads to Side Control which opens Mount, Knee on Belly, or Back Control. See the full attack chain before drilling it.</li>
+      <li><strong>Gi vs No-Gi filtering</strong> — toggle between Gi, No-Gi, or Both modes. Spider Guard and Worm Guard disappear in No-Gi. Heel hooks light up in No-Gi. The graph adapts to your ruleset.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Data Model</h3>
+    <div class="ascii-diagram"><code><span class="dim">The graph is built from three JSON datasets:</span>
+
+  <span class="orn">positions.json</span>         <span class="dim">40 positions (nodes)</span>
+  <span class="orn">techniques-*.json</span>      <span class="dim">181 techniques (metadata on edges)</span>
+  <span class="orn">transitions.json</span>       <span class="dim">130 transitions (directed edges)</span>
+
+<span class="dim">Relationships:</span>
+
+  +------------------+          +-------------------+
+  |    <span class="hi">Position</span>       |          |    <span class="grn">Technique</span>       |
+  |                  |          |                   |
+  |  id              |&lt;-------- |  fromPosition     |
+  |  name            |          |  toPosition?      |
+  |  category        |          |  type             |
+  |  gi / noGi       |          |  gi / noGi        |
+  |  dominance       |          |  difficulty        |
+  +------------------+          |  famousFor         |
+         ^    ^                 |  counters[]        |
+         |    |                 |  attackChains[]    |
+         |    |                 +-------------------+
+         |    |
+  +------+----+-------+
+  |    <span class="cyn">Transition</span>       |
+  |                    |
+  |  from ----------&gt;  |  <span class="dim">(source position)</span>
+  |  to   ----------&gt;  |  <span class="dim">(target position)</span>
+  |  techniqueIds[]    |  <span class="dim">(links to techniques)</span>
+  |  bidirectional?    |
+  |  primaryType       |
+  +--------------------+</code></div>
+
+    <h3>Graph Engine</h3>
+    <div class="ascii-diagram"><code><span class="dim">Two layout modes, switchable at runtime:</span>
+
+  <span class="hi">FORCE-DIRECTED</span>                          <span class="grn">HIERARCHICAL</span>
+  +-----------------------------+      +-----------------------------+
+  |                             |      |        <span class="dim">Standing</span>             |
+  |    <span class="orn">o</span>---<span class="cyn">o</span>     <span class="red">o</span>             |      |        <span class="orn">o</span>   <span class="orn">o</span>   <span class="orn">o</span>        |
+  |   / \   \   / \            |      |       / \ / \             |
+  |  <span class="grn">o</span>   <span class="orn">o</span>   <span class="cyn">o</span> <span class="grn">o</span>              |      |        <span class="dim">Top</span>               |
+  |  |   |  / \                |      |  <span class="orn">o</span> <span class="orn">o</span> <span class="orn">o</span> <span class="orn">o</span> <span class="orn">o</span> <span class="orn">o</span> <span class="orn">o</span> <span class="orn">o</span> <span class="orn">o</span>    |
+  |  <span class="hi">o</span>   <span class="red">o</span>-<span class="hi">o</span>   <span class="grn">o</span>              |      |       / | \ | \           |
+  |       |                    |      |       <span class="dim">Bottom</span>              |
+  |       <span class="cyn">o</span>                    |      |  <span class="cyn">o</span> <span class="cyn">o</span> <span class="cyn">o</span> <span class="cyn">o</span> <span class="cyn">o</span> <span class="cyn">o</span> <span class="cyn">o</span> <span class="cyn">o</span> <span class="cyn">o</span>    |
+  |                             |      |       <span class="dim">Leg Locks</span>           |
+  | <span class="dim">Physics simulation with</span>     |      |     <span class="red">o</span>   <span class="red">o</span>   <span class="red">o</span>   <span class="red">o</span>      |
+  | <span class="dim">cluster gravity, charge,</span>    |      |                             |
+  | <span class="dim">and collision forces</span>        |      | <span class="dim">Layered by position</span>        |
+  +-----------------------------+      | <span class="dim">category (top to bottom)</span>    |
+                                       +-----------------------------+</code></div>
+
+    <h3>Interaction Model</h3>
+    <div class="ascii-diagram"><code><span class="dim">Click position node:</span>
+  <span class="hi">Sidebar</span> opens with all techniques from that position
+  Grouped by type: <span class="red">Submissions</span> | <span class="cyn">Sweeps</span> | <span class="grn">Escapes</span> | <span class="orn">Passes</span> | <span class="hi">Takedowns</span>
+
+<span class="dim">Click technique in sidebar:</span>
+  <span class="hi">Flow Mode</span> activates, highlighting the attack chain
+  Position A --<span class="red">technique</span>--&gt; Position B --<span class="red">followup</span>--&gt; Position C
+
+<span class="dim">Search bar:</span>
+  Fuzzy search across all positions and techniques
+  Select result &gt; graph zooms and highlights the node
+
+<span class="dim">Filters:</span>
+  Gi / No-Gi / Both toggle
+  Technique type checkboxes (submission, sweep, escape, pass, takedown)
+
+<span class="dim">Minimap:</span>
+  Canvas overview of the full graph in bottom-right corner
+  Shows node positions and connections at a glance</code></div>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <div class="ascii-diagram"><code><span class="dim">
++-------------------+     +-------------------+     +-------------------+
+|    <span class="orn">data/*.json</span>     |     |   <span class="hi">src/graph/</span>       |     |    <span class="grn">src/ui/</span>         |
+|                   |     |                   |     |                   |
+| positions.json    |     | graph-core.ts     |     | sidebar.ts        |
+| techniques-gi     |--&gt;  | graph-physics.ts  |&lt;--&gt; | filters.ts        |
+| techniques-nogi   |     | graph-visuals.ts  |     | search.ts         |
+| techniques-common |     | graph-interactions|     | flow-mode.ts      |
+| transitions.json  |     | graph-state-ops   |     | minimap.ts        |
++-------------------+     | graph-types.ts    |     | legend.ts         |
+        |                  +-------------------+     | notes.ts          |
+        v                          |                 +-------------------+
++-------------------+              |
+|  <span class="cyn">data-loader.ts</span>   |              v
+|                   |     +-------------------+
+| snake_case JSON   |     |    <span class="hi">D3.js Engine</span>    |
+| -&gt; camelCase TS   |     |                   |
+| parallel fetch    |     | Force simulation  |
+| Gi/NoGi flags     |     | SVG rendering     |
++-------------------+     | Zoom + drag       |
+                          | Cluster hulls     |
+                          +-------------------+</span></code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Language</td><td><code>TypeScript</code> (strict)</td><td>Full application source, type-safe data model</td></tr>
+      <tr><td>Visualization</td><td><code>D3.js v7</code></td><td>Force simulation, SVG rendering, zoom/drag, transitions</td></tr>
+      <tr><td>Build</td><td><code>Vite 6</code></td><td>Dev server with HMR, production bundling</td></tr>
+      <tr><td>Runtime</td><td><code>Bun</code></td><td>Package management and script runner</td></tr>
+      <tr><td>Lint/Format</td><td><code>Biome</code></td><td>Single tool for linting and formatting</td></tr>
+      <tr><td>Hosting</td><td><code>Vercel</code></td><td>Static deployment with automatic builds</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Force-Directed vs Hierarchical Layout</h3>
+    <div class="highlight-box">
+      <p><strong>Force layout</strong> uses a physics simulation with charge repulsion, link attraction, cluster gravity, and collision detection. Positions naturally cluster by category (standing, top, bottom, leg locks). Good for exploring organic relationships.</p>
+      <p><strong>Hierarchical layout</strong> arranges positions in layers by category from top to bottom. Better for understanding the positional hierarchy of BJJ: standing leads to top positions, which connect to bottom positions, which feed into leg lock entanglements.</p>
+    </div>
+
+    <h3>Graph Data Model Design</h3>
+    <div class="highlight-box">
+      <p>Positions are <strong>nodes</strong>, not techniques. This is the key insight. A technique is not a standalone entity; it is a directed action <em>from</em> one position <em>to</em> another. An Armbar from Mount is a different thing than an Armbar from Guard, even though they share a name. By modeling techniques as edge metadata on transitions, the graph captures this naturally.</p>
+    </div>
+
+    <h3>Technique Taxonomy</h3>
+    <div class="highlight-box success">
+      <p>Six technique types map the entire art: <strong>submissions</strong> (76), <strong>sweeps</strong> (39), <strong>transitions</strong> (34), <strong>passes</strong> (17), <strong>takedowns</strong> (8), and <strong>escapes</strong> (7). Each type gets a distinct color on the graph edges, making it immediately visible whether a path is offensive (red submissions) or defensive (green escapes).</p>
+    </div>
+
+    <h3>Cluster Force</h3>
+    <p>A custom D3 force pulls nodes toward computed cluster centers based on their <code>PositionCategory</code>. Standing positions gravitate to the top, bottom guards cluster together, leg lock positions form their own island. The result is an organic layout that mirrors how practitioners mentally organize the art.</p>
+
+    <h3>Gi/No-Gi as a First-Class Filter</h3>
+    <p>Every position and technique carries <code>gi</code> and <code>noGi</code> boolean flags. Spider Guard, Lasso Guard, and Worm Guard are Gi-only. Rubber Guard is No-Gi-only. Toggling the filter dynamically shows or hides nodes and edges, revealing how the two rulesets produce different game graphs from the same underlying positions.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Positions (nodes)</td><td>40 across 5 categories</td></tr>
+      <tr><td>Techniques (edge data)</td><td>181 (62 common + 63 gi + 56 nogi)</td></tr>
+      <tr><td>Transitions (edges)</td><td>130 directed connections</td></tr>
+      <tr><td>Position categories</td><td>Standing (4), Top (13), Bottom (17), Leg Lock (5), Transitional (1)</td></tr>
+      <tr><td>Technique types</td><td>Submission (76), Sweep (39), Transition (34), Pass (17), Takedown (8), Escape (7)</td></tr>
+      <tr><td>Source code</td><td>~2,900 lines TypeScript (graph engine + UI)</td></tr>
+      <tr><td>Data files</td><td>~4,500 lines JSON</td></tr>
+      <tr><td>UI components</td><td>Sidebar, Filters, Search, Flow Mode, Minimap, Legend, Notes</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

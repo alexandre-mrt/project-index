@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZK Private Payments — Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+    .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; color: var(--green); }
+    pre code { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; }
+    strong { color: var(--text); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+    a { color: var(--accent); }
+    .highlight-box {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { color: var(--text); margin: 0; }
+    .tag {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin: 0.15rem 0.25rem 0.15rem 0;
+    }
+    .tag.accent { border-color: var(--accent); color: var(--accent); }
+    .tag.green { border-color: var(--green); color: var(--green); }
+    .tag.orange { border-color: var(--orange); color: var(--orange); }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+    }
+    .stat-box .value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    .stat-box .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+    <h1>ZK Private Payments</h1>
+    <p class="subtitle">Privacy-preserving payment system with stealth addresses and confidential amounts on Ethereum</p>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="value">8</div>
+        <div class="label">Circom Circuits</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">8</div>
+        <div class="label">Solidity Contracts</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">101</div>
+        <div class="label">Test Files</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">7</div>
+        <div class="label">Frontend Views</div>
+      </div>
+    </div>
+
+    <h2>The Challenge</h2>
+    <div class="highlight-box">
+      <p>On-chain payments are fully transparent. Every transaction reveals the sender, the recipient, and the exact amount. Anyone with a block explorer can trace the full financial history of any address.</p>
+    </div>
+    <p>Standard ERC-20 transfers and ETH sends create a permanent, public record. Salary payments, business transactions, charitable donations, and personal purchases are all visible to the world. Financial privacy, taken for granted in traditional banking, does not exist on public blockchains by default.</p>
+
+    <h2>Why It Matters</h2>
+    <ul>
+      <li><strong>Financial privacy is a right</strong> &mdash; salary recipients should not have their income visible to every counterparty</li>
+      <li><strong>Business confidentiality</strong> &mdash; vendors, clients, and competitors can see payment flows between companies</li>
+      <li><strong>Personal safety</strong> &mdash; large balances linked to a known identity create physical security risks</li>
+      <li><strong>Fungibility</strong> &mdash; without privacy, coins with certain transaction histories can be discriminated against</li>
+    </ul>
+
+    <h2>How It Works</h2>
+    <p>The system combines two complementary privacy techniques: <strong>stealth addresses</strong> hide <em>who</em> receives a payment, and <strong>confidential amounts</strong> hide <em>how much</em> is transferred. Everything is enforced by Groth16 zero-knowledge proofs generated from Circom circuits.</p>
+
+    <h3>System Flow</h3>
+<pre><code>  DEPOSIT                        TRANSFER                       WITHDRAW
+  -------                        --------                       --------
+
+  User sends ETH                 Owner spends a note            Owner exits to plaintext ETH
+       |                              |                              |
+       v                              v                              v
+  +-----------+                 +-----------+                 +-----------+
+  | Plaintext |                 | Input     |                 | Input     |
+  | ETH       |                 | Note      |                 | Note      |
+  +-----------+                 +-----------+                 +-----------+
+       |                              |                              |
+       | commitment =                 | ZK proof:                    | ZK proof:
+       | Poseidon(amt,                |  - Merkle inclusion          |  - Merkle inclusion
+       |   blinding,                  |  - Nullifier correct         |  - Nullifier correct
+       |   ownerPubKeyX)             |  - Balance preserved         |  - Balance preserved
+       |                              |  - Range [0, 2^96)          |  - Range [0, 2^96)
+       v                              v                              v
+  +-----------+              +------+  +------+            +------+  +----------+
+  | Merkle    |              | Out  |  | Out  |            |Change|  | Plaintext|
+  | Tree      |              | Note1|  | Note2|            | Note |  | ETH out  |
+  | (leaf)    |              +------+  +------+            +------+  +----------+
+  +-----------+              (new commitments)             (optional)</code></pre>
+
+    <h3>Stealth Address Protocol</h3>
+<pre><code>  Receiver (one-time setup)              Sender (per payment)
+  -------------------------              --------------------
+
+  spending_key (s) ----+                 1. Fetch receiver's viewing pubkey V
+  spending_pub  (S=sG) |
+                       |                 2. Generate ephemeral secret (r)
+  viewing_key   (v) ---+                    ephemeral_pub R = r * G
+  viewing_pub   (V=vG) |
+                       |                 3. Shared secret via ECDH:
+  Register V on-chain -+                    S = r * V  (= v * R for receiver)
+
+                                         4. Stealth pubkey:
+                                            P = Poseidon(S.x, S.y) * G + spending_pub
+
+                                         5. Deposit with commitment using P as owner
+                                            Announce (R, P, encrypted note data)
+
+  Receiver scans announcements:
+    For each (R, P):
+      shared = v * R
+      derived = Poseidon(shared.x, shared.y) * G + S
+      if derived == P  -->  note belongs to me
+      Decrypt amount and blinding from encrypted data</code></pre>
+
+    <h3>Confidential Notes (UTXO Model)</h3>
+<pre><code>  commitment  = Poseidon(amount, blinding, ownerPubKeyX)
+  nullifier   = Poseidon(commitment, spending_key)
+
+  Transfer Circuit (Groth16)
+  +---------------------------------------------------------+
+  | PUBLIC:  root, nullifier, outCommitment1, outCommitment2|
+  |                                                         |
+  | PRIVATE: amountIn, blindingIn, ownerPubKeyX,            |
+  |          spendingKey, pathElements[], pathIndices[],     |
+  |          amountOut1, blindingOut1, ownerOut1,            |
+  |          amountOut2, blindingOut2, ownerOut2             |
+  |                                                         |
+  | CONSTRAINTS:                                            |
+  |   1. commitment_in is in Merkle tree (root)             |
+  |   2. nullifier = Poseidon(commitment_in, spending_key)  |
+  |   3. amountIn == amountOut1 + amountOut2                |
+  |   4. All amounts in [0, 2^96) via binary decomposition  |
+  |   5. Output commitments correctly computed              |
+  +---------------------------------------------------------+</code></pre>
+
+    <h2>Tech Stack</h2>
+    <div style="margin: 0.75rem 0;">
+      <span class="tag accent">Circom 2.1</span>
+      <span class="tag accent">snarkjs</span>
+      <span class="tag accent">Groth16</span>
+      <span class="tag green">Solidity 0.8.20</span>
+      <span class="tag green">Hardhat</span>
+      <span class="tag green">OpenZeppelin</span>
+      <span class="tag">TypeScript</span>
+      <span class="tag">Commander.js</span>
+      <span class="tag">React</span>
+      <span class="tag">Vite</span>
+      <span class="tag">wagmi</span>
+      <span class="tag">shadcn/ui</span>
+      <span class="tag orange">Poseidon</span>
+      <span class="tag orange">BabyJubjub</span>
+    </div>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      <tr><td>Circuits</td><td>Circom + circomlib + snarkjs</td><td>ZK proof generation (stealth, transfer, withdraw, range)</td></tr>
+      <tr><td>Contracts</td><td>Solidity + OpenZeppelin</td><td>ConfidentialPool, StealthRegistry, MerkleTree, Verifiers</td></tr>
+      <tr><td>CLI</td><td>TypeScript + Commander.js</td><td>keygen, deposit, scan, transfer, withdraw, balance</td></tr>
+      <tr><td>Frontend</td><td>React + Vite + wagmi + Tailwind</td><td>7 views with client-side proof generation</td></tr>
+      <tr><td>Crypto</td><td>Poseidon, BabyJubjub ECDH</td><td>Commitments, nullifiers, stealth address derivation</td></tr>
+    </table>
+
+    <h2>Architecture</h2>
+<pre><code>  circuits/                              contracts/
+  +----------------------------+         +----------------------------+
+  | stealth_address.circom     |         | StealthRegistry.sol        |
+  | confidential_transfer.circom|        |   viewing key registry     |
+  | withdraw.circom            |         |   payment announcements    |
+  | deposit.circom             |         +----------------------------+
+  | note_commitment.circom     |         | ConfidentialPool.sol       |
+  | range_proof.circom         |         |   deposit / transfer /     |
+  | merkle_tree.circom         |         |   withdraw + Groth16       |
+  | hasher.circom              |         |   UTXO note management     |
+  +----------------------------+         +----------------------------+
+                                         | MerkleTree.sol             |
+  cli/                                   |   depth 20, Poseidon hash  |
+  +----------------------------+         |   30 root history buffer   |
+  | keygen    BabyJubjub keys  |         +----------------------------+
+  | register  viewing key      |         | TransferVerifier.sol       |
+  | deposit   ETH to note      |         | WithdrawVerifier.sol       |
+  | scan      find my notes    |         | DepositReceipt.sol (ERC721)|
+  | transfer  note to notes    |         | PoolLens.sol (read helper) |
+  | withdraw  note to ETH     |         | Constants.sol              |
+  | balance   total balance    |         +----------------------------+
+  +----------------------------+
+                                         frontend/src/components/
+  shared/                                +----------------------------+
+  +----------------------------+         | DashboardCard | KeysCard   |
+  | EventIndexer with caching  |         | DepositCard   | ScanCard   |
+  +----------------------------+         | TransferCard  | WithdrawCard|
+                                         | HistoryCard   | Header     |
+                                         +----------------------------+</code></pre>
+
+    <h2>Contract Features</h2>
+    <ul>
+      <li><strong>Multi-denomination support</strong> &mdash; owner-managed denomination set for uniform privacy sets</li>
+      <li><strong>Batch deposits</strong> &mdash; up to 10 notes per transaction</li>
+      <li><strong>Relayer fee system</strong> &mdash; gasless withdrawals with relayer and fee bound to ZK proof (no front-running)</li>
+      <li><strong>Compliance allowlist</strong> &mdash; optional depositor restrictions</li>
+      <li><strong>Minimum deposit age</strong> &mdash; flash loan protection</li>
+      <li><strong>Maximum withdrawal amount</strong> &mdash; rate limiting</li>
+      <li><strong>Emergency drain</strong> &mdash; owner-only when paused</li>
+      <li><strong>Chain ID replay protection</strong></li>
+      <li><strong>OpenZeppelin guards</strong> &mdash; ReentrancyGuard, Pausable, Ownable</li>
+      <li><strong>Deposit receipts</strong> &mdash; soulbound ERC-721 NFTs as proof of deposit</li>
+    </ul>
+
+    <h2>Key Insights</h2>
+    <div class="highlight-box">
+      <p>The core design combines <strong>stealth addresses</strong> (receiver anonymity) with <strong>confidential amounts</strong> (hidden values) in a single UTXO system. Neither technique alone provides full payment privacy. Together, they hide both the recipient identity and the transfer amount while maintaining verifiable balance preservation through ZK proofs.</p>
+    </div>
+    <ul>
+      <li><strong>Stealth addresses alone</strong> hide the recipient but leave amounts visible &mdash; an observer can correlate payments by matching deposit and withdrawal values</li>
+      <li><strong>Confidential amounts alone</strong> hide how much, but the link between sender and recipient remains visible on-chain</li>
+      <li><strong>Combined</strong> &mdash; the on-chain record shows only commitments entering a Merkle tree and nullifiers being consumed. No addresses, no amounts</li>
+      <li><strong>96-bit range proofs</strong> cover up to ~79 billion ETH per note (10,000x current supply), preventing overflow attacks while keeping circuit constraints practical</li>
+      <li><strong>Poseidon everywhere</strong> &mdash; using Poseidon for commitments, nullifiers, Merkle tree hashing, and stealth key derivation keeps constraint counts low inside SNARK circuits</li>
+      <li><strong>Encrypted announcements</strong> &mdash; note data (amount, blinding) is XOR-encrypted with a Poseidon-derived key from the ECDH shared secret, so only the intended receiver can decrypt</li>
+    </ul>
+  </div>
+</body>
+</html>

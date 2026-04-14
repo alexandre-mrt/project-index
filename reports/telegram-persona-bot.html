@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Persona Bot — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Telegram Persona Bot</h1>
+    <p class="subtitle">Reads Telegram messages via MTProto and generates structured persona cards per contact using Claude API</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Bun</span>
+      <span class="tag cyan">GramJS / MTProto</span>
+      <span class="tag cyan">Claude API</span>
+      <span class="tag orange">Privacy-First</span>
+      <span class="tag">Biome</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Personal networks grow faster than memory can track.</strong></p>
+      <p>Hundreds of Telegram conversations across private chats and groups contain valuable context about contacts: their interests, expertise, communication style, and relationship history. Manually maintaining a network database is unsustainable, and raw message data is a privacy liability.</p>
+    </div>
+
+    <p>Building meaningful professional and personal relationships requires remembering context: what someone works on, what you discussed last, which groups you share, and how often you interact. This information exists scattered across 18 months of Telegram history, buried in thousands of messages across private chats and groups. Extracting it by hand is a full-time job that no one does.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Automated relationship intelligence</strong>: transforms raw Telegram messages into structured persona cards with interests, traits, communication style, and relationship context.</li>
+      <li><strong>Privacy by design</strong>: raw messages exist only in memory during processing and are aggressively wiped after analysis. No message text is ever persisted to disk.</li>
+      <li><strong>Dual analysis modes</strong>: either call Claude API directly (fast, online) or save prompts for batch processing by Claude Code agents (offline, parallelizable).</li>
+      <li><strong>Searchable network index</strong>: 142 persona cards indexed with frontmatter metadata (tier, tags, expertise, location) for instant querying by need.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Full Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="dim">FETCH</span>                          <span class="dim">ANALYZE</span>                      <span class="dim">OUTPUT</span>
+
++------------------+             +-------------------+          +------------------+
+| <span class="hi">Telegram MTProto</span> |             |  <span class="cyn">Claude API</span>        |          | <span class="grn">Persona .md</span>      |
+| (GramJS client)  |--+          |  (Sonnet 4)       |--+       | (frontmatter +   |
++------------------+  |          +-------------------+  |       |  structured data) |
+                      |                                 |       +------------------+
++------------------+  |   +----+  +-------------------+ |  +-+
+| <span class="hi">Private Chats</span>    |--+-->|<span class="orn">MSG</span> |->|  <span class="cyn">Agent Prompts</span>    |-+->|<span class="grn">W</span>|->+------------------+
++------------------+  |   |<span class="orn">BUF</span> | |  (.prompt.txt)    |    +-+  | <span class="grn">Network Index</span>    |
+| <span class="hi">Group Chats</span>      |--+   +----+ +-------------------+         | (index.json)     |
++------------------+     |                                      +------------------+
+                         v
+                   <span class="red">wipeMessages()</span>
+                   <span class="dim">text = "" + .length = 0</span></code></div>
+
+    <h3>Processing Stages</h3>
+    <div class="ascii-diagram"><code><span class="dim">bun run dev</span>
+      |
+      v
+<span class="hi">1. CONNECT</span>
+      |  GramJS MTProto client (StringSession auth)
+      |  Connection timeout: 30s, retries: 5
+      v
+<span class="hi">2. FETCH DIALOGS</span>
+      |  Filter: skip channels, bots, inactive (&gt;18 months)
+      |  Sort: private chats first, then groups
+      |  Rate limit: 3s between batches, exponential backoff on FloodWait
+      |  Per-dialog timeout: 20s via AbortController
+      v
+<span class="hi">3. ANALYZE</span> <span class="dim">(per contact)</span>
+      |  Mode A (api):  Claude API call -> parse JSON -> validate -> PersonaData
+      |  Mode B (agent): build prompt -> save .prompt.txt for batch processing
+      v
+<span class="hi">4. PRIVACY WIPE</span>
+      |  wipeMessages(): scrub text to "", clear array to length 0
+      |  withPrivacy(): try/finally guarantees cleanup even on errors
+      v
+<span class="hi">5. PERSIST</span>
+      |  Write/merge persona .md files with frontmatter
+      |  Merge strategy: existing persona + new data = enriched persona
+      v
+<span class="orn">6. INDEX</span> <span class="dim">(bun run index)</span>
+      |  Parse all persona .md frontmatter
+      |  Normalize tiers (inner-circle, close, active, familiar, acquaintance)
+      |  Build searchable index.json with tier distribution + top tags</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Runtime</td><td><code>Bun</code></td><td>Fast TS runtime, .env loading, built-in test runner</td></tr>
+      <tr><td>Language</td><td><code>TypeScript (strict)</code></td><td>Readonly types, immutable interfaces, strict null checks</td></tr>
+      <tr><td>Telegram</td><td><code>GramJS</code> (telegram)</td><td>MTProto client for personal account access (not Bot API)</td></tr>
+      <tr><td>AI</td><td><code>Claude API</code> (@anthropic-ai/sdk)</td><td>Message analysis and persona generation (Claude Sonnet 4)</td></tr>
+      <tr><td>Auth</td><td><code>StringSession</code></td><td>Persistent Telegram session stored as env variable</td></tr>
+      <tr><td>Output</td><td><code>Markdown + JSON</code></td><td>Persona .md files with YAML frontmatter + network index</td></tr>
+      <tr><td>Linter</td><td><code>Biome</code></td><td>Lint + format in a single pass</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>src/
+  index.ts          Entry point: fetch dialogs, analyze, write personas
+  config.ts         Env validation (Telegram + Anthropic keys)
+  auth.ts           Interactive Telegram auth setup
+  telegram/
+    client.ts         MTProto connection (timeout + retry)
+    fetcher.ts        Dialog filtering, message batching, FloodWait handling
+    types.ts          TelegramContact, RawMessage, ContactMessages
+  persona/
+    analyzer.ts       Prompt builder + JSON response parser + validator
+    template.ts       Persona card Markdown template renderer
+    writer.ts         File I/O: read, write, merge persona .md files
+    types.ts          PersonaData, CommunicationStyle, RelationshipContext
+    index.ts          Public exports
+  privacy/
+    cleaner.ts        wipeMessages() + withPrivacy() try/finally wrapper
+  network/
+    indexer.ts        Scan all .md frontmatter -> index.json
+    quality.ts        Persona quality scoring and validation
+personas/             142 persona .md files (gitignored)
+personas/index.json   Lightweight search index (gitignored)</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Privacy as Architecture</h3>
+    <div class="highlight-box success">
+      <p><strong>Raw messages never touch the filesystem.</strong> The <code>wipeMessages()</code> function scrubs every message text to an empty string and clears the array to length 0. The <code>withPrivacy()</code> wrapper uses try/finally to guarantee cleanup even when analysis throws. This is the one intentional mutation in an otherwise immutable codebase.</p>
+    </div>
+
+    <h3>Dual Analysis Modes</h3>
+    <p>In <code>api</code> mode, the bot calls Claude API directly for each contact and writes persona files immediately. In <code>agent</code> mode, it saves structured prompts as <code>.prompt.txt</code> files for batch processing by Claude Code agents, enabling parallelism and offline analysis of the entire network at once.</p>
+
+    <h3>Resilient Fetching</h3>
+    <div class="highlight-box">
+      <p>Each dialog fetch is wrapped in a 20-second <code>AbortController</code> timeout. FloodWait errors trigger exponential backoff (max 120s). Failed dialogs retry twice with 10s delays and automatic reconnection. This makes the bot robust against Telegram rate limits during large-scale fetches.</p>
+    </div>
+
+    <h3>Tier-Based Network Model</h3>
+    <p>Personas are classified into 5 canonical tiers: <code>inner-circle</code>, <code>close</code>, <code>active</code>, <code>familiar</code>, <code>acquaintance</code>. Non-standard tiers from Claude analysis are auto-normalized (e.g., "weak" becomes "acquaintance", "friend" becomes "close"). The indexer outputs tier distribution and top tags for network overview.</p>
+
+    <h3>Merge-Over-Overwrite</h3>
+    <p>When a persona already exists on disk, new analysis data is merged into the existing file rather than replacing it. This preserves manually added notes while enriching the card with fresh data from recent messages.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Personas indexed</td><td>142 contacts</td></tr>
+      <tr><td>Message lookback window</td><td>18 months</td></tr>
+      <tr><td>Max messages per private chat</td><td>300</td></tr>
+      <tr><td>Max messages per group</td><td>200</td></tr>
+      <tr><td>Daily scan rate limit</td><td>50 scans/day</td></tr>
+      <tr><td>Source files</td><td>19 TypeScript modules</td></tr>
+      <tr><td>Tests</td><td>104 across 5 test files</td></tr>
+      <tr><td>Dependencies</td><td>2 runtime (telegram, @anthropic-ai/sdk)</td></tr>
+      <tr><td>Canonical network tiers</td><td>5 (inner-circle, close, active, familiar, acquaintance)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

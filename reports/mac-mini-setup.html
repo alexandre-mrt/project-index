@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mac Mini Setup — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Mac Mini Setup</h1>
+    <p class="subtitle">Automated setup scripts for a 24/7 headless Claude Code server with iMessage Channels</p>
+
+    <div class="tags">
+      <span class="tag">Bash/Zsh</span>
+      <span class="tag green">macOS</span>
+      <span class="tag cyan">Claude Code</span>
+      <span class="tag orange">iMessage</span>
+      <span class="tag">LaunchAgent</span>
+      <span class="tag green">SyncThing</span>
+      <span class="tag">tmux</span>
+      <span class="tag">SSH</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Running a personal AI assistant 24/7 requires careful system engineering.</strong></p>
+      <p>A Mac Mini sitting on a shelf needs to survive power failures, auto-login without a keyboard, keep Claude Code running across reboots, relay iMessages from family members, and stay in sync with a laptop. Setting this up manually is error-prone and hard to reproduce.</p>
+    </div>
+
+    <p>The project automates the entire provisioning of a headless Mac Mini as a Claude Code server. One SSH command from a laptop deploys everything: Homebrew, Bun, Claude Code, tmux sessions, LaunchAgent auto-restart, SyncThing config sync, and iMessage channel routing with per-user context files.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>One-command deployment</strong>: <code>./scripts/05-deploy-all.sh mac-mini.local</code> bootstraps the entire server via SSH, from Xcode CLI Tools to a running Claude Channels session.</li>
+      <li><strong>Self-healing</strong>: a macOS LaunchAgent restarts Claude Code on boot, after crashes, and daily at 4:00 AM. Power management is configured for zero sleep and auto-restart on power failure.</li>
+      <li><strong>Family-friendly</strong>: family members text Claude via iMessage. Each person gets a context file (<code>~/contexts/papa/CONTEXT.md</code>) that controls language, permissions, tone, and capabilities.</li>
+      <li><strong>Config sync</strong>: SyncThing keeps skills, commands, settings.json, and CLAUDE.md in sync between the laptop and Mac Mini, while ignoring machine-specific files (history, memory, channels state).</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Deployment Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="hi">LAPTOP</span>                                   <span class="grn">MAC MINI</span>
+
+05-deploy-all.sh mac-mini.local
+       |
+       v
+  Test SSH connection  --------ssh------->  "SSH OK"
+       |
+       v
+  scp scripts/*.sh  ----------scp-------->  ~/mac-mini-setup/scripts/
+       |
+       v
+  <span class="cyn">01-bootstrap.sh</span> (via SSH)
+       |                                    Install Xcode CLI Tools
+       |                                    Install Homebrew
+       |                                    brew install tmux syncthing
+       |                                    Install Bun
+       |                                    bun install -g claude-code
+       |                                    Configure pmset (no sleep)
+       |                                    mkdir ~/.claude/{scripts,skills,commands}
+       |                                    brew services start syncthing
+       v
+  <span class="cyn">03-syncthing-ignore.sh</span> (via SSH)
+       |                                    Create ~/.claude/.stignore
+       v
+  <span class="cyn">02-launchagent.sh</span> (via SSH)
+       |                                    Install restart script
+       |                                    Create com.claude.channels.plist
+       |                                    launchctl load
+       v
+  <span class="orn">MANUAL STEPS</span>
+    Auth Claude Code
+    Sign into Messages.app
+    Grant Full Disk Access
+    Install iMessage plugin
+    Allowlist family phones
+    Pair SyncThing devices</code></div>
+
+    <h3>24/7 Auto-Restart Architecture</h3>
+    <div class="ascii-diagram"><code><span class="dim">macOS LaunchAgent (com.claude.channels)</span>
+       |
+       |  RunAtLoad: true
+       |  StartCalendarInterval: 04:00 daily
+       |
+       v
+<span class="hi">claude-channels-restart.sh</span>
+       |
+       |  1. tmux kill-session -t claude-channels
+       |  2. Setup PATH (Homebrew + Bun)
+       |  3. tmux new-session -d -s claude-channels
+       |  4. Source shell profile
+       |  5. claude --channels plugin:imessage
+       |  6. Wait 25s for startup
+       |  7. Send "Resume monitoring" prompt
+       |
+       v
+<span class="grn">tmux session: claude-channels</span>
+       |
+       v
+<span class="cyn">Claude Code</span> + <span class="orn">iMessage Channel</span>
+  Reads incoming iMessages
+  Routes by sender phone number
+  Responds per context file</code></div>
+
+    <h3>Family Context Routing</h3>
+    <div class="ascii-diagram"><code><span class="dim">iMessage arrives from +33XXXXXXXXX</span>
+              |
+              v
+     <span class="hi">CLAUDE.MD routing table</span>
+     +33076... -> ~/contexts/alexandre/
+     +33XXX... -> ~/contexts/papa/
+     +33XXX... -> ~/contexts/maman/
+              |
+              v
+     Read <span class="grn">CONTEXT.md</span> for matched user
+     (language, permissions, tone, capabilities)
+              |
+              v
+     <span class="cyn">Generate response</span> following context rules
+     Alexandre: full system access, technical detail
+     Papa: simple French, no shell access
+     Maman: simple French, no shell access</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Hardware</td><td><code>Mac Mini (Apple Silicon)</code></td><td>Headless 24/7 server, auto-login, no sleep</td></tr>
+      <tr><td>OS</td><td><code>macOS Tahoe 26.1</code></td><td>LaunchAgent, pmset power management, Full Disk Access</td></tr>
+      <tr><td>AI</td><td><code>Claude Code CLI</code></td><td>AI assistant with iMessage Channels plugin</td></tr>
+      <tr><td>Messaging</td><td><code>iMessage (Messages.app)</code></td><td>Family communication channel via Apple ID</td></tr>
+      <tr><td>Session</td><td><code>tmux</code></td><td>Persistent terminal session that survives SSH disconnects</td></tr>
+      <tr><td>Auto-restart</td><td><code>LaunchAgent (launchd)</code></td><td>Start on boot + daily 4 AM restart cycle</td></tr>
+      <tr><td>Config Sync</td><td><code>SyncThing</code></td><td>Bidirectional sync of ~/.claude/ between laptop and Mini</td></tr>
+      <tr><td>Package Manager</td><td><code>Homebrew + Bun</code></td><td>System packages + Claude Code global install</td></tr>
+      <tr><td>Deployment</td><td><code>SSH + scp</code></td><td>Remote script execution from laptop</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>scripts/
+  01-bootstrap.sh             Install Homebrew, Bun, Claude Code, tmux, SyncThing
+  02-launchagent.sh           Install LaunchAgent plist + restart script
+  03-syncthing-ignore.sh      Create .stignore for selective ~/.claude/ sync
+  04-imessage-setup.sh        Print iMessage channel setup instructions
+  05-deploy-all.sh            Master script: deploy everything via SSH
+  claude-channels-restart.sh  Restart script used by LaunchAgent (tmux + claude)
+SETUP_INSTRUCTIONS.md         Full manual reference for all setup steps
+CLAUDE.md                     Project overview and dev commands</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Selective SyncThing Ignoring</h3>
+    <div class="highlight-box success">
+      <p><strong>Not everything should sync between machines.</strong> The <code>.stignore</code> file carefully separates shared config (skills, commands, settings.json, CLAUDE.md) from machine-specific state (history.jsonl, memory/, channels/, projects/). This prevents conflicts and keeps each machine's local context intact.</p>
+    </div>
+
+    <h3>LaunchAgent vs Cron</h3>
+    <p>macOS LaunchAgents are preferred over cron because they support <code>RunAtLoad</code> (start on boot/login), integrate with launchd's process management, and can set environment variables cleanly. The daily 4 AM restart ensures Claude Code gets a fresh context window and picks up any SyncThing-delivered config changes.</p>
+
+    <h3>Per-User Context Routing</h3>
+    <div class="highlight-box">
+      <p>Each family member gets a dedicated CONTEXT.md file that controls how Claude behaves. This is a simple but effective way to implement multi-tenant access control on a single Claude Code instance. Alexandre gets full technical responses and shell access. Parents get simple French responses with no code execution.</p>
+    </div>
+
+    <h3>Power Resilience</h3>
+    <p>The bootstrap script configures macOS for maximum uptime: <code>pmset sleep 0</code>, <code>disablesleep 1</code>, <code>displaysleep 0</code>, <code>autorestart 1</code>. Combined with auto-login and LaunchAgent RunAtLoad, the system self-recovers from power outages without any human intervention.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Setup scripts</td><td>6 Bash/Zsh scripts</td></tr>
+      <tr><td>Deployment</td><td>1 master SSH script (05-deploy-all.sh)</td></tr>
+      <tr><td>Restart schedule</td><td>On boot + daily at 04:00</td></tr>
+      <tr><td>Supported users</td><td>3 (owner + 2 family members via iMessage)</td></tr>
+      <tr><td>SyncThing ignored patterns</td><td>10 (settings.local, history, projects, memory, etc.)</td></tr>
+      <tr><td>Power settings</td><td>4 (sleep 0, disablesleep 1, displaysleep 0, autorestart 1)</td></tr>
+      <tr><td>Dependencies installed</td><td>5 (Homebrew, Bun, Claude Code, tmux, SyncThing)</td></tr>
+      <tr><td>Manual steps remaining</td><td>7 (auth, Messages.app, FDA, plugin, allowlist, SyncThing, test)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

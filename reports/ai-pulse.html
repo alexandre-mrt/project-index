@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Pulse — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>AI Pulse</h1>
+    <p class="subtitle">Automated AI/tech content pipeline from aggregation to multi-platform publishing</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Bun</span>
+      <span class="tag cyan">Claude API</span>
+      <span class="tag orange">ElevenLabs</span>
+      <span class="tag">FFmpeg</span>
+      <span class="tag">SQLite</span>
+      <span class="tag green">Beehiiv</span>
+      <span class="tag orange">Twitter/X</span>
+      <span class="tag red">YouTube</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>AI/tech news moves too fast for manual curation.</strong></p>
+      <p>Hundreds of articles, papers, and product launches drop daily across Hacker News, Reddit, ArXiv, TechCrunch, Product Hunt, and RSS feeds. Manually reading, filtering, writing, and publishing content across newsletter, Twitter, and YouTube is unsustainable.</p>
+    </div>
+
+    <p>Staying relevant in the AI space requires covering breaking news within hours. A human curator would need to monitor 6+ sources daily, score articles by relevance, write a newsletter, compose a Twitter thread, script a YouTube video, generate TTS audio, assemble the video, and publish to 3 platforms. That is a full-time job for content that has a 24-hour shelf life.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>End-to-end automation</strong>: from raw RSS/API feeds to published content on 3 platforms, zero manual intervention required.</li>
+      <li><strong>Multi-source intelligence</strong>: 6 aggregators with weighted relevance scoring ensure nothing important is missed and low-quality noise is filtered out.</li>
+      <li><strong>AI-native content</strong>: Claude API generates platform-specific content (long-form newsletter, punchy threads, narrated video scripts) from the same curated digest.</li>
+      <li><strong>Faceless YouTube</strong>: fully automated video production using ElevenLabs TTS and FFmpeg, no camera or editing software needed.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Full Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="dim">SOURCES (parallel fetch)</span>                 <span class="dim">GENERATION (parallel)</span>              <span class="dim">PUBLISHING (parallel)</span>
+
++----------------+                    +-------------------+            +------------------+
+| <span class="hi">Hacker News</span>    |--+                 |  <span class="cyn">Newsletter</span>        |--+         | <span class="grn">Beehiiv</span>           |
++----------------+  |                 |  (HTML email)     |  |         | (REST API draft) |
++----------------+  |                 +-------------------+  |         +------------------+
+| <span class="hi">Reddit</span>         |--+                                      |
++----------------+  |   +-----------+ +-------------------+  |  +---+  +------------------+
+| <span class="hi">TechCrunch</span>     |--+-->| <span class="orn">Scoring</span>   |>|  <span class="cyn">Twitter Thread</span>   |--+->|<span class="grn">PUB</span>|->| <span class="grn">Twitter/X</span>        |
++----------------+  |   | + Dedup   | |  (multi-tweet)    |  |  +---+  | (OAuth 1.0a)     |
+| <span class="hi">ArXiv</span>          |--+   | + Ranking | +-------------------+  |         +------------------+
++----------------+  |   +-----------+                        |
+| <span class="hi">Product Hunt</span>   |--+        |      +-------------------+  |         +------------------+
++----------------+  |        v      |  <span class="cyn">YouTube Script</span>    |--+         | <span class="grn">YouTube</span>          |
+| <span class="hi">RSS Feeds</span>      |--+  <span class="orn">ArticleDigest</span> |  + TTS + FFmpeg    |            | (upload API)     |
++----------------+        |      +-------------------+            +------------------+
+                          |             |
+                          v             v
+                    <span class="grn">Claude API</span>    <span class="grn">ElevenLabs TTS</span>
+                   <span class="dim">(content gen)</span>   <span class="dim">(voice synth)</span></code></div>
+
+    <h3>Pipeline Stages</h3>
+    <div class="ascii-diagram"><code><span class="dim">bun run pipeline</span>
+      |
+      v
+<span class="hi">1. AGGREGATION</span>
+      |  Fetch 6 sources in parallel
+      |  Deduplicate by URL (within run + cross-day via SQLite)
+      |  Score: relevance (keyword match) * 0.6 + trending (source weight) * 0.4
+      |  Rank and select top N articles
+      v
+<span class="hi">2. GENERATION</span>
+      |  Send ArticleDigest to Claude API
+      |  Generate 3 content types in parallel:
+      |    - Newsletter (HTML email body)
+      |    - Twitter thread (multi-tweet array)
+      |    - YouTube script (sections with narration + timing)
+      v
+<span class="hi">3. PUBLISHING</span> <span class="dim">(3 channels in parallel via Promise.allSettled)</span>
+      |
+      +---> <span class="grn">Beehiiv</span>: create draft via REST API
+      +---> <span class="grn">Twitter</span>: post thread via OAuth 1.0a
+      +---> <span class="grn">YouTube</span>: TTS audio -> FFmpeg video assembly -> upload
+      |
+      v
+<span class="orn">SQLite</span>: persist pipeline run status + publication records</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Runtime</td><td><code>Bun</code></td><td>Fast TS runtime, built-in SQLite, .env loading, Bun.serve()</td></tr>
+      <tr><td>Language</td><td><code>TypeScript (strict)</code></td><td>Immutable types, readonly arrays, strict null checks</td></tr>
+      <tr><td>AI</td><td><code>Claude API</code> (@anthropic-ai/sdk)</td><td>Content generation for all 3 platforms</td></tr>
+      <tr><td>TTS</td><td><code>ElevenLabs</code></td><td>Text-to-speech for YouTube video narration</td></tr>
+      <tr><td>Video</td><td><code>FFmpeg</code></td><td>Audio concatenation + video assembly with text overlays</td></tr>
+      <tr><td>Storage</td><td><code>SQLite</code> (bun:sqlite)</td><td>Articles, publications, pipeline runs, cross-day dedup</td></tr>
+      <tr><td>Newsletter</td><td><code>Beehiiv REST API</code></td><td>Draft creation and publishing</td></tr>
+      <tr><td>Social</td><td><code>Twitter OAuth 1.0a</code></td><td>Thread posting with multi-tweet support</td></tr>
+      <tr><td>Feeds</td><td><code>fast-xml-parser</code></td><td>RSS/Atom and ArXiv API XML parsing</td></tr>
+      <tr><td>Dashboard</td><td><code>Bun.serve() + React</code></td><td>Monitoring UI for pipeline status</td></tr>
+      <tr><td>Linter</td><td><code>Biome</code></td><td>Lint + format in a single pass</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Source Aggregators</h2>
+
+    <table>
+      <tr><th>Source</th><th>Method</th><th>Trending Weight</th></tr>
+      <tr><td>Hacker News</td><td>API (top/best stories)</td><td>1.0</td></tr>
+      <tr><td>Product Hunt</td><td>API (access token)</td><td>0.9</td></tr>
+      <tr><td>Reddit</td><td>OAuth API (subreddits)</td><td>0.8</td></tr>
+      <tr><td>TechCrunch</td><td>RSS feed</td><td>0.5</td></tr>
+      <tr><td>RSS Feeds</td><td>Custom RSS list</td><td>0.4</td></tr>
+      <tr><td>ArXiv</td><td>ArXiv API (cs.AI, cs.LG)</td><td>0.3</td></tr>
+    </table>
+
+    <div class="highlight-box">
+      <p><strong>Scoring formula</strong>: <code>combined = relevance * 0.6 + trending * 0.4</code></p>
+      <p>Relevance is computed by matching article text against 20 AI/ML keywords. Trending is the normalized engagement score weighted by source credibility. Articles are deduplicated by URL both within a run and across a 7-day window via SQLite.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>YouTube Video Pipeline</h2>
+
+    <div class="ascii-diagram"><code><span class="hi">YouTubeScript</span>
+  |
+  |  sections[] = { heading, narration, durationSeconds }
+  |
+  v
+<span class="cyn">ElevenLabs TTS</span>
+  |  Sequential generation (rate limit: 1s between calls)
+  |  Each section -> MP3 audio segment
+  |  Retry with backoff (max 2 retries, 5s delay)
+  v
+<span class="orn">FFmpeg: Audio Concat</span>
+  |  Write segment files to disk
+  |  Build concat list -> ffmpeg -f concat -> full_audio.mp3
+  v
+<span class="orn">FFmpeg: Video Assembly</span>
+  |  lavfi color source (1920x1080, dark background)
+  |  + full_audio.mp3 as audio track
+  |  + drawtext filters (title + section headings, timed)
+  |  -> libx264 fast preset, AAC 192k
+  v
+<span class="grn">output.mp4</span> -> YouTube upload API</code></div>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>src/
+  sources/        6 aggregators (HN, Reddit, TechCrunch, ArXiv, PH, RSS)
+  engine/         Claude API content generation
+    generator.ts    Parallel generation orchestrator
+    newsletter.ts   HTML email content
+    twitter.ts      Multi-tweet thread
+    youtube.ts      Video script with timed sections
+    prompts.ts      System + user prompts for each format
+  publishers/     Platform-specific publishing
+    beehiiv.ts      Newsletter REST API
+    twitter.ts      OAuth 1.0a thread posting
+    youtube/        Video pipeline
+      tts.ts          ElevenLabs text-to-speech
+      video.ts        FFmpeg audio concat + video assembly
+      upload.ts       YouTube Data API upload
+  scheduler/      Execution control
+    pipeline.ts     5-stage orchestrator with error recovery
+    cron.ts         Custom cron parser + interval scheduler
+  storage/        SQLite repositories
+    database.ts     Connection manager
+    articles.ts     Article persistence
+    publications.ts Pipeline runs + publication records
+  types/          Shared types (Article, Content, Pipeline)
+  config/         Environment-based config + keyword lists
+  utils/          Logger, HTTP client, retry with backoff
+dashboard/        Monitoring UI (Bun.serve + React)
+tests/            Unit tests (bun test)</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Parallel Everything</h3>
+    <div class="highlight-box success">
+      <p><strong>The pipeline maximizes parallelism at every stage.</strong> All 6 source providers fetch concurrently via <code>Promise.all</code>. All 3 content types generate in parallel. All 3 publishers run via <code>Promise.allSettled</code> so one failure does not block the others.</p>
+    </div>
+
+    <h3>Graceful Degradation</h3>
+    <p>Each pipeline stage is wrapped in a <code>runStage</code> helper that catches errors and records status. Publishing uses <code>Promise.allSettled</code>, so if Twitter fails, the newsletter and YouTube video still publish. The final status is <code>success</code>, <code>partial</code>, or <code>failed</code> depending on which stages completed.</p>
+
+    <h3>Cross-Day Deduplication</h3>
+    <div class="highlight-box">
+      <p>Articles are deduplicated not just within a single run, but across a rolling 7-day window stored in SQLite. This prevents the same trending story from appearing in consecutive daily digests.</p>
+    </div>
+
+    <h3>Faceless Video Production</h3>
+    <p>The YouTube pipeline is fully automated: Claude writes timed narration scripts, ElevenLabs converts each section to speech, and FFmpeg assembles a 1080p video with text overlays synced to audio segments. No camera, no editing, no human in the loop.</p>
+
+    <h3>Immutable Pipeline State</h3>
+    <p>All pipeline types use <code>readonly</code> arrays and properties. Stage updates produce new arrays via <code>.map()</code> rather than mutating in place. This makes the pipeline run traceable and debuggable at every step.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Source aggregators</td><td>6 (HN, Reddit, TechCrunch, ArXiv, Product Hunt, RSS)</td></tr>
+      <tr><td>Content formats</td><td>3 (Newsletter, Twitter thread, YouTube video)</td></tr>
+      <tr><td>Publishing platforms</td><td>3 (Beehiiv, Twitter/X, YouTube)</td></tr>
+      <tr><td>Pipeline stages</td><td>5 (aggregation, generation, 3x publishing)</td></tr>
+      <tr><td>Source files</td><td>36 TypeScript modules</td></tr>
+      <tr><td>Dependencies</td><td>3 runtime (@anthropic-ai/sdk, @elevenlabs/elevenlabs-js, fast-xml-parser)</td></tr>
+      <tr><td>AI keywords tracked</td><td>20 relevance terms</td></tr>
+      <tr><td>Video output</td><td>1920x1080 MP4, libx264 + AAC 192k</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

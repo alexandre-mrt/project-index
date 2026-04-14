@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>x402-sui — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.green { border-left-color: var(--green); }
+    .highlight-box.orange { border-left-color: var(--orange); }
+    .highlight-box.cyan { border-left-color: var(--cyan); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+    }
+    .stat-box .value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    .stat-box .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="../index.html" class="back">&larr; Back to projects</a>
+
+  <h1>@x402/sui</h1>
+  <p class="subtitle">HTTP 402 Payment Required for the Sui blockchain &mdash; native micropayments over HTTP</p>
+
+  <div class="tags">
+    <span class="tag">TypeScript</span>
+    <span class="tag">Sui</span>
+    <span class="tag cyan">USDC</span>
+    <span class="tag green">Payment Protocol</span>
+    <span class="tag">x402</span>
+    <span class="tag orange">MCP Integration</span>
+    <span class="tag">Apache-2.0</span>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-box">
+      <div class="value">3</div>
+      <div class="label">Scheme Roles</div>
+    </div>
+    <div class="stat-box">
+      <div class="value">3</div>
+      <div class="label">Networks</div>
+    </div>
+    <div class="stat-box">
+      <div class="value">3</div>
+      <div class="label">Extensions</div>
+    </div>
+    <div class="stat-box">
+      <div class="value">0</div>
+      <div class="label">Move Contracts</div>
+    </div>
+  </div>
+
+  <h2>The Challenge</h2>
+
+  <p>HTTP status code <strong>402 Payment Required</strong> was reserved in 1999 for "future use." Over two decades later, the web still has no native payment layer. Every resource is either free, gated behind a subscription, or monetized through ads and data harvesting.</p>
+
+  <div class="highlight-box">
+    <p><strong>The x402 protocol</strong> finally implements HTTP 402. A server responds with <code>402 Payment Required</code> plus machine-readable payment requirements. The client signs a transaction, attaches it to the retry request, and the server settles on-chain before serving the resource.</p>
+  </div>
+
+  <p>Coinbase published the <a href="https://github.com/coinbase/x402">reference implementation</a> for EVM and SVM. This package, <code>@x402/sui</code>, extends the protocol to the <strong>Sui blockchain</strong>.</p>
+
+  <h2>Why It Matters</h2>
+
+  <ul>
+    <li><strong>Micropayments</strong> &mdash; charge $0.001 per API call without credit card minimums or payment processor fees eating the margin</li>
+    <li><strong>Pay-per-use APIs</strong> &mdash; LLM inference, data feeds, premium endpoints can accept payment inline with the HTTP request</li>
+    <li><strong>No accounts, no subscriptions</strong> &mdash; a wallet and a signed transaction is all you need</li>
+    <li><strong>Machine-to-machine payments</strong> &mdash; AI agents can autonomously pay for resources via the MCP integration</li>
+    <li><strong>Stablecoin settlement</strong> &mdash; payments denominated in USDC, no volatility risk for either party</li>
+  </ul>
+
+  <h2>How It Works</h2>
+
+  <pre><code>  Client                    Server                  Facilitator              Sui
+  ------                    ------                  -----------              ---
+    |                         |                         |                     |
+    |  GET /premium/data      |                         |                     |
+    |------------------------>|                         |                     |
+    |                         |                         |                     |
+    |  402 Payment Required   |                         |                     |
+    |  + PaymentRequirements  |                         |                     |
+    |  (scheme, network,      |                         |                     |
+    |   asset, amount, payTo) |                         |                     |
+    |<------------------------|                         |                     |
+    |                         |                         |                     |
+    |  Build PTB:             |                         |                     |
+    |  SplitCoins(USDC, amt)  |                         |                     |
+    |  TransferObjects(payTo) |                         |                     |
+    |  Sign with Ed25519      |                         |                     |
+    |                         |                         |                     |
+    |  GET /premium/data      |                         |                     |
+    |  X-PAYMENT: {tx, sig}   |                         |                     |
+    |------------------------>|                         |                     |
+    |                         |  verify(payload, reqs)  |                     |
+    |                         |------------------------>|                     |
+    |                         |                         |  dryRunTransaction  |
+    |                         |                         |  verify signature   |
+    |                         |                         |  check balanceChgs  |
+    |                         |                         |  detect side effects|
+    |                         |                         |-------------------->|
+    |                         |                         |<--------------------|
+    |                         |  { isValid, payer }     |                     |
+    |                         |<------------------------|                     |
+    |                         |                         |                     |
+    |                         |  settle(payload, reqs)  |                     |
+    |                         |------------------------>|                     |
+    |                         |                         |  executeTransaction |
+    |                         |                         |-------------------->|
+    |                         |                         |  waitForTransaction |
+    |                         |                         |-------------------->|
+    |                         |                         |<--------------------|
+    |                         |  { success, digest }    |                     |
+    |                         |<------------------------|                     |
+    |                         |                         |                     |
+    |  200 OK + paid content  |                         |                     |
+    |<------------------------|                         |                     |</code></pre>
+
+  <div class="highlight-box green">
+    <p><strong>No custom Move contracts.</strong> The payment uses native Sui Programmable Transaction Blocks (PTBs): <code>SplitCoins</code> to extract the exact USDC amount, <code>TransferObjects</code> to send it to the resource owner. The facilitator dry-runs the PTB to verify correctness before executing.</p>
+  </div>
+
+  <h2>Architecture</h2>
+
+  <h3>Three Roles</h3>
+
+  <table>
+    <tr><th>Role</th><th>Class</th><th>Responsibility</th></tr>
+    <tr>
+      <td><strong>Client</strong></td>
+      <td><code>ExactSuiClientScheme</code></td>
+      <td>Fetches USDC coins, builds a PTB, signs the transaction</td>
+    </tr>
+    <tr>
+      <td><strong>Server</strong></td>
+      <td><code>ExactSuiServerScheme</code></td>
+      <td>Parses price into USDC base units, injects gas station URL</td>
+    </tr>
+    <tr>
+      <td><strong>Facilitator</strong></td>
+      <td><code>ExactSuiFacilitatorScheme</code></td>
+      <td>Verifies signature + dry-run simulation, checks balance changes, settles on-chain</td>
+    </tr>
+  </table>
+
+  <h3>Extensions</h3>
+
+  <table>
+    <tr><th>Extension</th><th>Purpose</th></tr>
+    <tr>
+      <td><strong>Offer/Receipt</strong></td>
+      <td>JWS-signed offers and receipts for verifiable payment proofs</td>
+    </tr>
+    <tr>
+      <td><strong>Sign-In-With-X (SIWx)</strong></td>
+      <td>Authentication via Sui wallet signatures, with storage hooks</td>
+    </tr>
+    <tr>
+      <td><strong>Payment Identifier</strong></td>
+      <td>Unique payment IDs for tracking and deduplication</td>
+    </tr>
+  </table>
+
+  <h3>MCP Integration</h3>
+  <p>The <code>createSuiPaymentWrapper</code> higher-order function wraps any MCP tool handler with x402 payment logic. When an AI agent calls a paid tool without payment, it receives a structured <code>402</code> error with <code>PaymentRequirements</code>. The agent signs a transaction and retries with payment metadata in <code>_meta["x402/payment"]</code>.</p>
+
+  <h2>Tech Stack</h2>
+
+  <div class="stat-grid">
+    <div class="stat-box">
+      <div class="value" style="font-size: 1rem;">TypeScript</div>
+      <div class="label">Language (strict)</div>
+    </div>
+    <div class="stat-box">
+      <div class="value" style="font-size: 1rem;">@mysten/sui</div>
+      <div class="label">Sui SDK v2</div>
+    </div>
+    <div class="stat-box">
+      <div class="value" style="font-size: 1rem;">@x402/core</div>
+      <div class="label">Protocol Core</div>
+    </div>
+    <div class="stat-box">
+      <div class="value" style="font-size: 1rem;">Bun</div>
+      <div class="label">Runtime</div>
+    </div>
+    <div class="stat-box">
+      <div class="value" style="font-size: 1rem;">Vitest</div>
+      <div class="label">Tests</div>
+    </div>
+    <div class="stat-box">
+      <div class="value" style="font-size: 1rem;">tsup</div>
+      <div class="label">Build</div>
+    </div>
+  </div>
+
+  <h3>Key Dependencies</h3>
+  <ul>
+    <li><code>@mysten/sui</code> &mdash; JSON-RPC client, transaction builder, cryptographic verification</li>
+    <li><code>@x402/core</code> &mdash; protocol types, facilitator/client/server base classes</li>
+    <li><code>jose</code> &mdash; JWS signing for the Offer/Receipt extension</li>
+    <li><code>@modelcontextprotocol/sdk</code> &mdash; optional peer dependency for MCP tool wrappers</li>
+  </ul>
+
+  <h2>Supported Networks</h2>
+
+  <table>
+    <tr><th>Network</th><th>CAIP-2 ID</th><th>USDC Coin Type</th></tr>
+    <tr>
+      <td>Mainnet</td>
+      <td><code>sui:mainnet</code></td>
+      <td><code>0xdba3...00e7::usdc::USDC</code></td>
+    </tr>
+    <tr>
+      <td>Testnet</td>
+      <td><code>sui:testnet</code></td>
+      <td><code>0xa1ec...7e29::usdc::USDC</code></td>
+    </tr>
+    <tr>
+      <td>Devnet</td>
+      <td><code>sui:devnet</code></td>
+      <td>Same as testnet</td>
+    </tr>
+  </table>
+
+  <p>Additional tokens in the registry: <strong>SUI</strong> (native, 9 decimals), <strong>AUSD</strong> (Agora Dollar), <strong>wUSDT</strong> (Wrapped USDT).</p>
+
+  <h2>Security Model</h2>
+
+  <div class="highlight-box orange">
+    <p><strong>Verification pipeline (facilitator):</strong></p>
+    <ul style="margin-top: 0.5rem;">
+      <li>Cryptographic signature verification via <code>verifyTransactionSignature</code></li>
+      <li>Dry-run simulation to validate transaction effects before execution</li>
+      <li>Balance change analysis: exact amount, correct recipient, correct asset</li>
+      <li>Signer/payer identity match to prevent signature substitution</li>
+      <li>Side-effect detection: rejects PTBs with unexpected balance changes (prevents injection attacks)</li>
+      <li>Duplicate settlement cache with TTL-based LRU eviction (prevents replay)</li>
+      <li>Request body size limit (1MB) on the facilitator HTTP server</li>
+    </ul>
+  </div>
+
+  <h2>Key Features</h2>
+
+  <ul>
+    <li><strong>Sponsored transactions</strong> &mdash; facilitator can cover gas fees via a gas station URL, enabling gasless payments for end users</li>
+    <li><strong>Multi-token support</strong> &mdash; USDC by default, but the token registry and coin metadata cache support any Sui fungible token</li>
+    <li><strong>Money parsers</strong> &mdash; pluggable price parsing: treat numbers as USD and auto-convert to USDC base units, or use custom parsers</li>
+    <li><strong>Standalone facilitator server</strong> &mdash; <code>createFacilitatorServer()</code> spins up a Bun HTTP server with <code>/supported</code>, <code>/verify</code>, and <code>/settle</code> endpoints</li>
+    <li><strong>Registration helpers</strong> &mdash; one-liner integration with <code>x402Client</code>, <code>x402Facilitator</code>, and <code>x402ResourceServer</code></li>
+  </ul>
+
+  <h2>Key Insights</h2>
+
+  <div class="highlight-box cyan">
+    <p><strong>Why Sui for x402?</strong></p>
+    <ul style="margin-top: 0.5rem;">
+      <li><strong>Sub-second finality</strong> &mdash; payments confirm in ~400ms, fast enough to feel synchronous within an HTTP request/response cycle</li>
+      <li><strong>Low transaction fees</strong> &mdash; fractions of a cent per transaction make micropayments economically viable (unlike EVM L1 where gas can exceed the payment)</li>
+      <li><strong>Programmable Transaction Blocks</strong> &mdash; split coins + transfer in a single atomic transaction, no custom smart contract needed. Dramatically simplifies deployment and auditing.</li>
+      <li><strong>Native USDC</strong> &mdash; Circle-issued USDC on Sui means stablecoin settlement without bridging risk</li>
+      <li><strong>Object model</strong> &mdash; Sui's object-centric architecture means coin objects can be split and transferred directly, with parallel execution for non-overlapping objects</li>
+    </ul>
+  </div>
+
+  <div class="highlight-box">
+    <p><strong>The MCP angle.</strong> With AI agents increasingly calling tools autonomously, x402 on Sui provides the payment rail. An agent that needs premium data can pay for it inline with the MCP tool call, no human approval loop needed. The structured 402 error tells the agent exactly what to pay, and the agent's wallet handles the rest.</p>
+  </div>
+
+  <h2>Project Structure</h2>
+
+  <pre><code>src/
+  index.ts                 -- barrel exports (100+ symbols)
+  types.ts                 -- ExactSuiPayload { transaction, signature }
+  constants.ts             -- CAIP-2 IDs, USDC coin types, RPC URLs
+  utils.ts                 -- network normalization, address validation, amount conversion
+  signer.ts                -- ClientSuiSigner + FacilitatorSuiSigner factories
+  tokens.ts                -- multi-token registry (USDC, SUI, AUSD, wUSDT)
+  coin-metadata.ts         -- on-chain metadata cache
+  money-parser.ts          -- pluggable price-to-token conversion
+  settlement-cache.ts      -- TTL + LRU eviction for replay prevention
+  exact/
+    client/scheme.ts       -- builds PTB, handles coin merging + gas sponsorship
+    server/scheme.ts       -- price parsing, gas station URL injection
+    facilitator/scheme.ts  -- verify (5-step pipeline) + settle (execute + wait)
+  facilitator/server.ts    -- standalone Bun HTTP facilitator
+  mcp/server.ts            -- payment wrapper for MCP tool handlers
+  extensions/
+    offer-receipt/         -- JWS-signed payment offers and receipts
+    siwx/                  -- Sign-In-With-X wallet authentication
+    payment-identifier/    -- unique payment ID generation + validation</code></pre>
+
+  <h2>Links</h2>
+
+  <ul>
+    <li><a href="https://github.com/alexandre-mrt/x402-sui">GitHub Repository</a></li>
+    <li><a href="https://x402.org">x402 Protocol Specification</a></li>
+    <li><a href="https://github.com/coinbase/x402">coinbase/x402 Reference Implementation</a></li>
+  </ul>
+
+</div>
+</body>
+</html>

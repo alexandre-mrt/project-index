@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub .github — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>GitHub .github</h1>
+    <p class="subtitle">Centralized GitHub org config with reusable CI workflows for TypeScript, Rust, and Sui Move</p>
+
+    <div class="tags">
+      <span class="tag">GitHub Actions</span>
+      <span class="tag green">YAML</span>
+      <span class="tag cyan">TypeScript/Bun CI</span>
+      <span class="tag orange">Rust CI</span>
+      <span class="tag">Sui Move CI</span>
+      <span class="tag green">Dependabot</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Every new repository needs CI workflows, and copy-pasting YAML across 20+ repos leads to drift and maintenance hell.</strong></p>
+      <p>A solo developer working across TypeScript, Rust, and Sui Move repos needs consistent lint, typecheck, build, and test pipelines. When a workflow improvement is found (pinning an action to a new SHA, adding a cache step), it must be applied to every repo individually. Dependabot configuration is the same story.</p>
+    </div>
+
+    <p>GitHub's special <code>.github</code> repository enables organization-wide reusable workflows. Any repo in the org can call these workflows with a single <code>uses:</code> line, inheriting best practices automatically. The repo also hosts the GitHub profile README, branch protection recommendations, and a shared Dependabot template.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Write once, use everywhere</strong>: 3 reusable workflows cover the entire stack. A new TypeScript repo gets full CI (lint, typecheck, build, test) with a 3-line YAML file.</li>
+      <li><strong>Security-hardened</strong>: all third-party actions pinned to commit SHA (not tags), least-privilege <code>permissions: contents: read</code> on every job, concurrency with <code>cancel-in-progress: true</code>.</li>
+      <li><strong>Configurable via inputs</strong>: each workflow exposes boolean flags and string overrides (bun-version, rust-version, sui-version, working-directory, custom commands) so repos can customize without forking.</li>
+      <li><strong>Dependabot integration</strong>: a template config keeps npm/cargo dependencies and GitHub Actions themselves up to date via weekly PRs with conventional commit prefixes.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Reusable Workflow Architecture</h3>
+    <div class="ascii-diagram"><code><span class="dim">CONSUMER REPO</span>                        <span class="dim">.github ORG REPO</span>
+
+my-ts-project/
+  .github/workflows/ci.yml
+    jobs:
+      ci:
+        <span class="hi">uses: alexandre-mrt/.github/</span>      ts-bun-ci.yml
+        <span class="hi">  .github/workflows/</span>  -----------> +---<span class="cyn">Lint</span> (Biome)
+        <span class="hi">  ts-bun-ci.yml@main</span>               +---<span class="cyn">Type Check</span> (tsc --noEmit)
+                                          +---<span class="cyn">Build</span> (bun run build)
+my-rust-project/                          +---<span class="cyn">Test</span> (bun run test)
+  .github/workflows/ci.yml
+    jobs:
+      ci:
+        <span class="hi">uses: alexandre-mrt/.github/</span>      rust-ci.yml
+        <span class="hi">  .github/workflows/</span>  -----------> +---<span class="grn">Format</span> (cargo fmt --check)
+        <span class="hi">  rust-ci.yml@main</span>                 +---<span class="grn">Clippy</span> (-D warnings)
+                                          +---<span class="grn">Test</span> (cargo test)
+my-move-project/                          +---<span class="grn">Audit</span> (cargo audit, optional)
+  .github/workflows/ci.yml
+    jobs:
+      ci:
+        <span class="hi">uses: alexandre-mrt/.github/</span>      move-ci.yml
+        <span class="hi">  .github/workflows/</span>  -----------> +---<span class="orn">Build</span> (sui move build)
+        <span class="hi">  move-ci.yml@main</span>                 +---<span class="orn">Test</span> (sui move test)</code></div>
+
+    <h3>CI Pipeline Details</h3>
+    <div class="ascii-diagram"><code><span class="hi">TypeScript/Bun CI</span>                <span class="grn">Rust CI</span>                   <span class="orn">Move CI</span>
+
+Inputs:                        Inputs:                     Inputs:
+  bun-version (latest)           rust-version (stable)       sui-version (mainnet)
+  has-tests (true)               has-clippy (true)           working-directory (.)
+  has-lint (true)                has-audit (false)
+  has-typecheck (true)           cargo-test-args ("")
+  has-build (true)               working-directory (.)
+  build/test commands
+
+Jobs (parallel):               Jobs (parallel):            Jobs (parallel):
+  <span class="cyn">Lint</span>: biome ci .               <span class="grn">Format</span>: cargo fmt --check   <span class="orn">Build</span>: sui move build
+  <span class="cyn">TypeCheck</span>: tsc --noEmit        <span class="grn">Clippy</span>: -D warnings         <span class="orn">Test</span>: sui move test
+  <span class="cyn">Build</span>: bun run build           <span class="grn">Test</span>: cargo test
+  <span class="cyn">Test</span>: bun run test              <span class="grn">Audit</span>: cargo audit (opt)
+
+Setup:                         Setup:                      Setup:
+  oven-sh/setup-bun@SHA         dtolnay/rust-toolchain@SHA  curl sui.io/install.sh
+  bun install --frozen-lockfile  Swatinem/rust-cache@SHA     (cache: N/A)
+  actions/checkout@SHA           actions/checkout@SHA        actions/checkout@SHA</code></div>
+
+    <h3>Branch Protection Strategy</h3>
+    <div class="ascii-diagram"><code><span class="hi">BRANCH: main</span>
+
+  +---------------------------+     +---------------------------+
+  | <span class="grn">Required status checks</span>    |     | <span class="orn">Solo dev optimizations</span>    |
+  |   Lint                    |     |   No PR reviews required  |
+  |   Type Check              |     |   (overhead for 1 person) |
+  |   Build                   |     |   Auto-delete merged      |
+  |   Test                    |     |   branches                |
+  |   Branches must be        |     |   Squash merge only       |
+  |   up to date              |     |   (clean linear history)  |
+  +---------------------------+     +---------------------------+
+
+  <span class="red">BLOCKED</span>: force push, branch deletion
+  <span class="grn">ALLOWED</span>: direct push (with CI passing), Dependabot PRs</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>CI Platform</td><td><code>GitHub Actions</code></td><td>Reusable workflow_call triggers</td></tr>
+      <tr><td>TS Lint</td><td><code>Biome</code></td><td>Lint + format in a single CI step</td></tr>
+      <tr><td>TS Runtime</td><td><code>Bun</code></td><td>Install, build, test via oven-sh/setup-bun</td></tr>
+      <tr><td>Rust Toolchain</td><td><code>dtolnay/rust-toolchain</code></td><td>rustfmt + clippy components</td></tr>
+      <tr><td>Rust Cache</td><td><code>Swatinem/rust-cache</code></td><td>Cargo target directory caching</td></tr>
+      <tr><td>Move CLI</td><td><code>Sui CLI</code></td><td>Build and test Move packages</td></tr>
+      <tr><td>Dependency Updates</td><td><code>Dependabot</code></td><td>Weekly PRs for github-actions ecosystem</td></tr>
+      <tr><td>Branch Management</td><td><code>gh API</code></td><td>Branch protection rules via GitHub CLI</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>.github/
+  workflows/
+    ts-bun-ci.yml       Reusable: Lint + TypeCheck + Build + Test (Bun)
+    rust-ci.yml         Reusable: Format + Clippy + Test + Audit (Rust)
+    move-ci.yml         Reusable: Build + Test (Sui Move)
+  dependabot.yml        Weekly github-actions updates
+profile/
+  README.md             GitHub profile page (bio, stack, active projects)
+README.md               Usage docs for consuming workflows
+BRANCH_PROTECTION.md    Recommended rules + gh CLI commands to apply them</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>SHA-Pinned Actions</h3>
+    <div class="highlight-box success">
+      <p><strong>Every third-party action is pinned to a full commit SHA, not a tag.</strong> Tags can be moved or deleted by the action author. SHA pinning (<code>actions/checkout@34e114876b...</code>) ensures the exact code that was audited is the code that runs. Dependabot automatically proposes SHA updates when new versions are released.</p>
+    </div>
+
+    <h3>Conditional Job Execution</h3>
+    <p>Each job in the reusable workflows is gated by a boolean input (<code>has-tests</code>, <code>has-lint</code>, <code>has-clippy</code>, etc.) with sensible defaults. A repo that has no tests can set <code>has-tests: false</code> without forking the workflow. The jobs themselves use <code>if: ${{ inputs.has-tests }}</code> for clean conditional skipping.</p>
+
+    <h3>Concurrency Control</h3>
+    <div class="highlight-box">
+      <p>All workflows use <code>concurrency: group + cancel-in-progress: true</code>. When a new commit is pushed to a PR, any running CI for that same PR is automatically cancelled. This saves runner minutes on force-pushed branches and prevents stale results from appearing alongside current ones.</p>
+    </div>
+
+    <h3>Frozen Lockfile Enforcement</h3>
+    <p>TypeScript workflows use <code>bun install --frozen-lockfile</code>, which fails the build if <code>bun.lockb</code> is out of sync with <code>package.json</code>. This catches accidental dependency changes that were not committed and ensures CI builds are deterministic.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Reusable workflows</td><td>3 (TypeScript/Bun, Rust, Sui Move)</td></tr>
+      <tr><td>Total CI jobs defined</td><td>10 across all workflows</td></tr>
+      <tr><td>Configurable inputs</td><td>15 (bun-version, has-tests, working-directory, etc.)</td></tr>
+      <tr><td>Pinned action SHAs</td><td>5 (checkout, setup-bun, rust-toolchain, rust-cache, sui CLI)</td></tr>
+      <tr><td>Dependabot schedule</td><td>Weekly (github-actions ecosystem)</td></tr>
+      <tr><td>Branch protection rules</td><td>6 (status checks, up-to-date, no force push, no delete, squash, auto-delete)</td></tr>
+      <tr><td>Languages covered</td><td>3 (TypeScript, Rust, Sui Move)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

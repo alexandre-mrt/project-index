@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZK Payment Mixer — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+
+    .highlight-box.warning {
+      border-left-color: var(--orange);
+    }
+    .highlight-box.success {
+      border-left-color: var(--green);
+    }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>ZK Payment Mixer</h1>
+    <p class="subtitle">Privacy-preserving ETH mixer using zero-knowledge proofs</p>
+
+    <div class="tags">
+      <span class="tag">Circom</span>
+      <span class="tag">Solidity</span>
+      <span class="tag green">Groth16</span>
+      <span class="tag cyan">Poseidon</span>
+      <span class="tag orange">TypeScript</span>
+      <span class="tag">React</span>
+      <span class="tag cyan">snarkjs</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Every ETH transfer is publicly traceable.</strong></p>
+      <p>Sender address, receiver address, and amount are all visible on-chain. Anyone with a block explorer can trace the full flow of funds between wallets.</p>
+    </div>
+
+    <p>When Alice sends 1 ETH to Bob, that link is permanently recorded on Ethereum. Chain analysis firms, curious observers, and adversaries can all reconstruct the payment graph. There is no native privacy layer for value transfers on public blockchains.</p>
+
+    <p>The mixer pattern solves this by inserting a cryptographic "break" between deposit and withdrawal. Many users deposit the same fixed amount into a shared pool. Any depositor can later withdraw to a fresh address, and nobody can link the two.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Transaction privacy</strong> is a fundamental property of any sound financial system. Without it, every wallet balance and payment is surveillance-ready.</li>
+      <li><strong>Tornado Cash</strong> proved the concept at scale on Ethereum mainnet. This project is a ground-up reimplementation to understand the cryptographic and smart contract mechanics.</li>
+      <li><strong>Fixed denomination</strong> (0.1 ETH) ensures all deposits look identical on-chain, maximizing the anonymity set. The more users in the pool, the stronger the privacy.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Deposit Flow</h3>
+    <div class="ascii-diagram"><code><span class="dim">User generates random:</span>
+  <span class="hi">secret</span>  (256-bit random)
+  <span class="hi">nullifier</span> (256-bit random)
+
+<span class="dim">Computes off-chain:</span>
+  <span class="grn">commitment</span> = Poseidon(<span class="hi">secret</span>, <span class="hi">nullifier</span>)
+
+<span class="dim">Calls contract:</span>
+  Mixer.deposit(<span class="grn">commitment</span>) + 0.1 ETH
+       |
+       v
+  +--------------------------+
+  |   Incremental Merkle     |
+  |   Tree (depth 20)        |
+  |                          |
+  |  leaf[i] = <span class="grn">commitment</span>    |
+  |                          |
+  |  root updated, stored    |
+  |  in ring buffer (30)     |
+  +--------------------------+
+
+<span class="dim">User saves note:</span>  <span class="orn">zk-mixer-&lt;secret_hex&gt;-&lt;nullifier_hex&gt;</span>
+<span class="dim">(losing it = losing funds)</span></code></div>
+
+    <h3>Withdraw Flow</h3>
+    <div class="ascii-diagram"><code><span class="dim">User provides:</span>
+  <span class="orn">note</span> + <span class="hi">recipient</span> address (fresh wallet)
+
+<span class="dim">Client rebuilds Merkle tree from on-chain events,</span>
+<span class="dim">finds the leaf, computes Merkle proof:</span>
+
+  pathElements[0..19]  (sibling hashes)
+  pathIndices[0..19]   (left/right flags)
+
+<span class="dim">Generates Groth16 proof proving:</span>
+  +----------------------------------------------+
+  |  <span class="grn">CIRCUIT: withdraw.circom</span>                    |
+  |                                              |
+  |  Public:  root, nullifierHash,               |
+  |           recipient, relayer, fee             |
+  |                                              |
+  |  Private: secret, nullifier,                 |
+  |           pathElements, pathIndices           |
+  |                                              |
+  |  Checks:                                     |
+  |   1. <span class="grn">commitment</span> = Poseidon(secret, nullifier) |
+  |   2. nullifierHash = Poseidon(nullifier)     |
+  |   3. commitment IS a leaf in the tree        |
+  |   4. recipient/relayer/fee bound to proof    |
+  +----------------------------------------------+
+
+<span class="dim">Submits to contract:</span>
+  Mixer.withdraw(proof, root, nullifierHash, recipient, relayer, fee)
+       |
+       v
+  <span class="hi">Verifier.verifyProof()</span> --- valid? ---+
+       |                                |
+       | no                             | yes
+       v                                v
+    REVERT                     Mark nullifier spent
+                               Send 0.1 ETH to <span class="hi">recipient</span>
+                               Send fee to relayer (if any)</code></div>
+
+    <h3>End-to-End Privacy</h3>
+    <div class="highlight-box success">
+      <p><strong>The ZK proof reveals nothing about which deposit is being withdrawn.</strong> The on-chain verifier only confirms that <em>some</em> valid commitment exists in the tree, without learning which one. The nullifier hash prevents double-spending without revealing the original nullifier.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <div class="ascii-diagram"><code><span class="dim">
++------------------+     +-------------------+     +------------------+
+|   <span class="hi">Circom Circuits</span> |     | <span class="hi">Solidity Contracts</span> |     |  <span class="hi">CLI + Frontend</span>  |
+|                  |     |                   |     |                  |
+| hasher.circom    |     | MerkleTree.sol    |     | cli/deposit.ts   |
+| merkle_tree.circom     | Mixer.sol         |     | cli/withdraw.ts  |
+| deposit.circom   |     | Verifier.sol      |     | cli/status.ts    |
+| withdraw.circom  |     | Constants.sol     |     | cli/watch.ts     |
+|                  |     | MixerLens.sol     |     |                  |
+|                  |     | DepositReceipt.sol|     | frontend/src/    |
++------------------+     +-------------------+     |  App.tsx         |
+       |                        |                  |  DepositCard.tsx |
+       | compile                | deploy           |  WithdrawCard.tsx|
+       v                        v                  |  StatusCard.tsx  |
+   withdraw.wasm         Hardhat network           +------------------+
+   withdraw_final.zkey    or Sepolia                       |
+       |                        |                   wagmi + snarkjs
+       +----------+-------------+                   (client-side proof)
+                  |
+           <span class="grn">Groth16 proof generation + verification</span></span></code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>ZK Circuits</td><td><code>Circom 2.1</code> + <code>circomlib</code></td><td>Define the withdraw proof constraints</td></tr>
+      <tr><td>Proving System</td><td><code>Groth16</code> via <code>snarkjs</code></td><td>Generate and verify succinct proofs</td></tr>
+      <tr><td>Hash Function</td><td><code>Poseidon</code></td><td>ZK-friendly hash for commitments and Merkle nodes</td></tr>
+      <tr><td>Smart Contracts</td><td><code>Solidity ^0.8.20</code></td><td>Mixer logic, Merkle tree, on-chain verification</td></tr>
+      <tr><td>Contract Framework</td><td><code>Hardhat</code> + <code>ethers.js</code></td><td>Compile, test, deploy</td></tr>
+      <tr><td>Security</td><td><code>OpenZeppelin</code></td><td>ReentrancyGuard, Pausable, Ownable, ERC721</td></tr>
+      <tr><td>CLI</td><td><code>TypeScript</code> + <code>Commander.js</code></td><td>Deposit, withdraw, status commands</td></tr>
+      <tr><td>Frontend</td><td><code>React</code> + <code>Vite</code> + <code>wagmi</code></td><td>Browser-based deposits/withdrawals</td></tr>
+      <tr><td>Package Manager</td><td><code>Bun</code></td><td>Fast dependency management and script runner</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Contract Design</h2>
+
+    <h3>Mixer.sol</h3>
+    <p>Core contract inheriting <code>MerkleTree</code>, <code>ReentrancyGuard</code>, <code>Pausable</code>, and <code>Ownable</code>. Handles deposits (commitment insertion), withdrawals (proof verification + ETH transfer), and pool statistics.</p>
+
+    <ul>
+      <li><strong>Fixed denomination</strong>: 0.1 ETH per deposit/withdrawal</li>
+      <li><strong>Duplicate prevention</strong>: commitment uniqueness enforced via mapping</li>
+      <li><strong>Double-spend protection</strong>: nullifier hash marked as spent before ETH transfer</li>
+      <li><strong>Anti-front-running</strong>: recipient, relayer, and fee are bound into the ZK proof</li>
+      <li><strong>Timelock governance</strong>: parameter changes require a 1-day delay</li>
+      <li><strong>Optional NFT receipts</strong>: soulbound <code>DepositReceipt</code> ERC721 minted on deposit</li>
+      <li><strong>Rate limiting</strong>: configurable per-address deposit cap and cooldown</li>
+    </ul>
+
+    <h3>MerkleTree.sol</h3>
+    <p>Incremental Poseidon Merkle tree with depth 20 (1M+ leaf capacity). Uses a ring buffer of 30 roots for in-flight withdrawal tolerance. External Poseidon hasher deployed from <code>circomlibjs</code>.</p>
+
+    <h3>MixerLens.sol</h3>
+    <p>Read-only aggregator that batches multiple view calls into a single RPC round-trip for dashboard data.</p>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Merkle Tree Membership Proofs</h3>
+    <div class="highlight-box">
+      <p>The core privacy primitive: prove that a commitment exists in the tree without revealing <em>which</em> leaf it is. The prover provides the sibling path (20 hashes) and direction bits. The circuit hashes up from the leaf and checks the computed root matches the public root.</p>
+    </div>
+
+    <h3>The Nullifier Pattern</h3>
+    <div class="highlight-box">
+      <p>Each deposit produces a unique <code>nullifierHash = Poseidon(nullifier)</code>. On withdrawal, the contract records this hash. If someone tries to withdraw the same deposit again, the hash is already marked as spent. The nullifier itself stays private (only the hash is revealed), so it cannot be linked back to the original commitment.</p>
+    </div>
+
+    <h3>Anti-Front-Running</h3>
+    <p>The circuit binds the recipient address, relayer address, and fee into the proof via square constraints. Changing any of these values after proof generation invalidates the proof, preventing transaction relay attacks.</p>
+
+    <h3>Root Ring Buffer</h3>
+    <p>The contract keeps the last 30 Merkle roots. This means a user can generate a proof, and even if other deposits change the root before submission, the proof remains valid as long as it references a root within the buffer window.</p>
+
+    <h3>Poseidon over Keccak</h3>
+    <p>Poseidon is algebraic (native to the BN254 field), making it orders of magnitude cheaper inside a ZK circuit compared to Keccak. This is why all commitments and Merkle nodes use Poseidon instead of Ethereum's native hash.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Circom circuits</td><td>4 files (hasher, merkle_tree, deposit, withdraw)</td></tr>
+      <tr><td>Solidity contracts</td><td>6 contracts + 3 test helpers</td></tr>
+      <tr><td>CLI commands</td><td>deposit, withdraw, status, watch, backup</td></tr>
+      <tr><td>Frontend components</td><td>DepositCard, WithdrawCard, StatusCard, HistoryCard</td></tr>
+      <tr><td>Test suites</td><td>20 test files (unit, parametric, security, e2e, regression)</td></tr>
+      <tr><td>Merkle tree depth</td><td>20 levels (1,048,576 leaf capacity)</td></tr>
+      <tr><td>Denomination</td><td>0.1 ETH fixed</td></tr>
+      <tr><td>Proving system</td><td>Groth16 (trusted setup required)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

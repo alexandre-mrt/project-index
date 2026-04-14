@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Swarm — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Claude Swarm</h1>
+    <p class="subtitle">Multi-agent Claude Code orchestration via tmux and shared filesystem</p>
+
+    <div class="tags">
+      <span class="tag">Bash</span>
+      <span class="tag green">tmux</span>
+      <span class="tag cyan">Claude Code</span>
+      <span class="tag orange">Git Worktrees</span>
+      <span class="tag">SSH</span>
+      <span class="tag">rsync</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>A single Claude Code session cannot parallelize work.</strong></p>
+      <p>Complex tasks like "build a REST API with auth, database, and tests" have independent sub-problems that could be worked on simultaneously. But Claude Code runs sequentially in a single terminal, leaving multi-core machines and remote servers idle.</p>
+    </div>
+
+    <p>The goal is to launch N Claude Code agents that work on a shared codebase simultaneously, each in its own isolated git worktree, coordinating through a simple file-based messaging protocol. No MCP servers, no external dependencies, just native Read/Write/Bash tools that every Claude Code instance already has.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>True parallelism</strong>: up to 20 worker agents execute sub-tasks concurrently, each in a separate tmux window with its own git branch.</li>
+      <li><strong>Zero infrastructure</strong>: no databases, no message queues, no servers. The entire communication protocol runs on the filesystem via JSON and Markdown files.</li>
+      <li><strong>SSH remote execution</strong>: agents can run on a remote VPS or Mac Mini via SSH, with bidirectional workspace sync via rsync every N seconds.</li>
+      <li><strong>Self-coordinating</strong>: the orchestrator (Agent #0) breaks down the task, assigns work, monitors progress, and collects results. Workers poll for tasks and report back autonomously.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Swarm Launch Flow</h3>
+    <div class="ascii-diagram"><code><span class="dim">USER</span>                           <span class="dim">LAUNCHER</span>                        <span class="dim">TMUX SESSION</span>
+
+./launcher.sh "Build API"       init-workspace.sh
+        |                          |
+        v                          v
+   Parse args               Create /tmp/claude-swarm-{id}/
+   (workers, project,           ├── registry/
+    SSH host)                   ├── messages/
+        |                       ├── tasks/
+        v                       └── artifacts/
+   <span class="hi">Create tmux session</span>              |
+        |                          v
+        +---> <span class="grn">Window 0</span>: spawn-agent.sh 0 orchestrator
+        +---> <span class="grn">Window 1</span>: spawn-agent.sh 1 worker-1
+        +---> <span class="grn">Window 2</span>: spawn-agent.sh 2 worker-2
+        +---> <span class="grn">Window N</span>: spawn-agent.sh N worker-N
+        +---> <span class="orn">Monitor</span>:  monitor.sh (live dashboard)
+        |
+        v
+   <span class="cyn">Auto-accept trust dialogs</span> (sleep 3 + Enter)</code></div>
+
+    <h3>Agent Communication Protocol</h3>
+    <div class="ascii-diagram"><code><span class="hi">ORCHESTRATOR (Agent #0)</span>                    <span class="grn">WORKERS (Agent #1..N)</span>
+
+1. Read orchestrator.md                  1. Poll tasks/ for assignee-{id}
+2. Break task into sub-tasks             2. Claim task (status: in_progress)
+3. Write tasks/task-001-assignee-1.json  3. Execute in isolated worktree
+4. Write tasks/task-002-assignee-2.json  4. Save output to artifacts/agent-{id}/
+         |                               5. Update task (status: completed)
+         v                               6. Send result message to Agent #0
+   <span class="orn">MONITOR LOOP</span>                              7. Go back to step 1
+   Read registry/agent-*.json
+   Read messages/ (to-0, to-all)              <span class="dim">COMMUNICATION</span>
+   Handle blockers, reassign                  messages/{ts}-from-{id}-to-{target}.md
+   When all done: write result.md             registry/agent-{id}.json (status updates)
+   Broadcast SWARM_COMPLETE                   tasks/task-{NNN}-assignee-{id}.json</code></div>
+
+    <h3>SSH Remote Mode</h3>
+    <div class="ascii-diagram"><code><span class="hi">LAPTOP</span>                              <span class="grn">REMOTE VPS</span>
+
+launcher.sh --ssh user@vps         spawn-agent-ssh.sh
+       |                                  |
+       v                                  v
+  Local workspace              Remote workspace (rsync)
+  /tmp/claude-swarm-*/         /tmp/claude-swarm-*/
+       |                                  |
+       +---<span class="orn"> sync-workspace.sh </span>---+       claude --dangerously-skip-permissions
+       |    (bidirectional rsync         (agents run natively on VPS)
+       |     every 5 seconds)
+       v
+  Monitor window (local)</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Orchestration</td><td><code>Bash (launcher.sh)</code></td><td>Parse args, create tmux session, spawn agents</td></tr>
+      <tr><td>Multiplexing</td><td><code>tmux</code></td><td>One window per agent + monitor window</td></tr>
+      <tr><td>AI Agent</td><td><code>Claude Code CLI</code></td><td>Each agent is a full Claude Code session with injected CLAUDE.md</td></tr>
+      <tr><td>Isolation</td><td><code>Git Worktrees</code></td><td>Each agent gets its own branch + working directory</td></tr>
+      <tr><td>Communication</td><td><code>Filesystem (JSON + MD)</code></td><td>Registry, messages, tasks, artifacts via shared /tmp/ workspace</td></tr>
+      <tr><td>Remote</td><td><code>SSH + rsync</code></td><td>Agents run on VPS, workspace synced bidirectionally</td></tr>
+      <tr><td>Monitoring</td><td><code>monitor.sh + python3</code></td><td>Live terminal dashboard with agent statuses, messages, tasks</td></tr>
+      <tr><td>Cleanup</td><td><code>cleanup.sh</code></td><td>Remove workspaces, agent dirs, worktree branches, tmux sessions</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>launcher.sh                 Main entry point (tmux + agents)
+scripts/
+  init-workspace.sh         Create /tmp/claude-swarm-{id}/ directory tree
+  spawn-agent.sh            Launch one Claude agent with injected CLAUDE.md
+  spawn-agent-ssh.sh        Launch agent on remote machine via SSH
+  sync-workspace.sh         Bidirectional workspace sync for SSH mode
+  monitor.sh                Live status dashboard (agent registry, messages, tasks)
+  cleanup.sh                Remove all swarm artifacts (workspaces, branches, sessions)
+templates/
+  agent-claude.md           CLAUDE.md template injected per agent (orchestrator vs worker)
+skill/
+  SKILL.md                  /swarm skill definition for Claude Code</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Filesystem as Message Bus</h3>
+    <div class="highlight-box success">
+      <p><strong>No external infrastructure needed.</strong> The entire coordination protocol runs on JSON files in /tmp/. Agents read and write task assignments, status updates, and inter-agent messages using the same Read/Write/Bash tools they already have. This makes the system trivially portable to any machine with tmux and Claude Code.</p>
+    </div>
+
+    <h3>Git Worktree Isolation</h3>
+    <p>Each agent gets a dedicated git worktree with a unique branch name (<code>swarm-agent-{id}-{timestamp}-{random}</code>). This means agents can modify files in the same repository without merge conflicts during execution. The orchestrator collects results from artifacts/ when all tasks complete.</p>
+
+    <h3>Template-Based Agent Identity</h3>
+    <div class="highlight-box">
+      <p>Each agent receives a dynamically generated CLAUDE.md from <code>agent-claude.md</code> with conditional sections. The orchestrator gets planning and monitoring instructions. Workers get a task-polling loop. Template placeholders (<code>{{AGENT_ID}}</code>, <code>{{WORKSPACE}}</code>) are replaced at spawn time via sed.</p>
+    </div>
+
+    <h3>Graceful Cleanup</h3>
+    <p>The cleanup script handles four artifact types: /tmp/ workspaces, agent directories, tmux sessions, and git worktree branches. It supports <code>--dry-run</code>, <code>--keep N</code> (preserve recent runs), and <code>--force</code>. Safety check: refuses to delete anything outside /tmp/.</p>
+
+    <h3>Monitor Dashboard</h3>
+    <p>A dedicated tmux window refreshes every 3 seconds, showing agent statuses with icons ([WORK], [IDLE], [BLKD], [DONE]), the 10 most recent inter-agent messages, task progress, and the final result when the swarm completes. JSON parsing uses python3 for robustness against malformed files during race conditions.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Max agents</td><td>20 workers + 1 orchestrator</td></tr>
+      <tr><td>Default agents</td><td>3 workers + 1 orchestrator</td></tr>
+      <tr><td>Scripts</td><td>7 Bash scripts</td></tr>
+      <tr><td>Execution modes</td><td>2 (local + SSH remote)</td></tr>
+      <tr><td>Communication channels</td><td>4 (registry, messages, tasks, artifacts)</td></tr>
+      <tr><td>Message types</td><td>5 (info, question, result, request, blocker)</td></tr>
+      <tr><td>Task statuses</td><td>4 (pending, in_progress, completed, blocked)</td></tr>
+      <tr><td>Dependencies</td><td>3 (tmux, claude CLI, git)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

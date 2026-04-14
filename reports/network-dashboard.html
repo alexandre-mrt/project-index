@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Network Dashboard — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Network Dashboard</h1>
+    <p class="subtitle">Editorial-design personal network dashboard with 142 persona cards, opportunity tracker, and professional situation overview</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Next.js 15</span>
+      <span class="tag cyan">Supabase</span>
+      <span class="tag orange">Tailwind CSS 4</span>
+      <span class="tag">Biome</span>
+      <span class="tag green">Bun</span>
+      <span class="tag">Vercel</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Managing 142+ professional contacts across tiers, tags, and open loops is impossible with spreadsheets or CRMs.</strong></p>
+      <p>Traditional CRMs are designed for sales funnels, not personal relationship intelligence. You need to track reliability scores, contact freshness, open loops (pending follow-ups), and opportunities linked to specific people, all in a design that feels like reading a magazine, not filling out forms.</p>
+    </div>
+
+    <p>This dashboard treats your network as editorial content. Inspired by Monocle magazine's clean aesthetic, it presents persona cards, tier hierarchies, and opportunity pipelines in a format optimized for quick scanning and decision-making. Every contact has a slug-based detail page, reliability dots, tier badges, and a full-text content section parsed from Markdown source files.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Editorial design language</strong>: Playfair Display serif headers, parchment backgrounds, forest/sage color palette. No gradients, no rounded corners beyond 4px, no shadows. Reads like a printed publication.</li>
+      <li><strong>5-tier relationship model</strong>: inner-circle, close, active, familiar, acquaintance. Each tier has a distinct badge, filterable in the persona list.</li>
+      <li><strong>Opportunity pipeline</strong>: Kanban-style board (active / deadline / standby / completed) with CRUD operations, linked to related personas by ID.</li>
+      <li><strong>Password-protected</strong>: simple auth gate via API route and cookie, keeping persona data private without heavy auth infrastructure.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Data Flow</h3>
+    <div class="ascii-diagram"><code><span class="dim">IMPORT PIPELINE</span>                        <span class="dim">RUNTIME</span>
+
++---------------------+                +-------------------+
+| <span class="hi">142 Markdown Files</span>  |                | <span class="grn">Next.js 15</span>        |
+| (Claude_Jarvis/     |   bun run      | (App Router)      |
+|  network/*.md)      |---import------>| Server Components |
++---------------------+                +-------------------+
+                                              |
+         +------------------------------------+
+         |              |              |
+         v              v              v
+  +-----------+  +------------+  +----------+
+  | <span class="cyn">Dashboard</span> |  | <span class="cyn">Network</span>    |  | <span class="cyn">Opps</span>     |
+  | /         |  | /network   |  | /opps    |
+  | Situation |  | Filter,    |  | Kanban   |
+  | Overview  |  | Sort, Slug |  | CRUD     |
+  +-----------+  +------------+  +----------+
+         |              |              |
+         +--------------+--------------+
+                        |
+                        v
+              +-----------------+
+              | <span class="orn">Supabase</span>        |
+              | personas table  |
+              | opportunities   |
+              | situation       |
+              +-----------------+</code></div>
+
+    <h3>Persona Import Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="hi">1. READ</span>
+   |  Scan ~/projects/tools/Claude_Jarvis/network/*.md
+   |  Parse frontmatter: name, tier, tags, role, org, expertise
+   |  Extract sections: context, open loops, contact history
+   v
+<span class="hi">2. TRANSFORM</span>
+   |  Generate slug from name (kebab-case)
+   |  Compute reliability_score (0-5)
+   |  Count open_loops from section content
+   |  Normalize last_contact dates
+   v
+<span class="hi">3. UPSERT</span>
+   |  Supabase upsert by slug (idempotent)
+   |  142 personas inserted in batch
+   v
+<span class="grn">Supabase PostgreSQL</span> (hosted, Row Level Security)</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Framework</td><td><code>Next.js 15 (App Router)</code></td><td>Server components, file-based routing, ISR (revalidate: 60s)</td></tr>
+      <tr><td>Runtime</td><td><code>Bun</code></td><td>Fast dev server via Turbopack, script execution</td></tr>
+      <tr><td>Database</td><td><code>Supabase (PostgreSQL)</code></td><td>Personas, opportunities, situation tables with typed client</td></tr>
+      <tr><td>Styling</td><td><code>Tailwind CSS 4</code></td><td>CSS-based config in globals.css, editorial design tokens</td></tr>
+      <tr><td>Fonts</td><td><code>Playfair Display + Inter + JetBrains Mono</code></td><td>Serif headings, sans-serif body, mono for data</td></tr>
+      <tr><td>Auth</td><td><code>Cookie-based password</code></td><td>Simple middleware + API route, no OAuth</td></tr>
+      <tr><td>Linter</td><td><code>Biome</code></td><td>Lint + format in a single pass</td></tr>
+      <tr><td>Deploy</td><td><code>Vercel</code></td><td>Auto-deploy on push to main</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>src/
+  app/
+    page.tsx                  Dashboard: situation + stats + recent contacts
+    login/page.tsx            Password gate
+    network/page.tsx          Filterable persona list (tier, tags, search, sort)
+    network/[slug]/page.tsx   Persona detail (full content, open loops editor)
+    opportunities/page.tsx    Kanban board with CRUD form
+    api/
+      auth/route.ts           Password check + cookie set
+      personas/[slug]/        GET persona by slug
+      opportunities/          GET/POST + PATCH/DELETE by ID
+  components/
+    editorial/                Design system primitives
+      Divider.tsx             Horizontal rule with editorial styling
+      EditorialDate.tsx       Date formatting component
+      ReliabilityDots.tsx     1-5 dot indicator
+      StatBlock.tsx           Metric display block
+      TierBadge.tsx           Colored tier label
+    network/
+      PersonaList.tsx         Filterable, sortable list with 8 tag presets
+    persona/
+      OpenLoopsEditor.tsx     Edit open loops inline
+    opportunities/
+      OpportunityBoard.tsx    4-column Kanban with drag-like status updates
+  hooks/
+    useKeyboardShortcuts.ts   Keyboard navigation
+  lib/
+    supabase.ts               Browser client
+    supabase-server.ts        Server-side client (no cookies leak)
+    types.ts                  Persona, Opportunity, Situation, Database types
+    utils.ts                  daysAgo, tierOrder formatters
+scripts/
+  import-personas.ts          Parse .md files into Supabase
+  seed-opportunities.ts       Seed initial data
+  run-migration.ts            SQL migration helper
+supabase/migrations/          PostgreSQL schema DDL</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Editorial Design System</h3>
+    <div class="highlight-box success">
+      <p><strong>Every component follows Monocle magazine aesthetics.</strong> Parchment (#F7F6F1) backgrounds, ink (#1A1A1A) text, forest (#2D6A4F) and sage (#8B9D83) accents. No gradients, no rounded corners beyond 4px, no box shadows. The result feels like a printed publication, not a web app.</p>
+    </div>
+
+    <h3>Tier-Based Relationship Model</h3>
+    <p>Contacts are organized into 5 tiers: inner-circle (closest allies), close, active, familiar, and acquaintance. The PersonaList component supports filtering by tier, by 8 preset tags (sui, bsa, epfl, hackathon, blockchain, crypto, events, kryptosphere), and by free-text search. Sorting works on last contact date, reliability score, name, or tier rank.</p>
+
+    <h3>Immutable Types Throughout</h3>
+    <div class="highlight-box">
+      <p>All interfaces use <code>readonly</code> properties. The <code>Database</code> type maps Supabase tables with strict Row/Insert/Update generics, preventing accidental mutation of ID or timestamp fields. Opportunity updates go through PATCH API routes, never direct state mutation.</p>
+    </div>
+
+    <h3>Markdown as Source of Truth</h3>
+    <p>The 142 persona cards originate as Markdown files in the Claude Jarvis network directory. The import script parses frontmatter, extracts structured sections, and upserts into Supabase by slug. This means persona data can be edited in any text editor or by Claude Code, then synced to the dashboard with a single <code>bun run import</code> command.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Persona cards</td><td>142 contacts across 5 tiers</td></tr>
+      <tr><td>Pages</td><td>5 (dashboard, login, network list, persona detail, opportunities)</td></tr>
+      <tr><td>API routes</td><td>4 (auth, personas, opportunities, opportunities/[id])</td></tr>
+      <tr><td>Design components</td><td>5 editorial primitives (Divider, EditorialDate, ReliabilityDots, StatBlock, TierBadge)</td></tr>
+      <tr><td>Source files</td><td>23 TypeScript modules</td></tr>
+      <tr><td>Tag presets</td><td>8 (sui, bsa, epfl, hackathon, blockchain, crypto, events, kryptosphere)</td></tr>
+      <tr><td>Database tables</td><td>3 (personas, opportunities, situation)</td></tr>
+      <tr><td>Color palette</td><td>Parchment, Ink, Forest, Sage, Danger</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

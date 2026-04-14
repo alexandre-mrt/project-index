@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorldPulse — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>WorldPulse</h1>
+    <p class="subtitle">Real-time global intelligence dashboard: Bloomberg Terminal meets CNN War Room with 4 switchable editorial personalities</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Next.js 15</span>
+      <span class="tag cyan">Leaflet</span>
+      <span class="tag orange">Zustand</span>
+      <span class="tag">Recharts</span>
+      <span class="tag">shadcn/ui</span>
+      <span class="tag green">Bun</span>
+      <span class="tag red">SSE</span>
+      <span class="tag">Vercel</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>No single dashboard aggregates news, conflict data, financial markets, and live video in one place.</strong></p>
+      <p>Bloomberg Terminal costs $25K/year and focuses on finance. CNN covers news but not markets. ACLED tracks conflicts but has no news context. Individually, each source is incomplete. What is needed is a unified command center where geopolitical events, their market impact, and live footage converge in real time.</p>
+    </div>
+
+    <p>WorldPulse pulls from 6+ data sources (GNews, RSS feeds, ACLED, CoinGecko, Alpha Vantage, YouTube), proxies everything through Next.js API routes with in-memory TTL caching, and renders it all in a dark-themed window-manager layout. Four editorial "personalities" (War Room, Analyst, Global Citizen, Futurist) re-rank the same data with different category weights, letting you switch perspective without changing sources.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Multi-source intelligence fusion</strong>: news, conflicts, finance, videos, and trends aggregated into one view. Market correlations link financial moves to geopolitical events.</li>
+      <li><strong>4 editorial personalities</strong>: War Room prioritizes conflict and military news. Analyst weights economy and data. Global Citizen highlights humanitarian impact. Futurist focuses on emerging tech. Same data, completely different reading experience.</li>
+      <li><strong>Real-time updates</strong>: SSE streaming from /api/stream with automatic polling fallback. Finance data refreshes every 30s, news every 60s, conflicts every 5 minutes.</li>
+      <li><strong>Window manager layout</strong>: draggable, resizable panels inspired by Bloomberg Terminal. Each panel (map, news, conflicts, finance, video, trends) can be rearranged. Layout persists across sessions.</li>
+      <li><strong>Country intelligence</strong>: deep-dive reports per country with power index, threat level, sanctions tracker, and relationship matrix between nations.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Data Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="dim">DATA SOURCES</span>                  <span class="dim">API PROXY LAYER</span>              <span class="dim">CLIENT</span>
+
++--------------+              +----------------+           +------------------+
+| <span class="hi">GNews API</span>    |--+           | <span class="cyn">/api/news</span>     |--+        | <span class="grn">NewsFeed</span>         |
++--------------+  |           | (classify +    |  |        | TopStories       |
+| <span class="hi">RSS Feeds</span>    |--+---------->|  cache 60s)    |  |  SSE   | DeepDive         |
+| (5 sources)  |  |           +----------------+  +------->+------------------+
++--------------+  |                               |
+                  |           +----------------+  |        +------------------+
++--------------+  |           | <span class="cyn">/api/finance</span>  |--+        | <span class="grn">FinancePanel</span>     |
+| <span class="hi">CoinGecko</span>   |--+---------->| (cache 30s)    |  |        | MarketTicker     |
++--------------+  |           +----------------+  |        | SparklineChart   |
+| <span class="hi">AlphaVantage</span>|--+                               |        +------------------+
++--------------+              +----------------+  |
+                              | <span class="cyn">/api/conflicts</span>|--+        +------------------+
++--------------+              | (ACLED +       |  |        | <span class="grn">ConflictTracker</span>  |
+| <span class="hi">ACLED API</span>    |------------->|  static defs)  |  |        | ConflictTimeline |
++--------------+              +----------------+  |        +------------------+
+                                                  |
++--------------+              +----------------+  |        +------------------+
+| <span class="hi">YouTube API</span> |------------->| <span class="cyn">/api/videos</span>   |--+        | <span class="grn">VideoSection</span>     |
++--------------+              +----------------+  |        | LiveStream       |
+                                                  |        +------------------+
++--------------+              +----------------+  |
+| <span class="hi">Keyword</span>      |------------->| <span class="cyn">/api/trends</span>   |--+        +------------------+
+| <span class="hi">Extraction</span>   |              +----------------+           | <span class="grn">TrendingTopics</span>   |
++--------------+                                           +------------------+
+                              +----------------+
+                              | <span class="orn">/api/stream</span>   |           +------------------+
+                              | (SSE endpoint) |---------->| <span class="grn">Zustand Store</span>    |
+                              +----------------+           +------------------+</code></div>
+
+    <h3>Personality Filtering</h3>
+    <div class="ascii-diagram"><code><span class="hi">Same Raw Data</span>
+      |
+      v
++---------------------+
+| <span class="orn">Personality Engine</span>   |
+| category weights    |
++---------------------+
+      |
+      +----> <span class="red">War Room</span>:     conflict=10, military=10, politics=6, economy=3
+      +----> <span class="cyn">Analyst</span>:      economy=10, tech=6, politics=5, conflict=5
+      +----> <span class="grn">Global Citizen</span>: humanitarian=10, climate=7, conflict=5
+      +----> <span class="hi">Futurist</span>:     tech=10, economy=6, climate=6, politics=5
+      |
+      v
+<span class="grn">Re-ranked articles, conflicts, trends</span>
+<span class="dim">(same data, different priority order)</span></code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Framework</td><td><code>Next.js 15 (App Router)</code></td><td>Server API routes, client-side dashboard</td></tr>
+      <tr><td>State</td><td><code>Zustand</code></td><td>Global dashboard store (articles, conflicts, assets, UI state)</td></tr>
+      <tr><td>Map</td><td><code>Leaflet + react-leaflet</code></td><td>World map with conflict zones, news markers (client-only, no SSR)</td></tr>
+      <tr><td>Charts</td><td><code>Recharts</code></td><td>Sparkline charts for financial assets</td></tr>
+      <tr><td>UI</td><td><code>shadcn/ui + Tailwind CSS</code></td><td>Dark-themed component library (cards, badges, tabs, tooltips)</td></tr>
+      <tr><td>Streaming</td><td><code>Server-Sent Events</code></td><td>Real-time data push from /api/stream with polling fallback</td></tr>
+      <tr><td>News</td><td><code>GNews API + 5 RSS feeds</code></td><td>Reuters, BBC, Al Jazeera, AP News, France 24</td></tr>
+      <tr><td>Finance</td><td><code>CoinGecko + Alpha Vantage</code></td><td>Crypto prices + stock indices, commodities, defense sector</td></tr>
+      <tr><td>Conflicts</td><td><code>ACLED API</code></td><td>Armed Conflict Location & Event Data with static zone definitions</td></tr>
+      <tr><td>Caching</td><td><code>In-memory TTL cache</code></td><td>Per-route caching (30s-5min), no Redis dependency</td></tr>
+      <tr><td>Deploy</td><td><code>Vercel</code></td><td>Auto-deploy on push</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Data Sources</h2>
+
+    <table>
+      <tr><th>Source</th><th>Method</th><th>Cache TTL</th><th>Data Type</th></tr>
+      <tr><td>GNews</td><td>REST API</td><td>60s</td><td>Categorized news articles</td></tr>
+      <tr><td>Reuters, BBC, Al Jazeera, AP, France 24</td><td>RSS feeds</td><td>60s</td><td>World news headlines</td></tr>
+      <tr><td>CoinGecko</td><td>REST API</td><td>30s</td><td>Bitcoin, Ethereum prices + sparklines</td></tr>
+      <tr><td>Alpha Vantage</td><td>REST API</td><td>30s</td><td>S&P 500, NASDAQ, FTSE, Nikkei, Oil, Gold, Wheat</td></tr>
+      <tr><td>ACLED</td><td>REST API</td><td>300s</td><td>Conflict events with geolocation</td></tr>
+      <tr><td>YouTube Data API</td><td>REST API</td><td>300s</td><td>News videos + 3 live streams (Al Jazeera, France 24, DW)</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>src/
+  app/
+    page.tsx                  Client dashboard (WindowManager layout)
+    layout.tsx                Root layout (dark theme)
+    api/
+      news/route.ts           GNews + RSS aggregation + classification
+      finance/route.ts        CoinGecko + Alpha Vantage proxy
+      conflicts/route.ts      ACLED + static conflict definitions
+      videos/route.ts         YouTube Data API proxy
+      trends/route.ts         Keyword extraction from articles
+      stream/route.ts         SSE endpoint for real-time push
+      countries/route.ts      Country intelligence data
+      correlations/route.ts   Market-conflict correlation engine
+      health/route.ts         Data source health monitoring
+  components/
+    layout/                   TopBar, DashboardShell, WindowManager, ClockBar, WindowPanel, SystemStatus
+    map/                      WorldMap (dynamic import), ConflictZone, NewsMarker
+    news/                     NewsFeed, NewsCard, CategoryBadge, TopStories, DeepDive
+    conflicts/                ConflictTracker, ConflictCard, ConflictDetail, ConflictTimeline
+    finance/                  FinancePanel, AssetCard, SparklineChart, MarketTicker
+    video/                    VideoSection, LiveStream, VideoCarousel
+    trends/                   TrendingTopics, RisingStories
+    geopolitics/              RelationshipMatrix, MatrixCell, SanctionsTracker, RelationshipDetail
+    countries/                CountryReport, CountryMetrics, CountrySelector, PowerIndex, ThreatLevel
+    alerts/                   AlertSystem, AlertConfig
+    intel/                    IntelLinks
+    timeline/                 StrategicTimeline, TimelineEvent
+    system/                   DataSourceHealth
+    ui/                       shadcn primitives (card, badge, tabs, button, tooltip, separator, scroll-area)
+  lib/
+    api/                      cache.ts, classify.ts, correlations.ts, deep-dive.ts
+    types/                    NewsArticle, Conflict, FinancialAsset, Personality, AlertRule, etc.
+    store/                    Zustand store (dashboard state + actions), alerts store
+    hooks/                    useDashboardData, usePersonalityFilter, useLayoutPersist
+    constants/                API config, RSS feeds, conflict zones, personalities, tracked assets</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Graceful Degradation by Design</h3>
+    <div class="highlight-box success">
+      <p><strong>Every data source can fail independently without breaking the dashboard.</strong> Missing API keys trigger fallback to RSS feeds or mock data. The cache layer ensures stale data is served while a source is down. SSE failures degrade to polling. The system health panel shows exactly which sources are active, stale, or errored.</p>
+    </div>
+
+    <h3>Personality-Driven Curation</h3>
+    <p>The same 50+ articles are re-ranked by multiplying each article's category against a personality's weight vector (7 categories, each weighted 1-10). Switching from War Room to Futurist completely reshuffles the feed without refetching data. The accent color, icon, and tone of the entire UI shift with each personality.</p>
+
+    <h3>Conflict-Market Correlations</h3>
+    <div class="highlight-box">
+      <p>The correlation engine links conflict events to financial asset movements. When the Ukraine conflict escalates, it highlights Wheat and Natural Gas price spikes. When Middle East tensions rise, Oil futures get flagged. This cross-domain intelligence is what makes WorldPulse more than a news reader.</p>
+    </div>
+
+    <h3>Window Manager</h3>
+    <p>The layout uses a custom WindowManager component where each panel (map, news, conflicts, finance, video, trends, geopolitics, countries) is independently positionable. Layout state persists via <code>useLayoutPersist</code> hook to localStorage, so your preferred arrangement survives page refreshes.</p>
+
+    <h3>7 Active Conflicts Tracked</h3>
+    <p>Static conflict definitions (Ukraine, Gaza, Sudan, Myanmar, Ethiopia, DRC, Syria) are enriched in real-time with ACLED event data. Each conflict has bounds for map zooming, status tracking (active/escalating/de-escalating/ceasefire/frozen), party lists, and a timeline of events.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Data sources</td><td>6+ (GNews, 5 RSS feeds, CoinGecko, Alpha Vantage, ACLED, YouTube)</td></tr>
+      <tr><td>API proxy routes</td><td>9 (news, finance, conflicts, videos, trends, stream, countries, correlations, health)</td></tr>
+      <tr><td>Editorial personalities</td><td>4 (War Room, Analyst, Global Citizen, Futurist)</td></tr>
+      <tr><td>News categories</td><td>7 (conflict, politics, economy, tech, climate, humanitarian, military)</td></tr>
+      <tr><td>Active conflicts tracked</td><td>7 (Ukraine, Gaza, Sudan, Myanmar, Ethiopia, DRC, Syria)</td></tr>
+      <tr><td>Financial assets tracked</td><td>13 (4 indices, 4 commodities, 2 crypto, 3 defense stocks)</td></tr>
+      <tr><td>Live streams</td><td>3 (Al Jazeera, France 24, DW News)</td></tr>
+      <tr><td>Source files</td><td>77 TypeScript modules</td></tr>
+      <tr><td>Component categories</td><td>13 (layout, map, news, conflicts, finance, video, trends, geopolitics, countries, alerts, intel, timeline, system)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

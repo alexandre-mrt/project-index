@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suibotics Projects — Project Report</title>
+  <style>
+    :root { --bg: #0a0a0f; --surface: #13131a; --surface-hover: #1a1a25; --border: #2a2a3a; --text: #e4e4ef; --text-muted: #8888a0; --accent: #6366f1; --accent-soft: rgba(99,102,241,0.15); --green: #22c55e; --green-soft: rgba(34,197,94,0.15); --orange: #f59e0b; --orange-soft: rgba(245,158,11,0.15); --pink: #ec4899; --cyan: #06b6d4; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; line-height: 1.6; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; margin: 1rem 0 0.5rem; }
+    .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
+    h2 { font-size: 1.3rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 1.05rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
+    p { color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.92rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.3rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; overflow-x: auto; margin: 1rem 0; font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; font-size: 0.82rem; color: var(--green); line-height: 1.5; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; color: var(--green); }
+    strong { color: var(--text); }
+    .tag { display: inline-block; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 500; margin-right: 0.3rem; }
+    .tag-lang { background: var(--accent-soft); color: var(--accent); }
+    .tag-blockchain { background: var(--green-soft); color: var(--green); }
+    .tag-infra { background: var(--orange-soft); color: var(--orange); }
+    .highlight-box { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1rem 0; }
+    .highlight-box p { margin-bottom: 0; }
+    .stats { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; text-align: center; min-width: 100px; }
+    .stat-value { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Suibotics Projects</h1>
+    <p class="subtitle">Blockchain-powered robot rental, multiplayer control, and action queue tokenomics on Sui</p>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Sub-Projects</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">8</div>
+        <div class="stat-label">Move Contracts</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">2</div>
+        <div class="stat-label">Custom Tokens</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">2</div>
+        <div class="stat-label">React Frontends</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">Ed25519</div>
+        <div class="stat-label">Command Auth</div>
+      </div>
+    </div>
+
+    <span class="tag tag-lang">Sui Move</span>
+    <span class="tag tag-lang">TypeScript</span>
+    <span class="tag tag-lang">React</span>
+    <span class="tag tag-blockchain">Sui Testnet</span>
+    <span class="tag tag-blockchain">TREAT Token</span>
+    <span class="tag tag-blockchain">COOKIE Token</span>
+    <span class="tag tag-infra">Bun</span>
+    <span class="tag tag-infra">Vite</span>
+    <span class="tag tag-infra">WebSocket</span>
+
+    <!-- The Challenge -->
+    <h2>The Challenge</h2>
+
+    <p>Physical robots today operate in isolated silos. Renting a robot requires centralized middlemen. Coordinating multiple users controlling the same robot has no trustless mechanism. And there is no on-chain incentive layer to prioritize, queue, or pay for robot actions.</p>
+
+    <p>The core problem is <strong>trustless robot economies</strong>. How do you rent a robot without trusting a platform? How do you fairly share control among multiple users? How do you create economic incentives around robot actions without a central authority?</p>
+
+    <div class="highlight-box">
+      <p><strong>Suibotics solves this with three interlocking Sui Move projects.</strong> A rental marketplace with escrow and receipt NFTs. A multiplayer controller with an on-chain fairness queue. And a token-gated action queue that creates economic incentives for robot task prioritization.</p>
+    </div>
+
+    <!-- Why It Matters -->
+    <h2>Why It Matters</h2>
+
+    <h3>DePIN Meets Robotics</h3>
+    <p>Decentralized Physical Infrastructure Networks (DePIN) have exploded for sensors, wireless, and compute. Robotics is the next frontier: machines that physically interact with the world, generating real economic value. Suibotics provides the on-chain primitives to make robot economies permissionless.</p>
+
+    <ul>
+      <li><strong>Robot rental as a service</strong> &mdash; Owners list robots with hourly rates, renters pay in TREAT tokens with automatic escrow and pro-rata refunds. No platform fee, no middleman.</li>
+      <li><strong>Fair multiplayer access</strong> &mdash; Multiple users queue for robot control with on-chain turn enforcement. Timeouts prevent hogging. Every control transfer is an auditable on-chain event.</li>
+      <li><strong>Tokenized action queues</strong> &mdash; Users pay COOKIE tokens to enqueue robot actions. The queue creates a market: higher demand means more fees for operators. Actions are dequeued and executed with full on-chain history.</li>
+      <li><strong>Composability</strong> &mdash; All three projects share the same object model. A rented robot could use the fairness queue for multi-user sessions, with actions paid via the token queue.</li>
+    </ul>
+
+    <!-- How It Works -->
+    <h2>How It Works</h2>
+
+    <h3>System Architecture</h3>
+<pre>
+  +---------------------------+     +-------------------------------+     +---------------------------+
+  |   Robot Rental Platform   |     |  Multiplayer Robot Controller |     |  Action Queue Tokenomics  |
+  |                           |     |                               |     |                           |
+  |  +-------------------+    |     |  +---------------------+      |     |  +-------------------+    |
+  |  | TREAT Token       |    |     |  | FairnessQueue       |      |     |  | COOKIE Token      |    |
+  |  | (faucet, 9 dec)   |    |     |  | (join/leave/take/   |      |     |  | (faucet, 9 dec)   |    |
+  |  +-------------------+    |     |  |  release control)   |      |     |  +-------------------+    |
+  |  | Robot Registry    |    |     |  +---------------------+      |     |  | Action Queue      |    |
+  |  | (register, rate,  |    |     |           |                   |     |  | (enqueue/dequeue, |    |
+  |  |  availability)    |    |     |           | auth check        |     |  |  fee collection)  |    |
+  |  +-------------------+    |     |           v                   |     |  +-------------------+    |
+  |  | Rental Escrow     |    |     |  +---------------------+      |     |           |              |
+  |  | (create/end,      |    |     |  | RobotState          |      |     |           | pay COOKIE   |
+  |  |  receipt NFTs)    |    |     |  | (x,y, direction,    |      |     |           v              |
+  |  +-------------------+    |     |  |  6 commands, grid)  |      |     |  +-------------------+    |
+  |  | Command Auth      |    |     |  +---------------------+      |     |  | History + Admin   |    |
+  |  | (Ed25519 verify,  |    |     |           |                   |     |  | (withdraw fees,   |    |
+  |  |  challenge-resp)  |    |     |           | WebSocket         |     |  |  1000-entry log)  |    |
+  |  +-------------------+    |     |           v                   |     |  +-------------------+    |
+  |           |               |     |  +---------------------+      |     |           |              |
+  |    React + Vite + dapp-kit|     |  | Bun WS Server       |      |     |      TS SDK Client      |
+  |    Bun HTTP Server        |     |  | React + Vite + d-kit|      |     |      Vitest Tests       |
+  +---------------------------+     +-------------------------------+     +---------------------------+
+</pre>
+
+    <h3>Rental Flow</h3>
+<pre>
+  Owner                          Sui Chain                        Renter
+    |                                |                               |
+    |-- register_robot(name,rate) --&gt;|                               |
+    |                                |&lt;-- claim_faucet() -----------|
+    |                                |--- TREAT tokens -------------&gt;|
+    |                                |                               |
+    |                                |&lt;-- create_rental(robot,hrs) -|
+    |                                |    [escrow TREAT, lock robot] |
+    |                                |--- RentalCap ---------------&gt;|
+    |                                |                               |
+    |                                |&lt;-- request_challenge() ------|
+    |                                |--- 32-byte challenge -------&gt;|
+    |                                |&lt;-- verify_and_execute(sig) --|
+    |                                |    [Ed25519 verify on-chain] |
+    |                                |                               |
+    |                                |&lt;-- end_rental(cap) ----------|
+    |&lt;-- TREAT payment -------------|    [pro-rata cost calc]       |
+    |                                |--- TREAT refund + Receipt --&gt;|
+</pre>
+
+    <h3>Fairness Queue Flow</h3>
+<pre>
+  Player A           Player B           Sui Chain           Robot
+     |                   |                  |                  |
+     |-- join_queue() --&gt;|                  |                  |
+     |                   |-- join_queue() -&gt;|                  |
+     |                   |                  |                  |
+     |-- take_control(clock) -------------&gt;|                  |
+     |    [removes from queue pos 0]       |                  |
+     |                                      |                  |
+     |-- send_command(MOVE_FORWARD, 5) ---&gt;|-- update state -&gt;|
+     |-- send_command(TURN_LEFT) ---------&gt;|-- update state -&gt;|
+     |                                      |                  |
+     |-- release_control() --------------&gt;|                  |
+     |                   |                  |                  |
+     |                   |-- take_control() |                  |
+     |                   |    [60s timeout] |                  |
+</pre>
+
+    <!-- Smart Contracts -->
+    <h2>Smart Contracts</h2>
+
+    <h3>Robot Rental Platform (4 modules)</h3>
+    <ul>
+      <li><strong>treat_token</strong> &mdash; Custom fungible token with 9 decimals. Shared <code>FaucetState</code> with rate-limited minting (5 claims per epoch, 100 TREAT each). Treasury cap locked in faucet.</li>
+      <li><strong>robot_registry</strong> &mdash; Shared registry mapping robot IDs to <code>RobotInfo</code> (name, capabilities, hourly rate, owner, availability, earnings). <code>OwnerCap</code> pattern for access control. Package-visible helpers for escrow integration.</li>
+      <li><strong>rental_escrow</strong> &mdash; The core marketplace. Creates rentals with TREAT payment held in escrow. Pro-rata cost calculation (ceiling to nearest hour). Automatic refund of unused time. Mints <code>RentalReceipt</code> NFTs on completion. Admin force-end with full refund.</li>
+      <li><strong>command_auth</strong> &mdash; Ed25519 challenge-response authentication. Generates 32-byte challenges (8-byte nonce + 24-byte address prefix). On-chain signature verification gates robot command execution. One-time challenge consumption prevents replay.</li>
+    </ul>
+
+    <h3>Multiplayer Robot Controller (2 modules)</h3>
+    <ul>
+      <li><strong>fairness_queue</strong> &mdash; On-chain FIFO queue (max 100 players). Turn-based control with configurable duration (default 60s). Voluntary release or admin force-release on timeout. Full event emission for every state transition.</li>
+      <li><strong>robot_state</strong> &mdash; Shared object tracking position (x,y on 100x100 grid), direction (N/E/S/W), and status (idle/walking/sitting/standing/waving). 6 command types with grid-wrapping movement. Only the current controller (verified via fairness queue) can send commands.</li>
+    </ul>
+
+    <h3>Action Queue Tokenomics (2 modules)</h3>
+    <ul>
+      <li><strong>cookie_token</strong> &mdash; COOKIE token with 9 decimals. Faucet with 3 claims per epoch (10 COOKIE each). Time-based epoch calculation (86,400,000ms per epoch). Shared treasury cap.</li>
+      <li><strong>action_queue</strong> &mdash; Shared queue where users pay 1 COOKIE per action. 5 action types with up to 256 bytes of parameters. Admin dequeues and executes. 1000-entry history with automatic rotation. Fee withdrawal for queue operator.</li>
+    </ul>
+
+    <!-- Tech Stack -->
+    <h2>Tech Stack</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; margin: 1rem 0;">
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Smart Contracts</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">Sui Move 2024 (8 modules across 3 packages, Ed25519 crypto, Table-based storage)</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Tokens</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">TREAT (rental payments) + COOKIE (action fees), both 9 decimals with rate-limited faucets</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Frontends</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">React + Vite + Tailwind + @mysten/dapp-kit (rental marketplace, multiplayer controller)</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Servers</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">Bun HTTP (rental API) + Bun WebSocket (robot simulator, real-time state sync)</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">TS Client</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">@mysten/sui SDK, Vitest tests (action queue integration)</div>
+      <div style="color: var(--text); font-size: 0.92rem; font-weight: 600;">Tooling</div>
+      <div style="color: var(--text-muted); font-size: 0.92rem;">Bun (runtime + packages), Biome (lint/format), Sui CLI</div>
+    </div>
+
+    <!-- Key Insights -->
+    <h2>Key Insights</h2>
+
+    <div class="highlight-box">
+      <p><strong>Escrow with pro-rata refunds is the right rental primitive.</strong> The rental escrow locks the maximum cost upfront and refunds unused time on early return, calculated to the nearest hour ceiling. This protects both parties: the owner is guaranteed payment, and the renter never overpays. Receipt NFTs provide an immutable rental history.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Ed25519 challenge-response on-chain is elegant for robot command auth.</strong> Instead of relying on wallet signatures alone, the command_auth module issues 32-byte challenges and verifies Ed25519 signatures on-chain. Each challenge is consumed after use, preventing replay attacks. This pattern works for any IoT device that needs cryptographic command authorization.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>On-chain fairness queues solve the shared-robot problem.</strong> When multiple users want to control the same robot, the fairness queue enforces FIFO ordering with time-limited turns. The 60-second default with admin force-release handles both voluntary handoffs and AFK users. Every control transfer is an on-chain event, making the entire history auditable.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Token-gated action queues create natural market dynamics.</strong> Paying 1 COOKIE per action creates backpressure: when the queue is long, users think twice about low-priority actions. The admin dequeue pattern separates payment (on-chain) from execution (off-chain), which is the right split for physical robot actions that cannot be verified on-chain.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>The three projects are composable by design.</strong> A robot registered in the rental platform could use the fairness queue for multi-user sessions during a rental period, with individual actions paid via the COOKIE token queue. The shared Sui object model and capability pattern make cross-project integration straightforward.</p>
+    </div>
+
+  </div>
+</body>
+</html>

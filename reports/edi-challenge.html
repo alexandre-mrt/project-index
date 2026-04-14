@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDI Challenge — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>EDI Challenge</h1>
+    <p class="subtitle">Serverless NFT badge minter on Polygon with dynamic SVG generation and IPFS storage</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Next.js 16</span>
+      <span class="tag cyan">Solidity</span>
+      <span class="tag orange">Polygon</span>
+      <span class="tag">ERC-721</span>
+      <span class="tag green">OpenZeppelin 5</span>
+      <span class="tag">Hardhat</span>
+      <span class="tag cyan">Pinata/IPFS</span>
+      <span class="tag orange">Ethers.js v6</span>
+      <span class="tag red">ELCA Branding</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Build a public web app that mints personalized NFT badges to any wallet, with zero wallet connection required.</strong></p>
+      <p>The ELCA EDI Challenge required creating a system where non-crypto users can fill a form and receive an ERC-721 NFT badge on Polygon. The user provides their name, project, dates, and a photo. The system generates a branded SVG badge, uploads it to IPFS, and mints the NFT to any wallet address. No MetaMask, no gas fees for the user, no blockchain knowledge needed.</p>
+    </div>
+
+    <p>This is a gasless, server-side minting architecture. The Next.js API route holds the contract owner's private key and pays gas on behalf of the user. The badge is a dynamically generated SVG with ELCA's branding (orange-red accent, Montserrat font, profile photo), uploaded to Pinata IPFS alongside ERC-721 metadata. The contract is deployed on both Polygon Amoy testnet and mainnet, with a UI toggle to switch networks.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Zero-friction minting</strong>: users fill a form and receive an NFT. No wallet setup, no gas payment, no transaction signing. The server handles everything.</li>
+      <li><strong>Dynamic SVG badges</strong>: each badge is a unique SVG generated from form data, with gradient backgrounds, profile photos, and ELCA branding. Uploaded as the NFT image to IPFS.</li>
+      <li><strong>IPFS permanence</strong>: both the SVG badge image and ERC-721 JSON metadata are pinned on Pinata, ensuring the NFT's content survives independently of any server.</li>
+      <li><strong>Dual network support</strong>: testnet (Amoy) for demo/testing, mainnet (Polygon) for production. Users toggle between them in the UI.</li>
+      <li><strong>Security hardened</strong>: input sanitization, rate limiting (IP-based), wallet address validation via ethers.js, and XSS-safe SVG generation.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Minting Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="dim">USER (Browser)</span>                        <span class="dim">SERVER (Next.js API)</span>                  <span class="dim">BLOCKCHAIN</span>
+
++---------------------+              +---------------------------+        +-----------------+
+| <span class="hi">BadgeForm</span>           |              | <span class="cyn">POST /api/mint</span>             |        | <span class="grn">Polygon</span>         |
+|                     |              |                           |        | (Amoy/Mainnet)  |
+| First Name          |              | 1. Rate limit (IP)        |        +-----------------+
+| Last Name           |              | 2. Sanitize inputs        |              ^
+| Project             |--POST------->| 3. Validate wallet addr   |              |
+| Start/End Date      |              | 4. Upload photo to IPFS   |              |
+| Photo (crop/resize) |              | 5. Generate SVG badge     |        +-----------------+
+| Wallet Address      |              | 6. Upload SVG to IPFS     |        | <span class="orn">EDIBadge.sol</span>    |
+| Network (toggle)    |              | 7. Build ERC-721 metadata |        | mintBadge(      |
++---------------------+              | 8. Upload metadata IPFS   |------->|   to, uri       |
+                                     | 9. Call mintBadge()       |        | ) onlyOwner     |
+         <span class="dim">response</span>                  |                           |        +-----------------+
+                                     +---------------------------+
++---------------------+                       |
+| <span class="grn">MintResult</span>          |<------response----------+
+| Token ID: #42       |
+| TX Hash: 0xabc...   |
+| [View on PolygonScan]|
+| [View on OpenSea]   |
++---------------------+</code></div>
+
+    <h3>SVG Badge Generation</h3>
+    <div class="ascii-diagram"><code><span class="hi">generateBadgeSVG(data, network)</span>
+  |
+  |  600x400 SVG viewBox
+  v
++-----------------------------------------------------------+
+| <span class="orn">##############################</span>  <span class="dim">(#FF483A accent bar)</span>      |
+|                                                           |
+| <span class="dim">EDI BADGE</span>                             +----------+    |
+|                                        |  <span class="cyn">Profile</span>   |    |
+| <span class="hi">Alexandre Mourot</span>                      |  <span class="cyn">Photo</span>    |    |
+| <span class="dim">Guest Badge Project</span>                   | <span class="dim">(clipped</span>  |    |
+|                                        |  <span class="dim">circle)</span>  |    |
+| Start:  2026-04-20                     +----------+    |
+| End:    2026-07-20                                      |
+|                                                           |
+| <span class="dim">Full-stack development for ELCA CDD team</span>               |
+|                                                           |
+| <span class="grn">Polygon Amoy</span>  <span class="dim">|  Verified On-Chain</span>                    |
++-----------------------------------------------------------+
+  |
+  |  escapeXml() for XSS safety
+  |  truncate() for overflow protection
+  v
+<span class="grn">SVG Buffer</span> -> Pinata IPFS upload -> imageUrl</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Frontend</td><td><code>Next.js 16 (App Router)</code></td><td>Form UI, badge preview, mint result display</td></tr>
+      <tr><td>Styling</td><td><code>Tailwind CSS 4</code></td><td>ELCA branding (#FF483A primary, Montserrat font)</td></tr>
+      <tr><td>Smart Contract</td><td><code>Solidity 0.8.24</code></td><td>ERC-721 with onlyOwner mintBadge()</td></tr>
+      <tr><td>Contract Libs</td><td><code>OpenZeppelin 5</code></td><td>ERC721, ERC721URIStorage, Ownable</td></tr>
+      <tr><td>Deploy</td><td><code>Hardhat 2</code></td><td>Contract compilation and deployment</td></tr>
+      <tr><td>Blockchain</td><td><code>Ethers.js v6</code></td><td>Transaction building, wallet validation, RPC calls</td></tr>
+      <tr><td>Storage</td><td><code>Pinata (IPFS)</code></td><td>SVG badge image + ERC-721 JSON metadata pinning</td></tr>
+      <tr><td>Network</td><td><code>Polygon Amoy + Mainnet</code></td><td>Testnet for demo, mainnet for production</td></tr>
+      <tr><td>Image</td><td><code>react-image-crop</code></td><td>Client-side photo crop and resize before upload</td></tr>
+      <tr><td>Hosting</td><td><code>Vercel</code></td><td>Frontend deployment with serverless API routes</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Smart Contract</h2>
+
+    <div class="highlight-box">
+      <p><strong>EDIBadge.sol</strong>: minimal ERC-721 with URI storage. The <code>mintBadge(address to, string uri)</code> function is restricted to <code>onlyOwner</code>, ensuring only the server can mint. Each badge gets a unique token ID (auto-incrementing <code>_nextTokenId</code>). A <code>BadgeMinted</code> event is emitted with the token ID, recipient, and metadata URI for off-chain indexing. The <code>totalSupply()</code> view function exposes the current count.</p>
+    </div>
+
+    <pre><code>contract EDIBadge is ERC721, ERC721URIStorage, Ownable {
+    uint256 private _nextTokenId;
+
+    event BadgeMinted(uint256 indexed tokenId, address indexed recipient, string tokenURI);
+
+    constructor() ERC721("EDI Badge", "EDIB") Ownable(msg.sender) {}
+
+    function mintBadge(address to, string memory uri) public onlyOwner returns (uint256) {
+        uint256 tokenId = _nextTokenId++;
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, uri);
+        emit BadgeMinted(tokenId, to, uri);
+        return tokenId;
+    }
+
+    function totalSupply() public view returns (uint256) { return _nextTokenId; }
+}</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>contracts/
+  EDIBadge.sol          ERC-721 with onlyOwner mint + URI storage
+scripts/
+  deploy.js             Hardhat deployment script (amoy / polygon)
+src/
+  app/
+    page.tsx             Main form page (BadgeForm + BadgePreview)
+    lookup/page.tsx      Badge lookup by token ID
+    api/
+      mint/route.ts      Server-side minting endpoint (7-step pipeline)
+      lookup/route.ts    Token metadata lookup endpoint
+  components/
+    BadgeForm.tsx         Form with validation + network toggle
+    BadgePreview.tsx      Live SVG preview (updates as user types)
+    BadgeRevealAnimation.tsx  Post-mint celebration animation
+    NetworkSwitch.tsx     Amoy / Mainnet toggle
+    MintResult.tsx        Token ID, TX hash, explorer + OpenSea links
+    ImageUpload.tsx       Photo upload with crop/resize
+    ErrorBoundary.tsx     Graceful error handling
+  lib/
+    badge-generator.ts   Dynamic SVG generation (600x400, ELCA branding)
+    contract.ts          Ethers.js contract interaction (mint, lookup)
+    pinata.ts            IPFS upload (image + JSON metadata)
+    rate-limit.ts        IP-based rate limiting
+    sanitize.ts          Input sanitization (XSS, length, format)
+    types.ts             BadgeData, MintResponse, NetworkType</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Server-Side Minting Eliminates UX Friction</h3>
+    <div class="highlight-box success">
+      <p><strong>The user never interacts with the blockchain.</strong> The Next.js API route holds the contract owner's private key (via environment variable) and calls <code>mintBadge()</code> directly. The user only fills a form. This design trades decentralization for accessibility: non-crypto users can receive NFTs without understanding gas, wallets, or transaction signing.</p>
+    </div>
+
+    <h3>7-Step Minting Pipeline</h3>
+    <p>The <code>/api/mint</code> route executes 7 sequential steps: (1) rate limit check, (2) input sanitization, (3) wallet address validation via <code>ethers.isAddress()</code>, (4) photo upload to Pinata if provided as data URL, (5) SVG badge generation, (6) badge + metadata upload to IPFS, (7) on-chain mint. Each step fails fast with an explicit error message. The response includes the token ID, transaction hash, and explorer URL.</p>
+
+    <h3>Defense in Depth</h3>
+    <div class="highlight-box">
+      <p>Multiple security layers protect the minting endpoint: IP-based rate limiting prevents spam, input sanitization strips dangerous characters and enforces length limits, XML escaping in SVG generation prevents XSS injection, and <code>ethers.isAddress()</code> validates wallet addresses before any on-chain call. The contract's <code>onlyOwner</code> modifier ensures only the server can mint.</p>
+    </div>
+
+    <h3>Live Badge Preview</h3>
+    <p>The <code>BadgePreview</code> component renders the exact same SVG that will be minted, updating in real-time as the user types. This WYSIWYG approach builds confidence: what you see in the preview is exactly what gets pinned to IPFS and linked to the NFT.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Source files</td><td>18 TypeScript/TSX + 1 Solidity contract</td></tr>
+      <tr><td>React components</td><td>7 (form, preview, animation, network switch, result, upload, error)</td></tr>
+      <tr><td>API routes</td><td>2 (mint, lookup)</td></tr>
+      <tr><td>Minting pipeline steps</td><td>7 (rate limit, sanitize, validate, upload photo, generate SVG, upload metadata, mint)</td></tr>
+      <tr><td>Badge SVG dimensions</td><td>600x400 with gradient background</td></tr>
+      <tr><td>Networks</td><td>2 (Polygon Amoy testnet + Mainnet)</td></tr>
+      <tr><td>Contract standard</td><td>ERC-721 (OpenZeppelin 5)</td></tr>
+      <tr><td>Storage</td><td>Pinata IPFS (image + metadata)</td></tr>
+      <tr><td>Deployment</td><td>Vercel (frontend) + Hardhat (contract)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

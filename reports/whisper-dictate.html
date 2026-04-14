@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whisper Dictate — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+
+    .highlight-box.warning {
+      border-left-color: var(--orange);
+    }
+    .highlight-box.success {
+      border-left-color: var(--green);
+    }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .red { color: var(--red); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Whisper Dictate</h1>
+    <p class="subtitle">100% local voice-to-text for macOS, powered by Whisper on Apple Silicon</p>
+
+    <div class="tags">
+      <span class="tag">Python</span>
+      <span class="tag green">MLX Whisper</span>
+      <span class="tag cyan">Apple Silicon</span>
+      <span class="tag orange">macOS APIs</span>
+      <span class="tag">PyAudio</span>
+      <span class="tag">Quartz</span>
+      <span class="tag">AppKit</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Cloud-based dictation sends every word you say to external servers.</strong></p>
+      <p>Slow round-trips, privacy exposure, and zero functionality without an internet connection. Your voice data lives on someone else's infrastructure.</p>
+    </div>
+
+    <p>macOS built-in dictation and services like Google Voice require a network connection and route audio through cloud APIs. For developers, writers, and anyone handling sensitive information, this is a non-starter. Latency varies with connection quality, and there is no guarantee about how voice data is stored or processed server-side.</p>
+
+    <p>The goal: hold a key, speak, release, and have the transcribed text appear instantly at your cursor. No network. No cloud. No data leaving your machine.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Privacy by design</strong> -- audio never leaves your Mac. No server, no API key, no data retention policy to worry about.</li>
+      <li><strong>Apple Silicon optimization</strong> -- MLX Whisper runs inference on the Apple Neural Engine, making transcription faster than real-time on M-series chips.</li>
+      <li><strong>Works offline</strong> -- airplane mode, no WiFi, VPN down. Dictation keeps working because the model runs locally.</li>
+      <li><strong>System-wide</strong> -- global hotkey works in any app. Hold fn in your IDE, browser, or terminal and speak.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <div class="ascii-diagram"><code><span class="dim">User holds hotkey (fn / esc / any configured key)</span>
+
+  <span class="orn">HOLD</span>                          <span class="orn">RELEASE</span>
+    |                               |
+    v                               v
++----------+    +----------+    +-----------+    +-------------+
+| <span class="red">Record</span>   |--->| <span class="hi">Whisper</span>  |--->| <span class="grn">Clipboard</span> |--->| <span class="grn">Auto-Paste</span>  |
+| PyAudio  |    | MLX/GPU  |    | pyperclip |    | osascript   |
+| 16kHz    |    | on-device|    |           |    | Cmd+V       |
++----------+    +----------+    +-----------+    +-------------+
+    |                                                   |
+    v                                                   v
++----------+                                    +-------------+
+| <span class="orn">Overlay</span>  |                                    | Text appears |
+| AppKit   |                                    | at cursor    |
+| pulsing  |                                    +-------------+
++----------+
+
+<span class="dim">Audio pipeline:</span>
+  Microphone --> PyAudio (16kHz mono) --> numpy float32 --> MLX Whisper
+                                                             |
+                                                             v
+                                                     <span class="grn">"transcribed text"</span></code></div>
+
+    <h3>Two Operating Modes</h3>
+
+    <table>
+      <tr><th>Mode</th><th>Hotkey</th><th>Permissions</th><th>Scope</th></tr>
+      <tr><td><strong>Terminal</strong></td><td>Hold SPACE</td><td>None</td><td>Active terminal only</td></tr>
+      <tr><td><strong>Global</strong></td><td>fn / esc / configurable</td><td>Accessibility + Input Monitoring</td><td>Any app, system-wide</td></tr>
+    </table>
+
+    <p>Terminal mode uses raw stdin key detection with no special permissions. Global mode uses either a <strong>Quartz event tap</strong> (for the fn/Globe key, detecting the <code>NSEventModifierFlagFunction</code> flag bit) or <strong>pynput</strong> keyboard listeners (for all other keys).</p>
+
+    <h3>Overlay UI</h3>
+
+    <div class="highlight-box">
+      <p>A native <strong>AppKit floating window</strong> appears at the top-center of the screen while recording. Borderless, translucent, with a pulsing red dot and "Listening..." label. It floats above all windows, ignores mouse events, and joins all Spaces. A background thread watches for parent process death to auto-terminate.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Transcription</td><td><code>mlx-whisper</code></td><td>Whisper inference on Apple Neural Engine via MLX</td></tr>
+      <tr><td>Transcription (alt)</td><td><code>faster-whisper</code></td><td>CUDA/CPU fallback for non-Apple hardware</td></tr>
+      <tr><td>Audio capture</td><td><code>PyAudio</code> + <code>PortAudio</code></td><td>16kHz mono recording with CoreAudio</td></tr>
+      <tr><td>Hotkey (fn)</td><td><code>Quartz</code> event tap</td><td>Low-level macOS event monitoring for fn/Globe key</td></tr>
+      <tr><td>Hotkey (other)</td><td><code>pynput</code></td><td>Cross-platform keyboard listener for non-fn keys</td></tr>
+      <tr><td>Text injection</td><td><code>pyperclip</code> + <code>osascript</code></td><td>Copy to clipboard then simulate Cmd+V</td></tr>
+      <tr><td>Overlay</td><td><code>AppKit</code> (PyObjC)</td><td>Native floating window with pulsing indicator</td></tr>
+      <tr><td>Audio feedback</td><td><code>afplay</code></td><td>Start/stop sounds via macOS audio</td></tr>
+      <tr><td>Config</td><td><code>PyYAML</code></td><td>YAML-based configuration with sensible defaults</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <div class="ascii-diagram"><code><span class="dim">
++------------------+     +-------------------+     +------------------+
+|   <span class="hi">dictate.py</span>     |     |   <span class="hi">overlay.py</span>      |     |  <span class="hi">config.yaml</span>    |
+|                  |     |                   |     |                  |
+| AudioRecorder    |     | OverlayWindow     |     | backend, model   |
+| MLXTranscriber   |     | RoundedView       |     | language, hotkey |
+| FasterWhisper..  |     | pulse animation   |     | auto_paste       |
+| DictateApp       |     | parent watcher    |     | sound, overlay   |
+| inject_text()    |     +-------------------+     +------------------+
+| play_sound()     |
++------------------+     +-------------------+     +------------------+
+                         |   <span class="orn">setup.sh</span>        |     | <span class="orn">download-model</span>  |
+                         |                   |     |   <span class="orn">.sh</span>           |
+                         | PortAudio install |     | HuggingFace     |
+                         | venv + pip        |     | model download  |
+                         | mic test          |     | MLX or NVIDIA   |
+                         +-------------------+     +------------------+
+</span></code></div>
+
+    <h3>File Structure</h3>
+    <pre><code>whisper-dictate/
+  dictate.py           # Core: recording, transcription, hotkey, text injection (920 lines)
+  overlay.py           # Native AppKit floating overlay (131 lines)
+  config.yaml          # User configuration
+  setup.sh             # One-command install (PortAudio, venv, deps, mic test)
+  download-model.sh    # Interactive model downloader (tiny to large-v3-turbo)
+  test_e2e.py          # E2E test with Quartz key simulation
+  requirements.txt     # Python dependencies
+  sounds/              # start.wav, stop.wav
+</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Apple Silicon Acceleration</h3>
+    <div class="highlight-box success">
+      <p><strong>MLX Whisper runs on the Apple Neural Engine</strong>, not just CPU. The <code>mlx-community</code> models are quantized and optimized for M-series chips. The <code>whisper-small-mlx</code> model (~500 MB) transcribes faster than real-time, typically processing 5 seconds of audio in under 1 second.</p>
+    </div>
+
+    <h3>The fn Key Problem</h3>
+    <div class="highlight-box">
+      <p>The fn/Globe key on Mac keyboards is not a regular key. It does not generate standard key press/release events. <code>pynput</code> cannot reliably detect it. The solution: a <strong>Quartz CGEventTap</strong> that monitors <code>kCGEventFlagsChanged</code> events and checks the <code>0x800000</code> (NX_SECONDARYFNMASK) flag bit. This gives true hold-to-talk behavior for the most natural hotkey on a Mac.</p>
+    </div>
+
+    <h3>CoreAudio Threading Constraint</h3>
+    <div class="highlight-box">
+      <p>macOS CoreAudio requires the audio stream to be <strong>opened on the main thread</strong>. The recorder opens the PyAudio stream on the calling thread, then spawns a background thread for the read loop. Violating this causes silent failures or crashes on macOS.</p>
+    </div>
+
+    <h3>Hotkey-Driven UX</h3>
+    <p>No GUI, no menubar app, no tray icon. The entire interaction is: hold a key, speak, release. Audio feedback (start/stop sounds) and a pulsing overlay provide confirmation. Text appears at the cursor via clipboard injection (<code>Cmd+V</code> simulated through <code>osascript</code>). A trailing space is appended by default for continuous dictation.</p>
+
+    <h3>Dual Backend Support</h3>
+    <p>MLX is the primary backend for Apple Silicon. For non-Apple hardware, <code>faster-whisper</code> provides CUDA GPU acceleration or CPU fallback with int8 quantization. Backend selection is a single config toggle.</p>
+
+    <h3>Model Flexibility</h3>
+    <p>Six model sizes from <code>tiny</code> (75 MB) to <code>large-v3-turbo</code> (1.6 GB). Models are downloaded from HuggingFace on first run or pre-downloaded locally via the interactive <code>download-model.sh</code> script. Supports 20+ languages with auto-detection, plus speech translation to English.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Core source</td><td>2 Python files (~1050 lines total)</td></tr>
+      <tr><td>Backends</td><td>MLX Whisper (Apple Silicon) + faster-whisper (CUDA/CPU)</td></tr>
+      <tr><td>Model sizes</td><td>6 options: tiny (75 MB) to large-v3 (3 GB)</td></tr>
+      <tr><td>Languages</td><td>20+ with auto-detection</td></tr>
+      <tr><td>Audio format</td><td>16kHz mono, 16-bit PCM</td></tr>
+      <tr><td>Hotkeys</td><td>fn, esc, ctrl, alt, shift, cmd, F1-F12, any character</td></tr>
+      <tr><td>Permissions</td><td>Terminal mode: none. Global: Accessibility + Input Monitoring</td></tr>
+      <tr><td>Setup</td><td>Single <code>./setup.sh</code> command</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

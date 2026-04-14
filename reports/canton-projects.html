@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canton Projects — Ecosystem Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.12);
+      --orange: #f59e0b;
+      --orange-soft: rgba(245, 158, 11, 0.12);
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.10);
+      --cyan: #06b6d4;
+      --cyan-soft: rgba(6, 182, 212, 0.12);
+      --purple: #a855f7;
+      --purple-soft: rgba(168, 85, 247, 0.12);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); line-height: 1.55; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box.green { border-left-color: var(--green); background: var(--green-soft); }
+    .highlight-box.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .highlight-box.red { border-left-color: var(--red); background: var(--red-soft); }
+    .highlight-box.cyan { border-left-color: var(--cyan); background: var(--cyan-soft); }
+    .highlight-box p { margin-bottom: 0; }
+    .highlight-box strong { font-size: 0.85rem; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+    .tag.ts { background: var(--cyan-soft); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.25); }
+    .tag.daml { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.25); }
+    .tag.defi { background: var(--green-soft); color: var(--green); border: 1px solid rgba(34, 197, 94, 0.25); }
+    .tag.grants { background: var(--orange-soft); color: var(--orange); border: 1px solid rgba(245, 158, 11, 0.25); }
+    .tag.nextjs { background: var(--purple-soft); color: var(--purple); border: 1px solid rgba(168, 85, 247, 0.25); }
+    .tag.sdk { background: var(--red-soft); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.2); }
+    .tag.cli { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); border: 1px solid var(--border); }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.82rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+    }
+    .project-card h4 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+    .project-card p {
+      font-size: 0.78rem;
+      line-height: 1.45;
+      margin-bottom: 0;
+    }
+    .project-card .card-tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+    .card-tag.tools { color: var(--cyan); }
+    .card-tag.protocol { color: var(--green); }
+    .card-tag.infra { color: var(--orange); }
+
+    .stat-row {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+    }
+    .stat-box .num {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+    .stat-box .label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 600px) {
+      .project-grid { grid-template-columns: 1fr; }
+      .stat-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Canton Projects</h1>
+    <p class="subtitle">
+      8-project developer ecosystem for the Canton Network. SDK, reference dApps, compliance infra, and developer tooling with $155K-$375K in grant potential.
+    </p>
+
+    <div class="tags">
+      <span class="tag ts">TypeScript</span>
+      <span class="tag daml">DAML</span>
+      <span class="tag defi">DeFi</span>
+      <span class="tag nextjs">Next.js</span>
+      <span class="tag sdk">Canton SDK</span>
+      <span class="tag cli">CLI</span>
+      <span class="tag grants">Grants</span>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-box"><span class="num">8</span><span class="label">Projects</span></div>
+      <div class="stat-box"><span class="num">10.5K+</span><span class="label">Lines of Code</span></div>
+      <div class="stat-box"><span class="num">6</span><span class="label">Grant Proposals</span></div>
+      <div class="stat-box"><span class="num">$375K</span><span class="label">Max Grant Value</span></div>
+    </div>
+
+    <!-- THE CHALLENGE -->
+    <h2>The Challenge</h2>
+    <p>
+      Canton Network is a Goldman Sachs-backed enterprise blockchain processing <strong>$300B+ daily volume</strong> across institutions like DTCC, JPMorgan, and Broadridge. Yet its developer ecosystem is almost empty: DAML is a niche Haskell-based language, documentation is fragmented with broken links, local setup requires 8GB+ Docker environments, and the community has fewer developers than most weekend hackathons.
+    </p>
+    <p>
+      The network has the institutional backing and real transaction volume, but critically lacks the tooling, reference applications, and onboarding pathways to grow its developer base. Without these, Canton risks joining the enterprise blockchain graveyard alongside Hyperledger Fabric and R3 Corda.
+    </p>
+
+    <!-- WHY IT MATTERS -->
+    <h2>Why It Matters</h2>
+    <div class="highlight-box green">
+      <p><strong>Ecosystem play:</strong> Rather than building a single app, this is a coordinated 8-project ecosystem that covers the full developer journey: from SDK to starter template to production dApps. Each project reinforces the others, and each one qualifies independently for Canton Foundation grants.</p>
+    </div>
+    <div class="highlight-box orange">
+      <p><strong>Grant economics:</strong> 6 grant proposals totaling $155K-$375K in Canton Coin (CC). Low competition: Canton's tiny developer community means fewer applicants fighting for the Protocol Development Fund. The 62% app reward pool (~516M CC/month) creates additional ongoing revenue for deployed apps.</p>
+    </div>
+    <div class="highlight-box cyan">
+      <p><strong>First-mover advantage:</strong> Building developer infrastructure for an emerging $5.5B market cap chain with $135M in funding and real institutional adoption. Very few people know DAML, which means being early creates a defensible moat.</p>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <h2>How It Works</h2>
+    <p>The ecosystem is layered: foundational tools enable application development, which feeds into production infrastructure.</p>
+
+<pre><code>                     CANTON ECOSYSTEM MAP
+  ===================================================
+
+  LAYER 3 — PRODUCTION INFRASTRUCTURE
+  +---------------------+    +----------------------+
+  | Canton Scan         |    | Canton Credentials   |
+  | Dashboard           |    | (KYC/AML)            |
+  | - Network analytics |    | - Verifiable creds   |
+  | - Reward calculator |    | - ComplianceGates    |
+  | - Tokenomics viz    |    | - Multi-issuer       |
+  +---------------------+    +----------+-----------+
+                                        |
+                              integrates | via gates
+                                        |
+  LAYER 2 — REFERENCE dAPPS            v
+  +---------------------+    +----------------------+
+  | Canton Lend         |    | Canton OTC Desk      |
+  | - Pool-based lend   |    | - P2P atomic DvP     |
+  | - Liquidation       |    | - RFQ system         |
+  | - Health factors    |    | - Portfolio mgmt     |
+  +---------------------+    +----------------------+
+          |                           |
+          +----------+----------------+
+                     | built with
+                     v
+  LAYER 1 — DEVELOPER FOUNDATION
+  +---------------------+    +----------------------+
+  | Canton SDK          |    | Canton dApp Starter  |
+  | - TypeScript client |    | - Next.js template   |
+  | - Scan API wrapper  |    | - useCanton() hook   |
+  | - Type-safe queries |    | - Demo provider      |
+  +----------+----------+    +----------+-----------+
+             |                          |
+             +----------+---------------+
+                        | scaffolded by
+                        v
+              +---------------------+
+              | Canton DAML         |
+              | Generator           |
+              | - 9 contract        |
+              |   patterns          |
+              | - TS types gen      |
+              | - JSON API clients  |
+              +---------------------+
+</code></pre>
+
+    <h3>Data Flow</h3>
+<pre><code>  Developer Journey:
+  ──────────────────
+  daml-generator ──scaffold──> dapp-starter ──build──> OTC / Lend / Credentials
+         |                          |                         |
+         |                     uses canton-sdk            deploys to
+         |                          |                     Canton Network
+         |                          v                         |
+         +── generates TS types ──> frontend               monitors
+                                                              |
+                                                    canton-scan-dashboard
+</code></pre>
+
+    <!-- THE PROJECTS -->
+    <h2>The Projects</h2>
+
+    <h3>Developer Tools</h3>
+    <div class="project-grid">
+      <div class="project-card">
+        <span class="card-tag tools">SDK</span>
+        <h4>Canton SDK</h4>
+        <p>TypeScript client wrapping the Scan API. Type-safe queries for validators, rounds, rewards, and network health. Foundation for all other projects.</p>
+      </div>
+      <div class="project-card">
+        <span class="card-tag tools">Starter</span>
+        <h4>Canton dApp Starter</h4>
+        <p>Next.js 15 template with <code>useCanton()</code> hook, demo mode (works without a node), wallet connection, CIP-103 ready architecture.</p>
+      </div>
+      <div class="project-card">
+        <span class="card-tag tools">CLI</span>
+        <h4>Canton DAML Generator</h4>
+        <p>Scaffolds DAML contracts from 9 battle-tested patterns (propose-accept, delegation, locking, etc.) with TypeScript types and JSON API clients.</p>
+      </div>
+      <div class="project-card">
+        <span class="card-tag tools">Analytics</span>
+        <h4>Canton Scan Dashboard</h4>
+        <p>Real-time network analytics: tokenomics visualizer, app reward calculator, validator metrics. Public good solving Canton's metric verification problem.</p>
+      </div>
+    </div>
+
+    <h3>DeFi Protocols</h3>
+    <div class="project-grid">
+      <div class="project-card">
+        <span class="card-tag protocol">Trading</span>
+        <h4>Canton OTC Desk</h4>
+        <p>P2P OTC trading with atomic delivery-vs-payment settlement, request-for-quote system, and portfolio management. High transaction volume = high app rewards.</p>
+      </div>
+      <div class="project-card">
+        <span class="card-tag protocol">Lending</span>
+        <h4>Canton Lend</h4>
+        <p>Overcollateralized lending protocol with pool-based lending, liquidation auctions, and health factor monitoring. Competes with ACME Lend (the only other lending app).</p>
+      </div>
+    </div>
+
+    <h3>Compliance Infrastructure</h3>
+    <div class="project-grid">
+      <div class="project-card" style="grid-column: span 2;">
+        <span class="card-tag infra">Compliance</span>
+        <h4>Canton Credentials</h4>
+        <p>On-chain verifiable KYC/AML credentials with ComplianceGates, selective disclosure, and multi-issuer credential federation. Integrates with OTC Desk and Lend via compliance gates, enabling "verify once, use everywhere" for institutional apps.</p>
+      </div>
+    </div>
+
+    <!-- TECH STACK -->
+    <h2>Tech Stack</h2>
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      <tr><td>Smart Contracts</td><td>DAML (Canton SDK 3.4)</td><td>Financial contract modeling (rights/obligations)</td></tr>
+      <tr><td>Frontend</td><td>Next.js 15, Tailwind CSS v4</td><td>dApp UIs and dashboard</td></tr>
+      <tr><td>Language</td><td>TypeScript (strict)</td><td>Full-stack type safety</td></tr>
+      <tr><td>Charts</td><td>Recharts</td><td>Dashboard visualizations</td></tr>
+      <tr><td>CLI</td><td>Commander.js, Chalk</td><td>DAML generator tool</td></tr>
+      <tr><td>Package Manager</td><td>Bun</td><td>Fast installs and scripts</td></tr>
+      <tr><td>Linter</td><td>Biome</td><td>Lint + format</td></tr>
+    </table>
+
+    <!-- GRANT STRATEGY -->
+    <h2>Grant Strategy</h2>
+    <table>
+      <tr><th>Project</th><th>Category</th><th>Ask (USD)</th><th>Milestones</th></tr>
+      <tr><td>Canton Scan Dashboard</td><td>Developer Tools / Analytics</td><td>$30K - $60K</td><td>4</td></tr>
+      <tr><td>Canton DAML Generator</td><td>Developer Tools</td><td>$18K - $45K</td><td>4</td></tr>
+      <tr><td>Canton OTC Desk</td><td>DeFi / Liquidity Seeding</td><td>$45K - $90K</td><td>4</td></tr>
+      <tr><td>Canton Credentials</td><td>Security / Infrastructure</td><td>$30K - $60K</td><td>4</td></tr>
+      <tr><td>Canton Lend</td><td>DeFi / Featured App</td><td>$45K - $90K</td><td>4</td></tr>
+      <tr><td>Canton dApp Starter</td><td>Developer Onboarding</td><td>$12K - $30K</td><td>4</td></tr>
+    </table>
+    <div class="highlight-box">
+      <p><strong>Total potential:</strong> $155K - $375K in Canton Coin. Milestone-based payments via <a href="https://github.com/canton-foundation/canton-dev-fund">Canton Foundation Protocol Development Fund</a>. OTC Desk and Credentials are also candidates for Featured App status (62% of 516M CC/month shared among featured apps).</p>
+    </div>
+
+    <!-- KEY INSIGHTS -->
+    <h2>Key Insights</h2>
+    <ul>
+      <li><strong>Ecosystem over apps:</strong> Individual dApps on a chain with 13 validators are risky. An interconnected ecosystem of tools + apps + infra creates compound value and multiple grant revenue streams.</li>
+      <li><strong>Low competition, high backing:</strong> Canton has Goldman Sachs, DTCC, and JPMorgan but almost no third-party developers. Building tooling now is planting flags in empty territory.</li>
+      <li><strong>Cross-project synergies:</strong> Credentials feed compliance gates into OTC Desk and Lend. The SDK powers the Dashboard and Starter. The Generator scaffolds contracts for all DAML projects. Every project makes the others more valuable.</li>
+      <li><strong>Grant-driven development:</strong> Each project is scoped to fit Canton Foundation grant milestones. The code is the grant application: working repos demonstrate capability before any proposal is submitted.</li>
+      <li><strong>Revenue beyond grants:</strong> Featured App rewards (up to $1.50/tx in CC) create ongoing revenue for OTC Desk and Lend once deployed to MainNet. Even a small share of 516M CC/month is significant.</li>
+    </ul>
+
+    <!-- CANTON NETWORK CONTEXT -->
+    <h2>Canton Network Context</h2>
+    <div class="stat-row">
+      <div class="stat-box"><span class="num">$300B</span><span class="label">Daily Volume</span></div>
+      <div class="stat-box"><span class="num">$6T+</span><span class="label">Assets Represented</span></div>
+      <div class="stat-box"><span class="num">$135M</span><span class="label">Raised</span></div>
+      <div class="stat-box"><span class="num">15M+</span><span class="label">Monthly TXs</span></div>
+    </div>
+    <p>
+      Key validators: Goldman Sachs, Broadridge, DTCC, JPMorgan Kinexys, Chainlink, Nasdaq. Canton uses sub-transaction privacy (each party only sees what involves them) and atomic composability across applications. Smart contracts written in DAML model rights and obligations rather than generic computation.
+    </p>
+
+  </div>
+</body>
+</html>

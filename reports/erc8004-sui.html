@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERC-8004 on Sui — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>ERC-8004 on Sui</h1>
+    <p class="subtitle">Trustless agent identity, reputation, and validation on Sui blockchain</p>
+
+    <div class="tags">
+      <span class="tag">Sui Move</span>
+      <span class="tag green">On-Chain Identity</span>
+      <span class="tag cyan">Reputation</span>
+      <span class="tag orange">Validator Attestation</span>
+      <span class="tag">ERC-8004</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>AI agents operate without verifiable identity.</strong></p>
+      <p>There is no standard way to verify who deployed an agent, assess its track record, or confirm that a third party has audited its behavior. Trust is implicit, not provable.</p>
+    </div>
+
+    <p>As autonomous AI agents proliferate across DeFi, data markets, and service orchestration, a fundamental gap emerges: how do you trust a piece of software that acts on its own? Today, agents self-report their capabilities. There is no on-chain record of who created them, how they have performed, or whether independent validators have attested to their reliability.</p>
+
+    <p>Without a trust layer, every interaction with an agent is a leap of faith. Malicious agents can impersonate legitimate ones. Good agents have no way to build a verifiable reputation. The agent economy cannot scale without a shared identity and trust primitive.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Trustless discovery</strong> -- agents register on-chain with a unique ID, URI, and metadata. Any protocol or user can verify an agent's identity without relying on centralized directories.</li>
+      <li><strong>Reputation as a primitive</strong> -- feedback from clients is stored on-chain with signed scores, tags, and revocation support. An agent's track record becomes a composable on-chain asset.</li>
+      <li><strong>Validator attestation</strong> -- designated validators can formally attest to agent behavior with scored responses (0-100). This creates a decentralized quality assurance layer.</li>
+      <li><strong>Cross-organizational trust</strong> -- agents from different teams, DAOs, or companies can interact with each other using a shared trust framework rather than bilateral agreements.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Protocol Flow</h3>
+    <div class="ascii-diagram"><code><span class="dim">1. REGISTRATION</span>
+
+  <span class="hi">Agent Owner</span> calls register()
+       |
+       v
+  +----------------------------+
+  |   <span class="grn">IdentityRegistry</span>          |
+  |   (shared singleton)       |
+  |                            |
+  |   agent_id: 1              |
+  |   next_agent_id++          |
+  |   owner_lookup[1] = 0xABC  |
+  +----------------------------+
+       |
+       v
+  <span class="orn">AgentIdentity</span> (owned object)
+  transferred to 0xABC
+  +----------------------------+
+  |   agent_id: 1              |
+  |   agent_uri: "ipfs://..."  |
+  |   metadata: { model: gpt } |
+  |   agent_wallet: None       |
+  +----------------------------+
+
+
+<span class="dim">2. REPUTATION (feedback loop)</span>
+
+  <span class="hi">Client</span> (not the owner) calls give_feedback()
+       |
+       v
+  +----------------------------+
+  |   <span class="grn">ReputationRegistry</span>        |
+  |   (shared singleton)       |
+  |                            |
+  |   feedbacks[agent_id] = [  |
+  |     { value: 95,           |
+  |       is_negative: false,  |
+  |       tag1: "accuracy",    |
+  |       tag2: "defi" }       |
+  |   ]                        |
+  |                            |
+  |   client_indexes tracks    |
+  |   per-client counters      |
+  +----------------------------+
+       |
+       v
+  get_summary(agent_id, [], "accuracy", "")
+  => (count: 12, net_score: 940, positive: true, decimals: 0)
+
+
+<span class="dim">3. VALIDATION (attestation)</span>
+
+  <span class="hi">Agent Owner</span> ---> validation_request() ---> <span class="orn">Validator</span>
+                                                   |
+                                    validation_response()
+                                                   |
+                                                   v
+  +----------------------------+
+  |   <span class="grn">ValidationRegistry</span>        |
+  |   (shared singleton)       |
+  |                            |
+  |   request_hash => {        |
+  |     validator: 0xVAL,      |
+  |     response: 87,          |
+  |     tag: "safety-audit",   |
+  |     has_response: true     |
+  |   }                        |
+  +----------------------------+
+       |
+       v
+  get_summary(agent_id, [], "safety-audit")
+  => (count: 3, avg_response: 91)</code></div>
+
+    <h3>Data Model</h3>
+    <div class="ascii-diagram"><code><span class="dim">Shared Singletons (created at package publish via init())</span>
+
+  <span class="hi">IdentityRegistry</span>           <span class="hi">ReputationRegistry</span>          <span class="hi">ValidationRegistry</span>
+  +------------------+       +---------------------+       +---------------------+
+  | next_agent_id    |       | feedbacks            |       | validations          |
+  | agent_owners     |       |  Table&lt;u64,          |       |  Table&lt;hash,         |
+  |  Table&lt;u64,addr&gt; |       |    Vec&lt;FeedbackEntry&gt;&gt;|       |    ValidationEntry&gt;  |
+  +------------------+       | client_indexes       |       | agent_validations   |
+                             |  Table&lt;ClientKey,u64&gt; |       |  Table&lt;u64,Vec&lt;hash&gt;&gt;|
+                             | agent_clients        |       | validator_requests  |
+                             |  Table&lt;u64,Vec&lt;addr&gt;&gt; |       |  Table&lt;addr,Vec&lt;hash&gt;&gt;|
+                             +---------------------+       +---------------------+
+
+<span class="dim">Owned Objects (transferred to registrant)</span>
+
+  <span class="orn">AgentIdentity</span>
+  +------------------+
+  | agent_id: u64    |
+  | agent_uri: String|
+  | metadata: VecMap |
+  | agent_wallet: Opt|
+  +------------------+</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Language</td><td><code>Sui Move (2024 edition)</code></td><td>Smart contract language with ownership model</td></tr>
+      <tr><td>Framework</td><td><code>Sui SDK v1.65+</code></td><td>Object runtime, shared objects, Tables</td></tr>
+      <tr><td>Identity</td><td><code>Owned objects</code></td><td>Agent NFT transferred to owner (replaces ERC-721)</td></tr>
+      <tr><td>Storage</td><td><code>Table</code> + <code>VecMap</code></td><td>Scalable dynamic fields for feedbacks, in-memory maps for metadata</td></tr>
+      <tr><td>Testing</td><td><code>sui move test</code></td><td>test_scenario-based unit and integration tests</td></tr>
+      <tr><td>Reference</td><td><code>ERC-8004 Solidity RI</code></td><td>Ethereum mainnet standard (deployed Jan 29, 2026)</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Sui-Specific Adaptations</h2>
+
+    <table>
+      <tr><th>ERC-8004 (Ethereum)</th><th>Sui Adaptation</th></tr>
+      <tr><td>ERC-721 token</td><td>Sui owned object (<code>AgentIdentity</code>)</td></tr>
+      <tr><td>Contract storage mappings</td><td>Sui <code>Table</code> on shared objects</td></tr>
+      <tr><td><code>msg.sender</code></td><td><code>tx_context::sender(ctx)</code></td></tr>
+      <tr><td>EIP-712 signatures</td><td>Sui native auth (object ownership)</td></tr>
+      <tr><td><code>int128</code> (signed)</td><td><code>u64 + is_negative</code> bool flag</td></tr>
+      <tr><td>Singleton per chain</td><td><code>init()</code> creates shared registry at publish</td></tr>
+      <tr><td>Solidity <code>emit</code></td><td><code>sui::event::emit</code></td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>NFT-Based Agent Identity</h3>
+    <div class="highlight-box">
+      <p>Each agent is an <strong>owned Sui object</strong> rather than a registry entry. This means agent identity is composable: it can be transferred, wrapped by other modules, or used as a proof-of-ownership in cross-protocol interactions. The owner controls the object directly through Sui's native authorization, with no <code>require(msg.sender == owner)</code> checks needed.</p>
+    </div>
+
+    <h3>Validator Attestation Pattern</h3>
+    <div class="highlight-box">
+      <p>Validation follows a <strong>request-response model</strong> with designated validators. The agent owner requests validation by specifying a validator address and a request hash. Only that exact validator can respond, with a score from 0 to 100. Multiple responses to the same request are allowed, enabling <strong>progressive validation states</strong> where a validator can update their assessment over time.</p>
+    </div>
+
+    <h3>Reputation as an On-Chain Primitive</h3>
+    <div class="highlight-box">
+      <p>Feedback is not just a number. Each entry carries <strong>two tag dimensions</strong> (e.g., tag1: "accuracy", tag2: "defi") enabling structured queries. The <code>get_summary</code> function supports filtering by client addresses and tags, returning aggregated net scores. Self-feedback is blocked at the protocol level: the identity registry is cross-referenced to verify the caller is not the agent owner.</p>
+    </div>
+
+    <h3>Signed Integers Without Signed Integers</h3>
+    <div class="highlight-box">
+      <p>Move has no native signed integer type. The protocol represents feedback values as <code>u64 + is_negative bool</code>, and the summary function accumulates positive and negative totals separately before computing the net result. Decimal precision is preserved via a <code>value_decimals</code> field (0-18), matching Ethereum's token decimal convention.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Module Breakdown</h2>
+
+    <table>
+      <tr><th>Module</th><th>Lines</th><th>Functions</th><th>Events</th></tr>
+      <tr><td><code>types.move</code></td><td>55</td><td>15 (accessor functions for constants/errors)</td><td>0</td></tr>
+      <tr><td><code>identity_registry.move</code></td><td>257</td><td>12 (register, set_uri, set_metadata, wallet mgmt, reads)</td><td>5</td></tr>
+      <tr><td><code>reputation_registry.move</code></td><td>362</td><td>14 (give_feedback, revoke, append_response, summary, reads)</td><td>3</td></tr>
+      <tr><td><code>validation_registry.move</code></td><td>273</td><td>10 (request, respond, summary, reads)</td><td>2</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Project Structure</h2>
+
+    <pre><code>erc8004-sui/
+  Move.toml                     -- Package manifest (Sui framework dependency)
+  Published.toml                -- Deployment addresses
+  sources/
+    types.move                  -- 12 error codes, 3 constants, public accessors
+    identity_registry.move      -- AgentIdentity object + IdentityRegistry singleton
+    reputation_registry.move    -- FeedbackEntry storage + client tracking
+    validation_registry.move    -- ValidationEntry + request/response flow
+  tests/
+    identity_tests.move         -- Registration, URI update, metadata, wallet
+    reputation_tests.move       -- Feedback, revocation, self-feedback prevention
+    validation_tests.move       -- Request/response, validator access control</code></pre>
+
+  </div>
+</body>
+</html>

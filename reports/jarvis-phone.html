@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis Phone — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Jarvis Phone</h1>
+    <p class="subtitle">Telegram bot for monitoring and controlling Claude Night Shift and Long Run sessions from your phone</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Bun</span>
+      <span class="tag cyan">Telegram Bot API</span>
+      <span class="tag orange">Groq Whisper</span>
+      <span class="tag">Claude Code CLI</span>
+      <span class="tag green">Biome</span>
+      <span class="tag">macOS TTS</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Night shift sessions run for hours unsupervised, with no way to check progress or intervene from a phone.</strong></p>
+      <p>Claude Code's night-shift and long-run modes execute autonomously on a laptop or Mac Mini. When something goes wrong (a task fails, a blocker appears, a question needs answering), the only way to know is to sit at the terminal and watch. That defeats the purpose of autonomous overnight execution.</p>
+    </div>
+
+    <p>Jarvis Phone bridges the gap: a Telegram bot that watches project state files, sends real-time notifications when events occur, and lets the user respond with text or voice messages from their phone. It can also spawn Claude Code processes remotely, including launching night shift sessions on any monitored project.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Real-time monitoring</strong>: a filesystem watcher detects state file changes across all projects and dispatches Telegram notifications for task completions, failures, new problems, session endings, and phase transitions.</li>
+      <li><strong>Voice-first interaction</strong>: send a voice message from your phone, Groq Whisper transcribes it, and the instruction is written to <code>VOICE_INSTRUCTIONS.md</code> for the running Claude session to pick up.</li>
+      <li><strong>Remote process management</strong>: spawn Claude Code processes from Telegram, launch night-shift sessions on specific projects, list running processes, and kill them by PID.</li>
+      <li><strong>Quiet hours</strong>: notifications are suppressed between 23:00 and 09:00 and queued until morning, so the phone stays silent at night while sessions keep running.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Event Detection Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="dim">FILESYSTEM</span>                        <span class="dim">WATCHER</span>                     <span class="dim">TELEGRAM</span>
+
+~/projects/
+  project-a/
+    NIGHT_SHIFT_STATE.md ----+
+    LONG_RUN_STATE.md -------+---> <span class="hi">node:fs.watch</span>
+    NIGHT_SHIFT_PROBLEMS.md -+     (recursive)
+  project-b/                            |
+    NIGHT_SHIFT_STATE.md ----+          v
+    ...                      |   <span class="cyn">Diff Detection</span>
+                                  |  Compare prev vs current content
+                                  |  Count [x] tasks, [NEEDS-REWORK]
+                                  |  Match phase pattern, detect finish
+                                  |
+                                  v
+                          <span class="grn">Emit WatcherEvent</span>
+                          { type, projectName, detail }
+                                  |
+                                  v
+                          <span class="orn">Telegram Bot API</span>
+                          sendMessage(chatId, formatted HTML)</code></div>
+
+    <h3>Voice Interaction Flow</h3>
+    <div class="ascii-diagram"><code><span class="hi">USER (Phone)</span>                    <span class="grn">BOT</span>                    <span class="cyn">CLAUDE SESSION</span>
+
+  Record voice message
+        |
+        v
+  Telegram sends voice ------> getFile(file_id)
+                                Download .ogg audio
+                                      |
+                                      v
+                                <span class="orn">Groq Whisper API</span>
+                                Transcribe to text
+                                      |
+                                      v
+                                Write to project:
+                                VOICE_INSTRUCTIONS.md
+                                                        ------> Claude picks up
+                                                                 instruction
+
+  <span class="dim">--- Reply to question ---</span>
+
+  Voice reply to question ----> Transcribe via Groq
+                                      |
+                                      v
+                                <span class="cyn">parser/writer.ts</span>
+                                Write answer to
+                                LONG_RUN_QUESTIONS.md
+                                (append under question)
+                                                        ------> Claude reads
+                                                                 answer</code></div>
+
+    <h3>Process Management</h3>
+    <div class="ascii-diagram"><code><span class="hi">TELEGRAM COMMAND</span>               <span class="grn">PROCESS MANAGER</span>
+
+"/projects"  ----------------> List active sessions
+                                Return inline keyboard
+                                [Project A] [Project B]
+
+"night shift on myapp" ------> <span class="cyn">isNightShiftRequest()</span>
+                                Detect pattern + project name
+                                      |
+                                      v
+                                <span class="orn">spawnClaude()</span>
+                                child_process.spawn("claude",
+                                  ["--dangerously-skip-permissions",
+                                   "-p", "/night-shift"],
+                                  { cwd: projectPath })
+                                      |
+                                      +---> stdout/stderr -> onOutput
+                                      +---> on close -> onExit
+                                      +---> Regular: 5min timeout
+                                            Night shift: no timeout</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Runtime</td><td><code>Bun</code></td><td>Fast TS runtime, native fetch, file I/O</td></tr>
+      <tr><td>Language</td><td><code>TypeScript (strict)</code></td><td>Immutable types with readonly, no any</td></tr>
+      <tr><td>Messaging</td><td><code>Telegram Bot API</code></td><td>Long polling for updates, inline keyboards, HTML messages</td></tr>
+      <tr><td>STT</td><td><code>Groq Whisper API</code></td><td>Voice message transcription (OGG to text)</td></tr>
+      <tr><td>TTS</td><td><code>macOS say + ffmpeg</code></td><td>Generate voice notes from text (AIFF to Opus)</td></tr>
+      <tr><td>AI</td><td><code>Claude Code CLI</code></td><td>Spawned as child process for night-shift/instructions</td></tr>
+      <tr><td>File Watching</td><td><code>node:fs.watch</code></td><td>Recursive watch on ~/projects/ for state file changes</td></tr>
+      <tr><td>Linter</td><td><code>Biome</code></td><td>Lint + format in a single pass</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>src/
+  index.ts              Hono server + Telegram polling + file watcher bootstrap
+  config.ts             Env validation (BOT_TOKEN, CHAT_ID, PROJECTS_DIR, GROQ_KEY)
+  types.ts              Shared types (SessionStatus, PendingQuestion, AppConfig)
+  watcher.ts            Filesystem watcher: detect state changes across projects
+  process.ts            Claude Code process manager (spawn, kill, list, night-shift)
+  middleware.ts          Auth check, typing indicator, message tracker with auto-cleanup
+  telegram/
+    bot.ts              Telegram Bot API wrapper (send, getUpdates, deleteMessages)
+    messages.ts         Message formatters (status, questions, notifications)
+    format.ts           HTML escaping, output truncation, duration formatting
+    keyboard.ts         Persistent reply keyboard (Projects, Status, Clear, Help)
+    voice.ts            TTS generation (macOS say + ffmpeg to Opus)
+    transcribe.ts       STT via Groq Whisper API
+  parser/
+    state.ts            Parse NIGHT_SHIFT_STATE.md and LONG_RUN_STATE.md
+    questions.ts        Parse LONG_RUN_QUESTIONS.md (pending questions)
+    writer.ts           Write answers back to question files</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Diff-Based Event Detection</h3>
+    <div class="highlight-box success">
+      <p><strong>The watcher compares previous and current file content to detect specific events.</strong> It counts <code>[x]</code> checkboxes to detect task completions, matches <code>[NEEDS-REWORK]</code>/<code>[BLOCKED]</code> to detect failures, parses <code>### Current Phase</code> for iteration changes, and checks for the transition from <code>(in progress)</code> to <code>Finished:</code> for session completion. This is more reliable than filesystem event types alone.</p>
+    </div>
+
+    <h3>Night Shift vs Regular Process Handling</h3>
+    <p>The process manager distinguishes between night-shift spawns (no timeout, long-running) and regular instructions (5-minute timeout, killed on expiry). Night-shift detection uses regex patterns on the incoming text, extracting both the intent and the target project name from messages like "night shift on myapp".</p>
+
+    <h3>Message Auto-Cleanup</h3>
+    <div class="highlight-box">
+      <p>The <code>MessageTracker</code> in middleware.ts keeps a rolling window of sent message IDs persisted to disk. When the count exceeds a threshold, the oldest messages are batch-deleted via Telegram's deleteMessages API (up to 100 per call, with fallback to individual deletes). This keeps the chat clean during long sessions that generate many notifications.</p>
+    </div>
+
+    <h3>Immutable Types Throughout</h3>
+    <p>All interfaces use <code>readonly</code> properties. The watcher emits immutable <code>WatcherEvent</code> objects. The bot returns immutable <code>TelegramUpdate</code> arrays. The process manager's <code>listProcesses()</code> returns a <code>readonly</code> array. This prevents accidental mutation of shared state between the watcher, bot, and process manager.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Source modules</td><td>14 TypeScript files</td></tr>
+      <tr><td>Test files</td><td>6 (process, middleware, format, keyboard, state, questions)</td></tr>
+      <tr><td>Bot commands</td><td>4 (/projects, /status, /clear, /help)</td></tr>
+      <tr><td>Watcher event types</td><td>5 (task_completed, task_failed, problem_logged, session_finished, iteration_changed)</td></tr>
+      <tr><td>State files monitored</td><td>3 per project (NIGHT_SHIFT_STATE, LONG_RUN_STATE, NIGHT_SHIFT_PROBLEMS)</td></tr>
+      <tr><td>Quiet hours</td><td>23:00 to 09:00</td></tr>
+      <tr><td>Regular process timeout</td><td>5 minutes</td></tr>
+      <tr><td>Telegram delete batch size</td><td>100 messages per API call</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

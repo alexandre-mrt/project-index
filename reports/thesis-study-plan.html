@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thesis Study Plan — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Thesis Study Plan</h1>
+    <p class="subtitle">Interactive single-page study website for master thesis preparation covering cryptography, ZKP, TEE, and privacy systems</p>
+
+    <div class="tags">
+      <span class="tag">Vanilla JS</span>
+      <span class="tag green">HTML/CSS</span>
+      <span class="tag cyan">KaTeX</span>
+      <span class="tag orange">localStorage</span>
+      <span class="tag">Vercel</span>
+      <span class="tag green">No Build Step</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Preparing a master thesis on anonymous credentials requires studying across 6+ dense technical domains simultaneously.</strong></p>
+      <p>The thesis spans anonymous credentials, confidential transactions, trusted execution environments, private payments, ZK proof systems, and Rust implementation. Each chapter has academic papers, video lectures, blog posts, and exercises. Tracking progress across hundreds of resources with different depth levels is overwhelming without structure.</p>
+    </div>
+
+    <p>This project creates a tailored study dashboard that organizes all thesis preparation material by chapter, provides two depth levels (intuitive overview vs. technical deep dive), tracks completion progress via checkboxes persisted in localStorage, and includes productivity tools like a Pomodoro timer and global concept search.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Chapter-based organization</strong>: 6 thesis chapters + a Rust track + a ZK Deep Dive, each as a tab with color-coded content and per-chapter study guides.</li>
+      <li><strong>Dual-view learning</strong>: every topic has an "Intuitive" view (analogies, diagrams, high-level concepts) and a "Technical" view (math notation via KaTeX, protocol specifications, proof sketches).</li>
+      <li><strong>Progress persistence</strong>: checkbox states saved to localStorage, with a global progress bar showing overall completion percentage across all chapters.</li>
+      <li><strong>Zero dependencies</strong>: pure HTML/CSS/JS with no framework and no build step. Open index.html in a browser or deploy to Vercel.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Application Architecture</h3>
+    <div class="ascii-diagram"><code><span class="hi">index.html</span>
+  |
+  |  Sticky nav: chapter tabs + search + view toggle + Pomodoro
+  |  6 chapter sections + Rust + ZK Deep Dive
+  |
+  +--- <span class="grn">style.css</span>         Dark academic theme, glass-morphism cards
+  +--- <span class="grn">technical.css</span>     Technical view styling (KaTeX, code blocks)
+  +--- <span class="grn">paper-cards.css</span>   Paper reference cards layout
+  +--- <span class="grn">zk-deepdive.css</span>   ZK Deep Dive section styling
+  |
+  +--- <span class="cyn">app.js</span>            Core: tabs, progress, Pomodoro, YouTube, keyboard
+  +--- <span class="cyn">study-guide.js</span>    Render study guides (intuitive + technical views)
+  +--- <span class="cyn">search.js</span>         Global concept search with deep-linking
+  +--- <span class="cyn">lexicon.js</span>        Cryptography term lexicon
+  |
+  +--- <span class="orn">day{1-3}-guide.js</span>         Day-based study guide data
+  +--- <span class="orn">day{1-3}-technical.js</span>     Technical view data
+  +--- <span class="orn">ch{21-26}-papers-guide.js</span> Per-chapter paper guides
+  +--- <span class="orn">ch{21-26}-papers-technical.js</span>  Technical paper analysis
+  +--- <span class="orn">rust-guide.js</span>             Rust track content
+  +--- <span class="orn">zk-deepdive-data.js</span>       ZK proof systems deep dive</code></div>
+
+    <h3>Chapter Organization</h3>
+    <div class="ascii-diagram"><code><span class="dim">THESIS CHAPTERS</span>
+
+<span class="cyn">Ch 2.1</span> Anonymous Credentials     <span class="dim">(cyan    #06B6D4)</span>
+  |  BBS+ signatures, attribute-based credentials, selective disclosure
+  |
+<span class="orn">Ch 2.2</span> Confidential Transactions  <span class="dim">(yellow  #F59E0B)</span>
+  |  Pedersen commitments, range proofs, Bulletproofs
+  |
+<span class="grn">Ch 2.3</span> TEE                        <span class="dim">(green   #10B981)</span>
+  |  Intel SGX, ARM TrustZone, attestation, side channels
+  |
+<span class="hi">Ch 2.4</span> Private Payments            <span class="dim">(pink    #EC4899)</span>
+  |  Zcash, Monero, tornado.cash, CBDC privacy
+  |
+<span class="hi">Ch 2.5</span> ZK Proof Systems            <span class="dim">(indigo  #6366F1)</span>
+  |  SNARKs, STARKs, Groth16, PLONK, Halo2
+  |
+Ch 2.6  Advanced Topics             <span class="dim">(violet  #8B5CF6)</span>
+  |  MPC, FHE, oblivious transfer
+  |
+<span class="orn">Rust</span>   Implementation Track        <span class="dim">(orange  #F97316)</span>
+  |  Ownership, traits, async, crypto libraries
+  |
+ZK     Deep Dive                   <span class="dim">(violet  #8B5CF6)</span>
+       Interactive proof system explorer</code></div>
+
+    <h3>Feature Interactions</h3>
+    <div class="ascii-diagram"><code><span class="hi">KEYBOARD SHORTCUTS</span>          <span class="grn">PROGRESS SYSTEM</span>          <span class="orn">POMODORO</span>
+
+  1-6  Switch chapters         Checkboxes in each       Space  Toggle timer
+  Z    ZK Deep Dive            chapter section          25 min work / 5 min break
+  /    Focus search            Saved to localStorage    State persisted
+  L    Open lexicon            Global % in nav bar      Audio notification
+       |                             |                        |
+       v                             v                        v
+  <span class="cyn">app.js: initKeyboardShortcuts()</span>  <span class="cyn">app.js: updateProgress()</span>  <span class="cyn">app.js: initPomodoro()</span>
+
+<span class="hi">YOUTUBE LITE-EMBED</span>           <span class="grn">CONCEPT SEARCH</span>
+  Thumbnail placeholder      Search across all guides
+  Click to load iframe       Deep-link to matching
+  Saves bandwidth            section + highlight</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Markup</td><td><code>HTML5</code></td><td>Single page with semantic sections per chapter</td></tr>
+      <tr><td>Styling</td><td><code>CSS3</code></td><td>Dark theme (#0f0f0f), glass-morphism, responsive, print CSS</td></tr>
+      <tr><td>Logic</td><td><code>Vanilla JavaScript</code></td><td>Tabs, progress, timer, search, keyboard shortcuts</td></tr>
+      <tr><td>Math</td><td><code>KaTeX</code> (CDN)</td><td>LaTeX rendering for formulas and proofs</td></tr>
+      <tr><td>Fonts</td><td><code>Inter + JetBrains Mono</code></td><td>UI text + code blocks via Google Fonts</td></tr>
+      <tr><td>Persistence</td><td><code>localStorage</code></td><td>Checkbox state, active tab, timer state</td></tr>
+      <tr><td>Deploy</td><td><code>Vercel</code></td><td>Static site deployment, no build step</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>index.html                    Complete HTML with all chapter sections
+style.css                     Dark academic design, glass-morphism, responsive
+technical.css                 Technical view styling (formulas, diagrams)
+paper-cards.css               Paper reference card layout
+zk-deepdive.css               ZK Deep Dive section styling
+app.js                        Core: tabs, progress, Pomodoro, YouTube, keyboard
+study-guide.js                Study guide renderer (intuitive + technical toggle)
+search.js                     Global concept search with deep-linking
+lexicon.js                    Cryptography term definitions
+day{1-3}-guide.js             Day-structured intuitive study content
+day{1-3}-technical.js         Day-structured technical content
+ch{21-26}-papers-guide.js     Per-chapter paper summaries (6 files)
+ch{21-26}-papers-technical.js Per-chapter technical analysis (6 files)
+rust-guide.js / rust-technical.js    Rust implementation track
+ch22-guide.js / ch22-technical.js    Extended chapter guides
+zk-deepdive-data.js           ZK proof system deep dive data</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Zero-Dependency Architecture</h3>
+    <div class="highlight-box success">
+      <p><strong>No npm, no bundler, no framework.</strong> The entire application is plain HTML/CSS/JS files loaded directly by the browser. KaTeX is the only external dependency (loaded via CDN). This means zero build time, instant deployment to Vercel, and no version conflicts. The tradeoff is more boilerplate in the JS data files, but for a study tool that is primarily content, this is the right call.</p>
+    </div>
+
+    <h3>Dual-View Content Model</h3>
+    <p>Every study guide topic ships with two renderings. The "Intuitive" view uses analogies, simplified diagrams, and plain-language explanations. The "Technical" view shows the actual math (rendered via KaTeX), protocol specifications, and proof sketches. A global toggle in the nav bar switches all content simultaneously, with the preference saved to localStorage.</p>
+
+    <h3>Data-Driven Content</h3>
+    <div class="highlight-box">
+      <p>All study content lives in separate <code>.js</code> data files (30+ files), not inline in the HTML. Each file exports structured objects with titles, descriptions, resources, and exercises. The <code>study-guide.js</code> renderer consumes these data files and generates the DOM. This separation makes it easy to add new chapters or update content without touching the app logic.</p>
+    </div>
+
+    <h3>Productivity Integration</h3>
+    <p>The Pomodoro timer (25 min work / 5 min break) is built into the nav bar with start/pause/reset controls and audio notifications. Combined with the progress bar showing completion percentage, it creates a focused study environment where the user can track both time spent and material covered.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Thesis chapters covered</td><td>6 + Rust track + ZK Deep Dive</td></tr>
+      <tr><td>JavaScript data files</td><td>30+ content modules</td></tr>
+      <tr><td>CSS files</td><td>4 (style, technical, paper-cards, zk-deepdive)</td></tr>
+      <tr><td>Keyboard shortcuts</td><td>9 (1-6 chapters, Z, /, L, Space)</td></tr>
+      <tr><td>Pomodoro cycle</td><td>25 min work + 5 min break</td></tr>
+      <tr><td>External dependencies</td><td>2 (KaTeX CDN, Google Fonts)</td></tr>
+      <tr><td>Build step</td><td>None (open index.html)</td></tr>
+      <tr><td>Deployed on</td><td>Vercel (static)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

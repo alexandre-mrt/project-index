@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>miniCI — Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+    .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; color: var(--green); }
+    pre code { color: var(--text); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    .highlight-box {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { color: var(--text); margin-bottom: 0; }
+    .tag {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin: 0.15rem 0.25rem 0.15rem 0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .tag.green { border-color: var(--green); color: var(--green); }
+    .tag.accent { border-color: var(--accent); color: var(--accent); }
+    .tag.orange { border-color: var(--orange); color: var(--orange); }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat-box .value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    .stat-box .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>miniCI</h1>
+    <p class="subtitle">Local CI/CD engine. YAML pipelines, Docker isolation, real-time dashboard.</p>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="value">16</div>
+        <div class="label">REST + WS Endpoints</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">4</div>
+        <div class="label">SQLite Tables</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">~2.5K</div>
+        <div class="label">Lines of Rust</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">5</div>
+        <div class="label">Frontend Pages</div>
+      </div>
+    </div>
+
+    <h2>The Challenge</h2>
+    <p>CI/CD platforms like GitHub Actions, CircleCI, and GitLab CI all live in the cloud. Every push triggers a remote build with cold-start latency, opaque runner environments, and zero offline capability. For solo developers or small teams iterating fast on local code, the feedback loop is unnecessarily slow.</p>
+    <div class="highlight-box">
+      <p>miniCI brings CI/CD to your machine: define pipelines in YAML, execute them in Docker containers locally, and watch logs stream in real-time on a web dashboard. No cloud account, no network dependency, sub-second trigger-to-execution.</p>
+    </div>
+
+    <h2>Why It Matters</h2>
+    <ul>
+      <li><strong>Instant feedback</strong> &mdash; no waiting for remote runners to spin up; pipelines start immediately on your Docker daemon</li>
+      <li><strong>Full isolation</strong> &mdash; every step runs in its own container with a defined image, environment, and timeout</li>
+      <li><strong>Offline-first</strong> &mdash; works without internet once images are cached locally</li>
+      <li><strong>Familiar model</strong> &mdash; YAML-based pipeline definition mirrors GitHub Actions / GitLab CI syntax</li>
+      <li><strong>Developer experience</strong> &mdash; real-time WebSocket log streaming, polished React dashboard, one-click manual triggers</li>
+    </ul>
+
+    <h2>How It Works</h2>
+    <pre><code>
+  pipeline.yaml          Rust Engine                    Browser
+  +-------------+    +------------------+    +---------------------+
+  |             |    |                  |    |                     |
+  | name: build |    |  YAML Parser     |    |   React Dashboard   |
+  | stages:     +--->+  (serde_yaml)    |    |   +-------------+  |
+  |   - compile |    |       |          |    |   | Pipelines   |  |
+  |   - test    |    |       v          |    |   | Runs        |  |
+  |   - deploy  |    |  Scheduler       |    |   | Logs        |  |
+  |             |    |  (semaphore +    |    |   +------+------+  |
+  +-------------+    |   job queue)     |    |          |         |
+                     |       |          |    |          |         |
+                     |       v          |    +---------------------+
+                     |  Docker Runner   |              |
+                     |  (bollard)       |     WebSocket (ws://)
+                     |   +----+----+   |              |
+                     |   | c1 | c2 |   +--- broadcast --+
+                     |   +----+----+   |
+                     |       |         |
+                     |       v         |
+                     |  SQLite (sqlx)  |
+                     |  logs, runs,    |
+                     |  step_results   |
+                     +------------------+
+    </code></pre>
+
+    <h3>Pipeline Flow</h3>
+    <ol>
+      <li><strong>Define</strong> &mdash; write a YAML config with stages, steps, images, commands, env vars, timeouts, retries</li>
+      <li><strong>Register</strong> &mdash; POST the pipeline via REST API (or trigger via GitHub webhook)</li>
+      <li><strong>Queue</strong> &mdash; a run is created and enqueued in the bounded mpsc job queue</li>
+      <li><strong>Schedule</strong> &mdash; the scheduler picks it up (respecting <code>max_concurrent</code> via semaphore)</li>
+      <li><strong>Execute</strong> &mdash; stages run in dependency-wave order; within a stage, steps run in parallel via <code>JoinSet</code></li>
+      <li><strong>Stream</strong> &mdash; container stdout/stderr is attached before start, broadcast to all WebSocket subscribers, and persisted to SQLite</li>
+      <li><strong>Report</strong> &mdash; dashboard updates live with status badges, exit codes, and full log history</li>
+    </ol>
+
+    <h2>Tech Stack</h2>
+
+    <h3>Backend</h3>
+    <div style="margin: 0.5rem 0 1rem;">
+      <span class="tag green">Rust</span>
+      <span class="tag green">Tokio</span>
+      <span class="tag green">Axum 0.8</span>
+      <span class="tag green">Bollard 0.18</span>
+      <span class="tag green">SQLx</span>
+      <span class="tag green">serde_yaml</span>
+    </div>
+    <ul>
+      <li><strong>Axum</strong> &mdash; REST API (CRUD pipelines, runs, logs) + WebSocket upgrade handler</li>
+      <li><strong>Bollard</strong> &mdash; Docker Engine API client: image pull, container create/start/attach/wait/remove</li>
+      <li><strong>SQLx + SQLite</strong> &mdash; persistent storage with 4 tables (<code>pipelines</code>, <code>runs</code>, <code>step_results</code>, <code>logs</code>)</li>
+      <li><strong>Tokio</strong> &mdash; async runtime with broadcast channels, semaphores, JoinSets, mpsc queues</li>
+    </ul>
+
+    <h3>Frontend</h3>
+    <div style="margin: 0.5rem 0 1rem;">
+      <span class="tag accent">React 19</span>
+      <span class="tag accent">TypeScript</span>
+      <span class="tag accent">TailwindCSS v4</span>
+      <span class="tag accent">Vite 8</span>
+      <span class="tag accent">react-router 7</span>
+      <span class="tag accent">lucide-react</span>
+    </div>
+    <ul>
+      <li><strong>Pages</strong> &mdash; Pipelines list, Runs list, Run detail (with live logs), 404</li>
+      <li><strong>Components</strong> &mdash; Layout, Sidebar, StatusBadge, LoadingSpinner, Skeleton, Toast</li>
+      <li><strong>Hooks</strong> &mdash; <code>useWebSocket</code> for real-time log subscription</li>
+    </ul>
+
+    <h2>Architecture Details</h2>
+
+    <h3>YAML Pipeline Config</h3>
+    <pre><code>name: my-pipeline
+stages:
+  - name: build
+    steps:
+      - name: compile
+        image: rust:1.85
+        commands:
+          - cargo build --release
+        env:
+          RUST_LOG: info
+        timeout_secs: 120
+        retries: 3
+  - name: test
+    depends_on: [build]
+    steps:
+      - name: unit-tests
+        image: rust:1.85
+        commands:
+          - cargo test</code></pre>
+
+    <h3>Stage Dependency Resolution</h3>
+    <p>Stages declare <code>depends_on</code> edges. The scheduler partitions remaining stages into <strong>waves</strong>: all stages whose dependencies are satisfied form a wave and execute concurrently. Deadlocks (cyclic or unresolvable graphs) are detected and fail the run immediately.</p>
+
+    <h3>WebSocket Protocol</h3>
+    <table>
+      <tr><th>Direction</th><th>Type</th><th>Payload</th></tr>
+      <tr><td>Client &rarr; Server</td><td><code>subscribe</code></td><td><code>{ run_id }</code></td></tr>
+      <tr><td>Client &rarr; Server</td><td><code>unsubscribe</code></td><td><code>{ run_id }</code></td></tr>
+      <tr><td>Client &rarr; Server</td><td><code>subscribe_all</code></td><td>&mdash;</td></tr>
+      <tr><td>Client &rarr; Server</td><td><code>ping</code></td><td>&mdash;</td></tr>
+      <tr><td>Server &rarr; Client</td><td><code>connected</code></td><td><code>{ message }</code></td></tr>
+      <tr><td>Server &rarr; Client</td><td><code>log</code></td><td><code>{ data: LogEntry }</code></td></tr>
+      <tr><td>Server &rarr; Client</td><td><code>pong</code></td><td>&mdash;</td></tr>
+      <tr><td>Server &rarr; Client</td><td><code>error</code></td><td><code>{ message }</code></td></tr>
+    </table>
+
+    <h3>REST API Surface</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr>
+      <tr><td>GET</td><td><code>/api/health</code></td><td>Liveness (Docker + DB)</td></tr>
+      <tr><td>GET/POST</td><td><code>/api/pipelines</code></td><td>List / Create pipeline</td></tr>
+      <tr><td>GET/PUT/DELETE</td><td><code>/api/pipelines/:id</code></td><td>Read / Update / Delete</td></tr>
+      <tr><td>GET/POST</td><td><code>/api/pipelines/:id/runs</code></td><td>List / Trigger run</td></tr>
+      <tr><td>GET/POST</td><td><code>/api/runs</code></td><td>List all / Create global</td></tr>
+      <tr><td>GET</td><td><code>/api/runs/:id</code></td><td>Run detail</td></tr>
+      <tr><td>POST</td><td><code>/api/runs/:id/cancel</code></td><td>Cancel a running pipeline</td></tr>
+      <tr><td>GET</td><td><code>/api/runs/:id/logs</code></td><td>Historical logs</td></tr>
+      <tr><td>POST</td><td><code>/api/webhooks/github</code></td><td>GitHub push webhook</td></tr>
+      <tr><td>GET</td><td><code>/api/ws</code></td><td>WebSocket upgrade</td></tr>
+    </table>
+
+    <h2>Key Insights</h2>
+
+    <div class="highlight-box">
+      <p><strong>Real-time log streaming</strong> &mdash; Container output is attached <em>before</em> the container starts (no missed lines). Logs flow through a Tokio broadcast channel to all WebSocket subscribers simultaneously, while being persisted to SQLite in the same task. The frontend subscribes per-run or globally.</p>
+    </div>
+
+    <ul>
+      <li><strong>Container lifecycle</strong> &mdash; pull (skip if cached) &rarr; create &rarr; attach &rarr; start &rarr; stream logs &rarr; wait &rarr; force-remove. Cleanup always runs, even on timeout or error.</li>
+      <li><strong>Concurrency control</strong> &mdash; bounded mpsc channel (100 jobs) prevents memory blow-up; Tokio semaphore caps concurrent runs at <code>max_concurrent</code></li>
+      <li><strong>Retry with exponential backoff</strong> &mdash; steps can declare <code>retries: N</code>; backoff starts at 1s and doubles each attempt (capped at 64s)</li>
+      <li><strong>Graceful shutdown</strong> &mdash; Ctrl+C triggers a signal handler; Axum drains in-flight requests before stopping</li>
+      <li><strong>Trigger modes</strong> &mdash; manual (dashboard button), webhook (GitHub push events), or scheduled</li>
+    </ul>
+
+    <h2>Database Schema</h2>
+    <pre><code>pipelines    (id, name, description, yaml_config, created_at, updated_at)
+runs         (id, pipeline_id, status, trigger_type, started_at, finished_at, created_at)
+step_results (id, run_id, step_name, stage_name, status, exit_code, started_at, finished_at)
+logs         (id, run_id, step_name, level, message, timestamp)
+
+Indexes: runs(pipeline_id), runs(status), logs(run_id)</code></pre>
+
+    <h2>Project Structure</h2>
+    <pre><code>miniCI/
+├── engine/                  # Rust backend
+│   └── src/
+│       ├── main.rs          # Server bootstrap, Docker check, scheduler spawn
+│       ├── api/
+│       │   ├── mod.rs       # Router builder (16 routes)
+│       │   ├── pipelines.rs # CRUD endpoints
+│       │   ├── runs.rs      # Run management + logs
+│       │   ├── webhooks.rs  # GitHub webhook handler
+│       │   └── ws.rs        # WebSocket subscription protocol
+│       ├── db/              # SQLite init + migrations
+│       ├── models/          # Pipeline, Run, StepResult, LogEntry
+│       ├── parser/          # YAML &rarr; PipelineConfig (with 15 tests)
+│       ├── runner/          # DockerRunner: pull, create, attach, stream
+│       └── scheduler/       # JobQueue (mpsc) + wave-based stage executor
+├── frontend/                # React + TypeScript
+│   └── src/
+│       ├── pages/           # Pipelines, Runs, RunDetail, 404
+│       ├── components/      # Layout, Sidebar, StatusBadge, Toast
+│       └── hooks/           # useWebSocket
+└── data/                    # SQLite DB (minici.db)</code></pre>
+
+  </div>
+</body>
+</html>

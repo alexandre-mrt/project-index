@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Index — Alexandre Mourot</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface-hover: #1a1a25;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.15);
+      --orange: #f59e0b;
+      --orange-soft: rgba(245, 158, 11, 0.15);
+      --pink: #ec4899;
+      --pink-soft: rgba(236, 72, 153, 0.15);
+      --cyan: #06b6d4;
+      --cyan-soft: rgba(6, 182, 212, 0.15);
+      --blue: #3b82f6;
+      --blue-soft: rgba(59, 130, 246, 0.15);
+      --teal: #14b8a6;
+      --teal-soft: rgba(20, 184, 166, 0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .header {
+      padding: 3rem 2rem 2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .controls {
+      padding: 1.5rem 2rem;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      width: 280px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search:focus { border-color: var(--accent); }
+
+    .filter-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.9rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+    .filter-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .card-date {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      margin-left: 0.5rem;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .tag-lang { background: var(--accent-soft); color: var(--accent); }
+    .tag-blockchain { background: var(--green-soft); color: var(--green); }
+    .tag-ai { background: var(--pink-soft); color: var(--pink); }
+    .tag-tool { background: var(--orange-soft); color: var(--orange); }
+    .tag-meta { background: var(--cyan-soft); color: var(--cyan); }
+    .tag-web { background: var(--blue-soft); color: var(--blue); }
+    .tag-travel { background: var(--teal-soft); color: var(--teal); }
+
+    .card-links {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-link {
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .card-link:hover {
+      background: var(--accent-soft);
+    }
+
+    .card-link.live {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .card-link.live:hover {
+      background: var(--green-soft);
+    }
+
+    .card-location {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    .card-features {
+      list-style: none;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-features li {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 0.15rem 0;
+    }
+
+    .card-features li::before {
+      content: "›";
+      color: var(--accent);
+      margin-right: 0.5rem;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .category-divider {
+      grid-column: 1 / -1;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      padding: 1rem 0 0.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-top: 0.5rem;
+    }
+
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; padding: 1rem; }
+      .header { padding: 2rem 1rem 1.5rem; }
+      .controls { padding: 1rem; }
+      .search { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Project Index</h1>
+    <p>All projects — updated 2026-04-14</p>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value" id="total-count">0</div>
+        <div class="stat-label">Projects</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="blockchain-count">0</div>
+        <div class="stat-label">Blockchain</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="ai-count">0</div>
+        <div class="stat-label">AI / ML</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="tool-count">0</div>
+        <div class="stat-label">Tools</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="web-count">0</div>
+        <div class="stat-label">Web</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="deployed-count">0</div>
+        <div class="stat-label">Deployed</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <input type="text" class="search" id="search" placeholder="Search projects...">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="blockchain">Blockchain</button>
+    <button class="filter-btn" data-filter="ai">AI / ML</button>
+    <button class="filter-btn" data-filter="privacy">Privacy / ZKP</button>
+    <button class="filter-btn" data-filter="tool">Tools</button>
+    <button class="filter-btn" data-filter="web">Web</button>
+    <button class="filter-btn" data-filter="travel">Travel</button>
+    <button class="filter-btn" data-filter="meta">Meta / Collections</button>
+    <button class="filter-btn" data-filter="game">Games</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const projects = [
+      // ─── ~/project/ ───
+      {
+        name: "roombabox",
+        desc: "Tamper-proof black box for robots on Walrus/Sui. Captures sensor data, hashes and signs locally, stores on Walrus, anchors on Sui.",
+        stack: ["Sui Move", "TypeScript", "Bun", "React", "Walrus"],
+        tags: ["blockchain", "ai"],
+        features: ["Edge agent: Roomba sensor collection + Walrus upload", "Sui Move: BlackBox NFT + hash anchoring + access control", "React dashboard: live map, session replay, integrity verification"],
+        date: "2026-03-26",
+        location: "~/project/",
+        report: "reports/roombabox.html"
+      },
+      {
+        name: "zkp-credential-verifier",
+        desc: "Full-stack anonymous credential verification using Nova folding schemes (ZKP), Sui Move contracts, and React frontend.",
+        stack: ["Rust", "TypeScript", "Sui Move", "React"],
+        tags: ["blockchain", "privacy"],
+        features: ["Nova ZKP circuits with WASM proving", "Issuer dashboard + verifier portal", "On-chain proof verification"],
+        date: "2026-03-25",
+        location: "~/project/",
+        report: "reports/zkp-credential-verifier.html"
+      },
+      {
+        name: "zk-private-payments",
+        desc: "Privacy-preserving payment system: stealth addresses + confidential amounts (Pedersen commitments + range proofs). UTXO-based.",
+        stack: ["Circom", "Solidity", "TypeScript", "React"],
+        tags: ["blockchain", "privacy"],
+        features: ["Groth16 proofs with circomlib", "Stealth address registry", "CLI + React frontend with client-side proving"],
+        date: "2026-03-25",
+        location: "~/project/",
+        report: "reports/zk-private-payments.html"
+      },
+      {
+        name: "zk-mixer",
+        desc: "Privacy-preserving ETH mixer using ZKP. Deposit 0.1 ETH, withdraw to any address without linkability.",
+        stack: ["Circom", "Solidity", "TypeScript", "React"],
+        tags: ["blockchain", "privacy"],
+        features: ["Poseidon-based Merkle tree", "Groth16 withdraw proofs", "CLI + web interface"],
+        date: "2026-03-25",
+        location: "~/project/",
+        report: "reports/zk-mixer.html"
+      },
+      {
+        name: "miniCI",
+        desc: "Local CI/CD engine. Define pipelines in YAML, execute steps in Docker containers, stream logs to a web dashboard.",
+        stack: ["Rust", "React", "SQLite", "Docker"],
+        tags: ["tool"],
+        features: ["Axum REST + WebSocket API", "Docker container execution", "Real-time log streaming"],
+        date: "2026-03-25",
+        location: "~/project/",
+        report: "reports/miniCI.html"
+      },
+      {
+        name: "Master Thesis",
+        desc: "Master thesis at Mysten Labs: anonymous credentials + ZKP + TEE for identity management and private payments on Sui.",
+        stack: ["Rust", "LaTeX"],
+        tags: ["privacy", "blockchain"],
+        features: ["Cryptographic implementations", "LaTeX report with research log", "Nova/Groth16 experiments"],
+        date: "2026-03-25",
+        location: "~/project/",
+        report: "reports/master-thesis.html"
+      },
+      {
+        name: "x402-sui",
+        desc: "TypeScript implementation of the x402 payment protocol for Sui. HTTP 402 Payment Required flow with USDC on Sui.",
+        stack: ["TypeScript", "Sui SDK"],
+        tags: ["blockchain"],
+        features: ["Client + facilitator schemes", "Settlement cache for dedup", "Multi-network support"],
+        date: "2026-03-24",
+        location: "~/project/",
+        report: "reports/x402-sui.html"
+      },
+      {
+        name: "Claude_Jarvis",
+        desc: "Personal OS assistant: calendar, tasks, network coordination, morning briefings, and automation.",
+        stack: ["Markdown", "Claude Code"],
+        tags: ["tool", "ai"],
+        features: ["Morning briefing system", "Telegram integration", "Task & schedule management"],
+        date: "2026-03-24",
+        location: "~/project/",
+        report: "reports/claude-jarvis.html"
+      },
+      {
+        name: "bsa-sui-template-frontend-2025",
+        desc: "BSA 2025 Sui dApp starter: Next.js frontend with counter Move contract and Walrus decentralized storage.",
+        stack: ["Next.js", "TypeScript", "Sui Move", "Tailwind"],
+        tags: ["blockchain"],
+        features: ["App Router + Turbopack", "Walrus blob storage", "dApp Kit integration"],
+        date: "2026-03-24",
+        location: "~/project/",
+        report: "reports/bsa-sui-template-frontend-2025.html"
+      },
+      {
+        name: "ai-pulse",
+        desc: "Automated AI/tech content pipeline. Aggregates news, generates content via Claude API, publishes to newsletter, Twitter, and YouTube.",
+        stack: ["TypeScript", "Bun", "Claude API", "FFmpeg"],
+        tags: ["ai", "tool"],
+        features: ["6 news aggregators (HN, Reddit, ArXiv...)", "ElevenLabs TTS video generation", "Beehiiv newsletter + X publishing"],
+        date: "2026-03-24",
+        location: "~/project/",
+        report: "reports/ai-pulse.html"
+      },
+      {
+        name: "whisper-dictate",
+        desc: "Local voice-to-text dictation for macOS. Hold a key, speak, release — text appears at cursor. 100% local Whisper on Apple Silicon.",
+        stack: ["Python", "Whisper", "macOS APIs"],
+        tags: ["tool", "ai"],
+        features: ["Real-time dictation", "Audio feedback overlay", "Fully offline"],
+        date: "2026-03-23",
+        location: "~/project/",
+        report: "reports/whisper-dictate.html"
+      },
+      {
+        name: "erc8004-sui",
+        desc: "Sui Move implementation of ERC-8004 Trustless Agents Protocol. On-chain identity, reputation, and validation for AI agents.",
+        stack: ["Sui Move"],
+        tags: ["blockchain", "ai"],
+        features: ["Agent identity as NFT objects", "Reputation scoring with tag filtering", "Validator attestation system"],
+        date: "2026-03-23",
+        location: "~/project/",
+        report: "reports/erc8004-sui.html"
+      },
+      {
+        name: "erc8183-sui",
+        desc: "Sui Move implementation of ERC-8183 Agentic Commerce Protocol. Job primitive for trustless AI agent commerce with escrow.",
+        stack: ["Sui Move"],
+        tags: ["blockchain", "ai"],
+        features: ["6-state job lifecycle", "Escrowed SUI payments", "Client/provider/evaluator roles"],
+        date: "2026-03-23",
+        location: "~/project/",
+        report: "reports/erc8183-sui.html"
+      },
+      {
+        name: "Aware.ai",
+        desc: "Switzerland's national platform for safe onboarding into LLMs. Interactive learning to identify AI risks, phishing, and social engineering.",
+        stack: ["React", "Vite", "Tailwind", "Framer Motion"],
+        tags: ["ai"],
+        features: ["Interactive learning journey", "Mocked AI responses for safety", "shadcn/ui + animations"],
+        date: "2026-03-23",
+        location: "~/project/",
+        report: "reports/aware-ai.html"
+      },
+      {
+        name: "canton-projects",
+        desc: "Canton Network ecosystem: 8 sub-projects (credentials, lending, OTC desk, SDK, dashboard) + grant proposals ($155K-$375K).",
+        stack: ["TypeScript", "DAML", "Canton SDK"],
+        tags: ["blockchain", "meta"],
+        features: ["canton-credentials, canton-lend, canton-otc-desk", "canton-scan-dashboard + canton-sdk", "Grant application strategy"],
+        date: "2026-03-25",
+        location: "~/project/",
+        report: "reports/canton-projects.html"
+      },
+      {
+        name: "suibotics-projects",
+        desc: "Robot/IoT projects on Sui blockchain: rental platform, multiplayer controller, and tokenomics.",
+        stack: ["TypeScript", "Sui Move"],
+        tags: ["blockchain", "meta"],
+        features: ["Robot rental platform", "Multiplayer robot controller", "Action queue tokenomics"],
+        date: "2026-03-25",
+        location: "~/project/",
+        report: "reports/suibotics-projects.html"
+      },
+      {
+        name: "0g-projects",
+        desc: "0G Network ecosystem: 7 sub-projects for decentralized storage, AI agents, and data tooling.",
+        stack: ["TypeScript", "0G SDK"],
+        tags: ["blockchain", "meta", "ai"],
+        features: ["0gscope explorer, agent-kit, agent bazaar", "datavault, zerodrop, zerostorage", "Storage gateway spec"],
+        date: "2026-03-24",
+        location: "~/project/",
+        report: "reports/0g-projects.html"
+      },
+      {
+        name: "proposals",
+        desc: "Blockchain improvement proposals. Includes SIP for x402 Sui-native payment protocol.",
+        stack: ["Markdown"],
+        tags: ["blockchain"],
+        features: ["SIP-x402: Sui native payment protocol"],
+        date: "2026-03-24",
+        location: "~/project/",
+        report: "reports/proposals.html"
+      },
+      // ─── NEW: AI ───
+      {
+        name: "telegram-persona-bot",
+        desc: "Reads Telegram messages via GramJS (MTProto), generates structured persona cards for 142+ contacts. Privacy-first: wipes messages after analysis.",
+        stack: ["TypeScript", "Bun", "GramJS", "Claude API"],
+        tags: ["ai", "tool"],
+        features: ["142 personas indexed with metadata", "18-month fetch window (600+ dialogs)", "Privacy-first: message wiping after analysis"],
+        date: "2026-04-05",
+        location: "~/projects/ai/",
+        github: "https://github.com/alexandre-mrt/telegram-persona-bot",
+        report: "reports/telegram-persona-bot.html"
+      },
+      {
+        name: "viralcut",
+        desc: "Automated viral video editing pipeline. Raw video + music to fully edited MP4 + FCPXML. Beat-sync, captions, scene detection, YOLO tracking.",
+        stack: ["Python", "MoviePy", "YOLO", "Whisper", "FFmpeg"],
+        tags: ["ai", "tool"],
+        features: ["Beat-sync video editing with librosa", "Face/object detection with YOLO + SAM2", "FCPXML export for Final Cut Pro"],
+        date: "2026-03-31",
+        location: "~/projects/ai/",
+        report: "reports/viralcut.html"
+      },
+      // ─── NEW: Blockchain ───
+      {
+        name: "soliquid",
+        desc: "Bottle recycling rewards platform on Solana. QR code scanning, token minting, coupon marketplace. Full-stack with mobile app.",
+        stack: ["Anchor", "Bun", "Hono", "React Native", "Expo"],
+        tags: ["blockchain"],
+        features: ["QR scan with nonce verification", "On-chain scan registry (no double-scans)", "$SLIQ token minting + coupon vault"],
+        date: "2026-04-05",
+        location: "~/projects/blockchain/",
+        report: "reports/soliquid.html"
+      },
+      {
+        name: "suipilot",
+        desc: "AI-powered Sui wallet Chrome extension. Claude AI agent for transaction assistance, portfolio management, DeFi integrations (Cetus, NAVI).",
+        stack: ["React", "TypeScript", "Sui SDK", "Claude API", "Zustand"],
+        tags: ["blockchain", "ai"],
+        features: ["Chrome sidebar with AI chat", "DeFi integrations (Cetus, NAVI)", "Secure keystore management"],
+        date: "2026-04-06",
+        location: "~/projects/blockchain/",
+        report: "reports/suipilot.html"
+      },
+      {
+        name: "chainlore",
+        desc: "Interactive visual encyclopedia of blockchain history. Timelines, D3 force-directed graphs, full-text search across eras, projects, people, events.",
+        stack: ["Next.js", "React", "D3.js", "Framer Motion", "Fuse.js"],
+        tags: ["blockchain", "web"],
+        features: ["Force-directed graph visualization", "Multi-dimensional entity search", "Era/project/person/event pages"],
+        date: "2026-04-05",
+        location: "~/projects/blockchain/",
+        report: "reports/chainlore.html"
+      },
+      {
+        name: "security-research",
+        desc: "White-hat security research on 40+ protocols. 50+ reports covering Ethereum, Solana, Sui, Polygon, Arbitrum, and more.",
+        stack: ["Rust", "Markdown"],
+        tags: ["blockchain", "privacy"],
+        features: ["Critical: Drift Protocol ($285M), Resolv Labs ($25M)", "DeepBook V3 deep analysis", "Cross-chain coverage (14+ networks)"],
+        date: "2026-04-14",
+        location: "~/projects/blockchain/",
+        report: "reports/security-research.html"
+      },
+      // ─── NEW: Web ───
+      {
+        name: "network-dashboard",
+        desc: "Personal network dashboard with editorial/Monocle design. 142 persona cards, opportunities tracker, professional situation overview.",
+        stack: ["Next.js 15", "React 19", "Supabase", "Tailwind v4"],
+        tags: ["web", "tool"],
+        features: ["Filterable persona list + detail pages", "Opportunity tracker with CRUD", "Auth system with Supabase"],
+        date: "2026-04-08",
+        location: "~/projects/web/",
+        url: "https://network-dashboard.vercel.app",
+        report: "reports/network-dashboard.html"
+      },
+      {
+        name: "worldpulse",
+        desc: "Global intelligence dashboard: news, conflict data (ACLED), finance (CoinGecko), video streams. 4 editorial personalities re-rank data.",
+        stack: ["Next.js 16", "React 19", "Leaflet", "Zustand", "Recharts"],
+        tags: ["web", "ai"],
+        features: ["Real-time news from GNews + RSS", "Interactive conflict map (ACLED)", "4 editorial personality modes"],
+        date: "2026-04-13",
+        location: "~/projects/web/",
+        url: "https://worldpulse.vercel.app",
+        report: "reports/worldpulse.html"
+      },
+      // ─── NEW: Travel ───
+      {
+        name: "road-trips-website",
+        desc: "Immersive showcase of 15 spiritual/cultural road trips worldwide. National Geographic magazine design with MapLibre maps.",
+        stack: ["Next.js 15", "MapLibre GL", "Tailwind v4", "Bun"],
+        tags: ["travel", "web"],
+        features: ["15 detailed trip packages with routes", "Interactive MapLibre maps", "Day-by-day itineraries + budgets"],
+        date: "2026-04-06",
+        location: "~/projects/trips/",
+        url: "https://road-trips-website.vercel.app",
+        report: "reports/road-trips-website.html"
+      },
+      {
+        name: "georgia-trip",
+        desc: "Interactive travel companion website for Georgia. Mobile-first with day-by-day itineraries and Google Maps routing.",
+        stack: ["HTML", "CSS", "JavaScript"],
+        tags: ["travel"],
+        features: ["Mobile-first responsive design", "Day-by-day itineraries", "Google Maps routing integration"],
+        date: "2025-10-15",
+        location: "~/projects/trips/",
+        url: "https://georgia-trip.vercel.app",
+        report: "reports/georgia-trip.html"
+      },
+      {
+        name: "iceland-trip",
+        desc: "Interactive Iceland road trip website with OSRM routing, GPS waypoints, and location-specific photos.",
+        stack: ["HTML", "CSS", "JavaScript", "Leaflet", "OSRM"],
+        tags: ["travel"],
+        features: ["Interactive road trip mapping", "120+ verified Unsplash images", "Route optimization"],
+        date: "2025-08-20",
+        location: "~/projects/trips/",
+        url: "https://iceland-trip.vercel.app",
+        report: "reports/iceland-trip.html"
+      },
+      {
+        name: "japan-singapore-trip",
+        desc: "Interactive trip planner for Japan + Singapore (Sept 22 - Oct 11, 2026). Leaflet map, horizontal timeline, budget, packing checklist.",
+        stack: ["HTML", "CSS", "JavaScript", "Leaflet"],
+        tags: ["travel"],
+        features: ["Phase-colored markers (Tokyo, Osaka, Singapore)", "Dual driving route modes", "Budget overview + weather"],
+        date: "2025-11-10",
+        location: "~/projects/trips/",
+        url: "https://japan-singapore-trip.vercel.app",
+        report: "reports/japan-singapore-trip.html"
+      },
+      // ─── NEW: Tools ───
+      {
+        name: "claude-swarm",
+        desc: "Multi-agent Claude Code orchestration via tmux and shared files. Launch N agents communicating through filesystem-based workspace.",
+        stack: ["Bash", "tmux", "Claude Code"],
+        tags: ["tool", "ai"],
+        features: ["Local or SSH deployment", "Agent registry + status tracking", "Live monitoring dashboard"],
+        date: "2026-03-26",
+        location: "~/projects/tools/",
+        report: "reports/claude-swarm.html"
+      },
+      {
+        name: "mac-mini-setup",
+        desc: "Automated setup for Mac Mini as 24/7 Claude Code server with iMessage Channels. Family members text Claude via iMessage.",
+        stack: ["Bash", "macOS", "Claude Code", "tmux"],
+        tags: ["tool"],
+        features: ["LaunchAgent auto-restart", "SyncThing config sync", "Multi-user iMessage access"],
+        date: "2026-04-01",
+        location: "~/projects/tools/",
+        report: "reports/mac-mini-setup.html"
+      },
+      {
+        name: "jarvis-phone",
+        desc: "Telegram bot interface for Claude Night Shift / Long Run sessions. Project status, voice input/output, session management.",
+        stack: ["Bun", "Hono", "Telegram Bot API", "Groq Whisper"],
+        tags: ["tool", "ai"],
+        features: ["Voice transcription via Groq Whisper", "Project list with inline keyboard", "Quiet hours (23h-9h)"],
+        date: "2026-03-30",
+        location: "~/projects/misc/",
+        report: "reports/jarvis-phone.html"
+      },
+      {
+        name: "thesis-study-plan",
+        desc: "Interactive study website for master thesis preparation. 6 chapters, 80+ papers with technical recaps, Pomodoro timer.",
+        stack: ["HTML", "CSS", "JavaScript"],
+        tags: ["tool", "privacy"],
+        features: ["80+ papers with deep dive recaps", "Progress tracking (localStorage)", "Global concept search + Pomodoro timer"],
+        date: "2026-04-09",
+        location: "~/projects/thesis/",
+        url: "https://thesis-study-plan.vercel.app",
+        report: "reports/thesis-study-plan.html"
+      },
+      {
+        name: "edi-challenge",
+        desc: "NFT badge minter on Polygon for ELCA Digital Innovation Challenge 2026. Form + live 3D preview + server-side minting, no wallet needed.",
+        stack: ["Next.js", "Solidity", "Hardhat", "Polygon", "IPFS"],
+        tags: ["blockchain", "web"],
+        features: ["Real-time 3D badge preview", "Server-side minting (no wallet)", "Badge lookup by wallet/token ID"],
+        date: "2026-03-27",
+        location: "~/projects/misc/",
+        report: "reports/edi-challenge.html"
+      },
+      {
+        name: "pf-construction",
+        desc: "Portfolio construction analysis: crypto (10 pairs) + traditional indices (4 assets). EDA, covariance cleaning, optimization algorithms.",
+        stack: ["Python", "NumPy", "Pandas", "SciPy"],
+        tags: ["tool"],
+        features: ["Min Variance, ERC, ENB, HRP optimization", "Covariance matrix cleaning", "Euler risk contributions"],
+        date: "2026-03-04",
+        location: "~/projects/misc/",
+        report: "reports/pf-construction.html"
+      },
+      {
+        name: "github-dot-github",
+        desc: "Centralized GitHub org config for alexandre-mrt. Profile README, reusable CI workflows for TypeScript, Rust, Sui Move.",
+        stack: ["GitHub Actions", "YAML"],
+        tags: ["tool"],
+        features: ["Reusable workflows (TS, Rust, Move)", "Dependabot configuration", "Security best practices"],
+        date: "2026-04-05",
+        location: "~/projects/tools/",
+        report: "reports/github-dot-github.html"
+      },
+      {
+        name: "dataviz-perfume",
+        desc: "COM-480 Data Visualization course project. Interactive perfume data exploration with D3.js and Svelte.",
+        stack: ["Svelte", "D3.js", "TypeScript"],
+        tags: ["web", "tool"],
+        features: ["Interactive perfume visualization", "Course: COM-480 at EPFL", "Milestone 2 due 2026-05-01"],
+        date: "2026-04-01",
+        location: "~/projects/",
+        report: "reports/dataviz-perfume.html"
+      },
+      // ─── ~/projects/ (existing, updated) ───
+      {
+        name: "bjj-knowledge-graph",
+        desc: "Interactive BJJ technique knowledge graph with dual-view visualization (force-directed + hierarchical). Gi and No-Gi.",
+        stack: ["TypeScript", "Vite", "D3.js", "Bun"],
+        tags: ["tool"],
+        features: ["Force-directed + hierarchical graph views", "Technique data from legendary practitioners", "Position/technique/transition data model"],
+        date: "2026-03-26",
+        location: "~/projects/",
+        url: "https://bjj-knowledge-graph.vercel.app",
+        report: "reports/bjj-knowledge-graph.html"
+      },
+      {
+        name: "life-guide",
+        desc: "Evidence-based decision guidance app with interactive graph visualization. Bilingual (EN/FR).",
+        stack: ["Next.js 15", "TypeScript", "@xyflow/react", "Tailwind"],
+        tags: ["tool"],
+        features: ["Interactive decision graph with @xyflow/react", "Dashboard + node search", "i18n (English/French)"],
+        date: "2026-03-26",
+        location: "~/projects/",
+        url: "https://life-guide-orcin.vercel.app",
+        report: "reports/life-guide.html"
+      },
+      {
+        name: "polymarket-bot",
+        desc: "Autonomous multi-strategy trading bot for Polymarket prediction markets.",
+        stack: ["TypeScript", "Bun"],
+        tags: ["tool", "ai"],
+        features: ["Multi-strategy execution", "Polymarket API integration", "Autonomous trading"],
+        date: "2026-03-25",
+        location: "~/projects/",
+        report: "reports/polymarket-bot.html"
+      },
+      {
+        name: "sui-arb-agent",
+        desc: "Autonomous DeFi arbitrage agent on Sui: detects price discrepancies between DeepBook v3 and Cetus, executes atomic swaps.",
+        stack: ["TypeScript", "Sui SDK"],
+        tags: ["blockchain", "ai"],
+        features: ["DeepBook v3 + Cetus monitoring", "Atomic PTB swaps", "Real-time price scanning"],
+        date: "2026-03-24",
+        location: "~/projects/",
+        report: "reports/sui-arb-agent.html"
+      },
+      {
+        name: "sui-rps-seal",
+        desc: "Rock Paper Scissors on Sui with two implementations: on-chain Seal decryption (BLS12-381) and commit-reveal.",
+        stack: ["Sui Move", "TypeScript", "React"],
+        tags: ["blockchain", "game"],
+        features: ["Seal BLS12-381 decryption in Move", "Commit-reveal scheme", "Web frontend"],
+        date: "2026-03-24",
+        location: "~/projects/",
+        report: "reports/sui-rps-seal.html"
+      },
+      {
+        name: "personal-website",
+        desc: "Personal portfolio website.",
+        stack: ["TypeScript", "React"],
+        tags: ["tool"],
+        features: ["Portfolio showcase"],
+        date: "2026-03-21",
+        location: "~/projects/",
+        report: "reports/personal-website.html"
+      },
+      {
+        name: "dino-game",
+        desc: "Chrome dino game clone.",
+        stack: ["JavaScript"],
+        tags: ["game"],
+        features: ["Browser-based game"],
+        date: "2026-03-22",
+        location: "~/projects/",
+        report: "reports/dino-game.html"
+      },
+      {
+        name: "flappy-bird",
+        desc: "Flappy Bird clone.",
+        stack: ["JavaScript"],
+        tags: ["game"],
+        features: ["Browser-based game"],
+        date: "2026-03-22",
+        location: "~/projects/",
+        report: "reports/flappy-bird.html"
+      },
+      {
+        name: "rock-paper-scissors",
+        desc: "Rock Paper Scissors browser game.",
+        stack: ["JavaScript"],
+        tags: ["game"],
+        features: ["Browser-based game"],
+        date: "2026-03-22",
+        location: "~/projects/",
+        report: "reports/rock-paper-scissors.html"
+      }
+    ];
+
+    const tagColors = {
+      blockchain: "tag-blockchain",
+      ai: "tag-ai",
+      tool: "tag-tool",
+      privacy: "tag-lang",
+      meta: "tag-meta",
+      web: "tag-web",
+      travel: "tag-travel",
+      game: "tag-lang"
+    };
+
+    const tagLabels = {
+      blockchain: "Blockchain",
+      ai: "AI",
+      tool: "Tool",
+      privacy: "ZKP/Privacy",
+      meta: "Collection",
+      web: "Web",
+      travel: "Travel",
+      game: "Game"
+    };
+
+    function renderCard(p) {
+      const tagsHtml = p.tags.map(t =>
+        `<span class="tag ${tagColors[t] || 'tag-lang'}">${tagLabels[t] || t}</span>`
+      ).join("");
+      const stackHtml = p.stack.map(s =>
+        `<span class="tag tag-lang">${s}</span>`
+      ).join("");
+      const featuresHtml = p.features.map(f => `<li>${f}</li>`).join("");
+
+      let linksHtml = "";
+      if (p.url || p.report) {
+        const parts = [];
+        if (p.url) parts.push(`<a class="card-link live" href="${p.url}" target="_blank">Live</a>`);
+        if (p.github) parts.push(`<a class="card-link" href="${p.github}" target="_blank">GitHub</a>`);
+        if (p.report) parts.push(`<a class="card-link" href="${p.report}" target="_blank">Report</a>`);
+        linksHtml = `<div class="card-links">${parts.join("")}</div>`;
+      }
+
+      return `
+        <div class="card" data-tags="${p.tags.join(",")}" data-name="${p.name.toLowerCase()}" data-desc="${p.desc.toLowerCase()}">
+          <div class="card-header">
+            <span class="card-name">${p.name}</span>
+            <span class="card-date">${p.date}</span>
+          </div>
+          <p class="card-desc">${p.desc}</p>
+          <div class="card-tags">${tagsHtml} ${stackHtml}</div>
+          <ul class="card-features">${featuresHtml}</ul>
+          ${linksHtml}
+          <span class="card-location">${p.location}</span>
+        </div>
+      `;
+    }
+
+    function render(filtered) {
+      const grid = document.getElementById("grid");
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="empty-state">No projects match your search.</div>';
+        return;
+      }
+
+      const categories = [
+        { label: "Blockchain", filter: p => p.tags.includes("blockchain") },
+        { label: "AI / ML", filter: p => p.tags.includes("ai") && !p.tags.includes("blockchain") },
+        { label: "Web Apps", filter: p => p.tags.includes("web") && !p.tags.includes("blockchain") && !p.tags.includes("ai") },
+        { label: "Travel", filter: p => p.tags.includes("travel") && !p.tags.includes("web") },
+        { label: "Tools & Infra", filter: p => p.tags.includes("tool") && !p.tags.includes("blockchain") && !p.tags.includes("ai") && !p.tags.includes("web") && !p.tags.includes("travel") },
+        { label: "Privacy / Research", filter: p => p.tags.includes("privacy") && !p.tags.includes("blockchain") && !p.tags.includes("tool") },
+        { label: "Games", filter: p => p.tags.includes("game") },
+      ];
+      const assigned = new Set();
+      let html = "";
+      for (const cat of categories) {
+        const items = filtered.filter(p => !assigned.has(p.name) && cat.filter(p));
+        items.forEach(p => assigned.add(p.name));
+        if (items.length > 0) {
+          html += `<div class="category-divider">${cat.label}</div>`;
+          html += items.map(renderCard).join("");
+        }
+      }
+      const remaining = filtered.filter(p => !assigned.has(p.name));
+      if (remaining.length > 0) {
+        html += '<div class="category-divider">Other</div>';
+        html += remaining.map(renderCard).join("");
+      }
+      grid.innerHTML = html;
+    }
+
+    function updateStats(filtered) {
+      document.getElementById("total-count").textContent = filtered.length;
+      document.getElementById("blockchain-count").textContent = filtered.filter(p => p.tags.includes("blockchain")).length;
+      document.getElementById("ai-count").textContent = filtered.filter(p => p.tags.includes("ai")).length;
+      document.getElementById("tool-count").textContent = filtered.filter(p => p.tags.includes("tool")).length;
+      document.getElementById("web-count").textContent = filtered.filter(p => p.tags.includes("web") || p.tags.includes("travel")).length;
+      document.getElementById("deployed-count").textContent = filtered.filter(p => p.url).length;
+    }
+
+    let activeFilter = "all";
+
+    function applyFilters() {
+      const query = document.getElementById("search").value.toLowerCase();
+      const filtered = projects.filter(p => {
+        const matchesFilter = activeFilter === "all" || p.tags.includes(activeFilter);
+        const matchesSearch = !query ||
+          p.name.toLowerCase().includes(query) ||
+          p.desc.toLowerCase().includes(query) ||
+          p.stack.some(s => s.toLowerCase().includes(query));
+        return matchesFilter && matchesSearch;
+      });
+      render(filtered);
+      updateStats(filtered);
+    }
+
+    document.getElementById("search").addEventListener("input", applyFilters);
+
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeFilter = btn.dataset.filter;
+        applyFilters();
+      });
+    });
+
+    // Initial render
+    applyFilters();
+  </script>
+</body>
+</html>

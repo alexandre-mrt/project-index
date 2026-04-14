@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Jarvis — Personal OS</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.12);
+      --orange: #f59e0b;
+      --orange-soft: rgba(245, 158, 11, 0.12);
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.10);
+      --cyan: #06b6d4;
+      --cyan-soft: rgba(6, 182, 212, 0.12);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); line-height: 1.55; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box.green { border-left-color: var(--green); background: var(--green-soft); }
+    .highlight-box.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .highlight-box.red { border-left-color: var(--red); background: var(--red-soft); }
+    .highlight-box.cyan { border-left-color: var(--cyan); background: var(--cyan-soft); }
+    .highlight-box p { margin-bottom: 0; }
+    .highlight-box strong { font-size: 0.85rem; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+    .tag.markdown { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.25); }
+    .tag.claude { background: var(--orange-soft); color: var(--orange); border: 1px solid rgba(245, 158, 11, 0.25); }
+    .tag.telegram { background: var(--cyan-soft); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.25); }
+    .tag.mcp { background: var(--green-soft); color: var(--green); border: 1px solid rgba(34, 197, 94, 0.25); }
+    .tag.config { background: rgba(168, 85, 247, 0.12); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.25); }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.82rem; }
+    th { background: var(--surface); color: var(--text); font-weight: 600; }
+    td { color: var(--text-muted); }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .status-badge.active { background: var(--green-soft); color: var(--green); }
+
+    .ascii-diagram {
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--accent);
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hl { color: var(--green); }
+    .ascii-diagram .warn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Claude Jarvis</h1>
+    <p class="subtitle">
+      A markdown-driven personal OS that unifies calendar, tasks, network, news,
+      hobbies, and decisions into a single conversational interface.
+    </p>
+
+    <div class="tags">
+      <span class="tag markdown">Markdown</span>
+      <span class="tag claude">Claude Code</span>
+      <span class="tag mcp">Google Calendar MCP</span>
+      <span class="tag telegram">Telegram MTProto</span>
+      <span class="tag config">Config-as-Code</span>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Personal OS &middot; Active since March 2026</strong></p>
+      <p>No backend, no database, no deployment. Just markdown files and natural language.</p>
+    </div>
+
+    <!-- ===== THE CHALLENGE ===== -->
+    <h2>The Challenge</h2>
+    <p>
+      Personal productivity is fragmented across <strong>dozens of disconnected apps</strong>.
+      Google Calendar for events, Todoist for tasks, a CRM for contacts, RSS for news,
+      Duolingo for languages, Notes for decisions. None of them talk to each other.
+      None of them know your context.
+    </p>
+    <div class="highlight-box red">
+      <p><strong>Core problem:</strong> No single tool coordinates your calendar, tasks,
+      relationships, learning goals, and information diet into a unified intelligence layer.
+      You spend more time managing tools than doing the work.</p>
+    </div>
+    <p>
+      Every morning starts with context-switching between 5+ apps just to figure out
+      what matters today. Relationships go cold because no system tracks who you
+      haven't spoken to. Decisions are made and forgotten without a trace.
+    </p>
+
+    <!-- ===== WHY IT MATTERS ===== -->
+    <h2>Why It Matters</h2>
+    <ul>
+      <li><strong>Context-aware prioritization</strong> &mdash; one system that knows your calendar,
+        deadlines, relationships, and goals can surface what actually matters each morning</li>
+      <li><strong>Relationship maintenance</strong> &mdash; automatic flagging of contacts you
+        haven't reached out to in 30+ days prevents network decay</li>
+      <li><strong>Live intelligence</strong> &mdash; curated news topics searched daily, with
+        deep-dive triggers for breakthroughs relevant to your work</li>
+      <li><strong>Zero-friction interface</strong> &mdash; say "good morning" and get a complete
+        briefing; say "add task" and it is tracked. Natural language, no UI to learn</li>
+      <li><strong>Decision memory</strong> &mdash; every choice logged with context and reasoning,
+        reviewable monthly to learn from patterns</li>
+    </ul>
+
+    <!-- ===== HOW IT WORKS ===== -->
+    <h2>How It Works</h2>
+
+    <pre><code class="ascii-diagram">
+<span class="dim">                         "good morning"</span>
+<span class="dim">                              |</span>
+<span class="dim">                              v</span>
+<span class="warn">                     +----------------+</span>
+<span class="warn">                     |  JARVIS CORE   |</span>
+<span class="warn">                     |  (Claude Code) |</span>
+<span class="warn">                     +-------+--------+</span>
+<span class="dim">                             |</span>
+<span class="dim">          reads morning.md sequence</span>
+<span class="dim">                             |</span>
+<span class="dim">      +----------+-----------+-----------+----------+</span>
+<span class="dim">      |          |           |           |          |</span>
+<span class="dim">      v          v           v           v          v</span>
+<span class="hl"> Google Cal</span>  <span class="hl">tasks/</span>    <span class="hl">network/</span>   <span class="hl">news-config</span>  <span class="hl">hobbies/</span>
+<span class="dim"> (MCP tool)</span>  <span class="dim">today.md</span>   <span class="dim">*.md</span>       <span class="dim">.md</span>         <span class="dim">spanish.md</span>
+<span class="dim">      |          |           |           |          |</span>
+<span class="dim">      |    top 3 tasks   30+ day gap   web search  streak +</span>
+<span class="dim">      |          |        flagged    per topic   practice</span>
+<span class="dim">      |          |           |           |          |</span>
+<span class="dim">      +----------+-----------+-----------+----------+</span>
+<span class="dim">                             |</span>
+<span class="dim">                             v</span>
+<span class="warn">                  +---------------------+</span>
+<span class="warn">                  |  MORNING BRIEFING   |</span>
+<span class="warn">                  |  (formatted output) |</span>
+<span class="warn">                  +----------+----------+</span>
+<span class="dim">                             |</span>
+<span class="dim">                             v</span>
+<span class="hl">                      Telegram Bot</span>
+<span class="dim">                      (MTProto)</span>
+</code></pre>
+
+    <div class="highlight-box cyan">
+      <p><strong>Conversational control plane:</strong> Every module is a markdown file.
+      Every action is a natural language command. "Add task", "log decision",
+      "prep for call with X", "who should I reach out to" &mdash; Jarvis reads,
+      writes, and searches the right files automatically.</p>
+    </div>
+
+    <h3>Briefing Sequence</h3>
+    <table>
+      <tr><th>#</th><th>Module</th><th>Source</th><th>Action</th></tr>
+      <tr><td>1</td><td>Date + Intention</td><td>&mdash;</td><td>Anchor the day with a sharp one-liner</td></tr>
+      <tr><td>2</td><td>Calendar</td><td>Google Calendar MCP</td><td>List today's events</td></tr>
+      <tr><td>3</td><td>Tasks</td><td><code>tasks/today.md</code></td><td>Surface top 3 by priority</td></tr>
+      <tr><td>4</td><td>Schedule</td><td>Calendar</td><td>Show calls/meetings (skip if free day)</td></tr>
+      <tr><td>5</td><td>Live News</td><td><code>news-config.md</code></td><td>Web search each topic, deep-dive on breakthroughs</td></tr>
+      <tr><td>6</td><td>Network Pulse</td><td><code>network/*.md</code></td><td>Flag contacts with 30+ days silence</td></tr>
+      <tr><td>7</td><td>Spanish Streak</td><td><code>hobbies/spanish.md</code></td><td>Current streak + today's practice</td></tr>
+      <tr><td>8</td><td>English Expression</td><td>&mdash;</td><td>One idiomatic phrase natives use</td></tr>
+      <tr><td>9</td><td>Meta-Review</td><td><code>~/.claude/meta/</code></td><td>Remind if overdue entries exist</td></tr>
+    </table>
+
+    <!-- ===== TECH STACK ===== -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Component</th><th>Technology</th><th>Purpose</th></tr>
+      <tr>
+        <td>Core Engine</td>
+        <td>Claude Code (CLI)</td>
+        <td>Reads markdown config, executes briefing logic, manages state</td>
+      </tr>
+      <tr>
+        <td>Data Layer</td>
+        <td>Markdown files</td>
+        <td>Tasks, contacts, schedules, decisions, hobbies &mdash; all plain text</td>
+      </tr>
+      <tr>
+        <td>Calendar</td>
+        <td>Google Calendar MCP</td>
+        <td>Read/write events via Model Context Protocol</td>
+      </tr>
+      <tr>
+        <td>News</td>
+        <td>Web Search (live)</td>
+        <td>Configurable topic search per <code>news-config.md</code></td>
+      </tr>
+      <tr>
+        <td>Delivery</td>
+        <td>Telegram MTProto (GramJS)</td>
+        <td>Push briefings and alerts to personal chat</td>
+      </tr>
+      <tr>
+        <td>Automation</td>
+        <td>Claude skills + subagents</td>
+        <td><code>/telegram</code>, <code>/planner</code> for orchestration</td>
+      </tr>
+    </table>
+
+    <!-- ===== PROJECT STRUCTURE ===== -->
+    <h2>Project Structure</h2>
+
+    <pre><code>Claude_Jarvis/
+  morning.md        # Briefing sequence config (9-step pipeline)
+  news-config.md    # News topics: blockchain, AI agents, ZK/TEE, fundraising
+  tasks/
+    today.md        # Daily priorities (high / medium / low / done)
+    backlog.md      # Parked tasks
+    _template.md    # Task template
+  schedule/
+    today.md        # Today's time blocks
+    weekly.md       # Week view
+    recurring.md    # Fixed commitments (daily, weekly, monthly)
+  network/
+    _template.md    # Contact profile template (snapshot, goals, interaction log)
+    README.md       # Network module docs
+  hobbies/
+    spanish.md      # Progress tracker (A2, streak, grammar checkpoints)
+    spanish-plan.md # Study plan
+  decisions/
+    log.md          # Decision journal (date, choice, context, reasoning, outcome)
+  telegram-bot/     # Telegram delivery integration
+  CLAUDE.md         # Project config
+  USAGE.md          # Natural language command reference</code></pre>
+
+    <!-- ===== COMMAND INTERFACE ===== -->
+    <h2>Command Interface</h2>
+    <p>No CLI flags or APIs. Just talk naturally:</p>
+
+    <table>
+      <tr><th>Domain</th><th>Say</th><th>What Happens</th></tr>
+      <tr><td>Morning</td><td><code>good morning</code></td><td>Full 9-step briefing</td></tr>
+      <tr><td>Tasks</td><td><code>add task: [desc]</code></td><td>Adds to today with priority prompt</td></tr>
+      <tr><td>Network</td><td><code>prep for call with [name]</code></td><td>Reads profile, surfaces talking points</td></tr>
+      <tr><td>Network</td><td><code>who should I reach out to</code></td><td>Scans for stale contacts</td></tr>
+      <tr><td>Schedule</td><td><code>block time for [X] at [time]</code></td><td>Adds to schedule</td></tr>
+      <tr><td>Hobbies</td><td><code>Spanish session done</code></td><td>Logs session, updates streak</td></tr>
+      <tr><td>Decisions</td><td><code>log decision: [X] because [Y]</code></td><td>Appends to decision journal</td></tr>
+    </table>
+
+    <!-- ===== NEWS TOPICS ===== -->
+    <h2>News Configuration</h2>
+    <p>Each morning, Jarvis web-searches these configurable topic areas:</p>
+    <ul>
+      <li><strong>Blockchain Development</strong> &mdash; EIPs, Solidity tooling, L2 updates, exploits, hackathons</li>
+      <li><strong>Fundraising &amp; Opportunities</strong> &mdash; recent raises, grant programs, token launches</li>
+      <li><strong>AI Agents &amp; Robotics on Blockchain</strong> &mdash; credible agent frameworks, autonomous protocols</li>
+      <li><strong>ZK Proofs, TEEs &amp; Identity</strong> &mdash; research papers, Mysten/Sui updates, arxiv preprints</li>
+    </ul>
+    <div class="highlight-box orange">
+      <p><strong>Deep-dive rule:</strong> If any search reveals a significant breakthrough
+      (protocol upgrade, major exploit, groundbreaking paper), Jarvis automatically runs
+      additional searches and provides a detailed explanation of what happened, why it matters,
+      and how it connects to current work.</p>
+    </div>
+
+    <!-- ===== KEY INSIGHTS ===== -->
+    <h2>Key Insights</h2>
+
+    <div class="highlight-box green">
+      <p><strong>Config-as-code personal OS.</strong>
+      Every aspect of life management is a markdown file: editable, versionable, portable.
+      No database migrations, no API rate limits, no subscription fees.
+      Adding a new life domain is just creating a new <code>.md</code> file.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>No traditional backend needed.</strong>
+      Claude Code acts as the runtime. MCP provides calendar integration.
+      Web search provides live intelligence. Telegram provides delivery.
+      The entire "backend" is a folder of markdown files and a language model
+      that knows how to read them.</p>
+    </div>
+
+    <div class="highlight-box cyan">
+      <p><strong>Natural language as the only interface.</strong>
+      The golden rule: "Talk naturally. If you're unsure of a command, just describe
+      what you want." There are no buttons, no forms, no dashboards. The command
+      reference exists for discoverability, but free-form language always works.</p>
+    </div>
+
+    <div class="highlight-box orange">
+      <p><strong>Relationship maintenance as a system.</strong>
+      The network module treats contacts like living documents: who they are,
+      what they need, how to help them, interaction history. The 30-day silence
+      detector prevents relationships from going cold by accident.</p>
+    </div>
+
+  </div>
+</body>
+</html>

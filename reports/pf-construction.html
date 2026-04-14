@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Construction — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Portfolio Construction</h1>
+    <p class="subtitle">Advanced portfolio optimization comparing risk-based strategies on crypto and traditional asset portfolios</p>
+
+    <div class="tags">
+      <span class="tag">Python</span>
+      <span class="tag green">NumPy</span>
+      <span class="tag cyan">Pandas</span>
+      <span class="tag orange">SciPy</span>
+      <span class="tag">Matplotlib</span>
+      <span class="tag green">riskfolio-lib</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>How do you build a diversified portfolio when half the assets are cryptocurrencies with extreme volatility and non-normal return distributions?</strong></p>
+      <p>Traditional mean-variance optimization (Markowitz) assumes elliptical distributions and stable correlations. Crypto assets violate both assumptions. The SBF crash of November 2022 demonstrated how correlation structures shift violently during crises, making naive optimization dangerous.</p>
+    </div>
+
+    <p>This project implements and compares 5 portfolio construction strategies across 14 assets (10 crypto-USD pairs + 4 traditional indices) over the period October 2017 to March 2025. It uses cleaned covariance matrices (both sample and EWMA), performs out-of-sample backtesting with periodic rebalancing, and evaluates each strategy by Euler risk contributions and diversification metrics.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>5 competing strategies</strong>: 1/N (equal weight), Markowitz (minimum variance), Roncalli ERC (equal risk contribution), Meucci (minimum effective number of bets), and DePrado HRP (hierarchical risk parity).</li>
+      <li><strong>Covariance cleaning</strong>: both raw sample and EWMA-smoothed covariance matrices are pre-computed and cleaned, then loaded for each optimization window.</li>
+      <li><strong>Out-of-sample backtesting</strong>: weights are computed on historical windows (PP_252, TR_252, etc.) and applied forward to unseen returns, preventing look-ahead bias.</li>
+      <li><strong>Crash resilience analysis</strong>: the dataset spans the SBF/FTX collapse, enabling comparison of how each strategy handles regime changes.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Optimization Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="dim">DATA LOADING</span>                    <span class="dim">OPTIMIZATION</span>                  <span class="dim">BACKTESTING</span>
+
+returns_slices/              For each period key:
+  PP_252.csv  ---+                                         Out-of-sample
+  TR_252.csv  ---+           <span class="hi">1/N</span>                           window returns
+  PP_105.csv  ---+              w = [1/N, ..., 1/N]              |
+  TR_105.csv  ---+                                               v
+       |                     <span class="cyn">Markowitz (Min-Var)</span>          performance =
+       v                        min w^T * Sigma * w        returns . weights
+clean_cov_matrices/             s.t. sum(w) = 1                  |
+  covs/                         bounds: [0, 1]                   v
+    PP_252.csv ---+                                        Cumulative product
+    TR_252.csv ---+          <span class="grn">Roncalli ERC</span>                 (1 + r_t).cumprod()
+  ewma_covs/                    min sum (RC_i - RC_j)^2          |
+    PP_252.csv ---+             s.t. sum(w) = 1                  v
+    TR_252.csv ---+             where RC = w * (Sigma*w)   <span class="orn">Plot cumulative</span>
+                                                           <span class="orn">performance.png</span>
+                             <span class="orn">Meucci (Min ENB)</span>
+                                Minimize effective bets
+                                Entropy-based objective
+
+                             <span class="hi">DePrado HRP</span>
+                                Hierarchical clustering
+                                on correlation matrix
+                                Top-down bisection alloc
+                                via riskfolio-lib</code></div>
+
+    <h3>Strategy Comparison Framework</h3>
+    <div class="ascii-diagram"><code><span class="hi">PortfolioOptimizer.py</span> (main orchestrator)
+       |
+       |  1. Load total returns (Oct 2017 - Mar 2025)
+       |  2. For each period key (PP_252, TR_252):
+       |       compute_weights() -> {strategy: weights}
+       |  3. build_performance_slices()
+       |       - Ordered by start date
+       |       - Apply weights to forward returns
+       |       - Concatenate, deduplicate boundaries
+       |  4. plot_cumulative_performance()
+       |
+       v
++------------------+------------------+------------------+
+|  <span class="cyn">erc.py</span>          |  <span class="grn">mv.py</span>           |  <span class="orn">hrp.py</span>          |
+|  Roncalli_pf     |  Markowitz_pf    |  DePrado_pf      |
+|  SLSQP solver    |  SLSQP solver    |  riskfolio-lib   |
+|  ERC objective   |  Variance obj    |  HRP model       |
+|  + verify_erc()  |  + tangency pf   |  Custom cov      |
++------------------+------------------+------------------+
+|  <span class="hi">erc_lib.py</span>                                            |
+|  Utility functions for risk contribution analysis       |
++------------------+------------------+------------------+
+|  <span class="hi">hrp_lib.py</span>                                            |
+|  HRP helper functions                                   |
++---------------------------------------------------------+</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Language</td><td><code>Python 3.10+</code></td><td>Scientific computing, optimization</td></tr>
+      <tr><td>Linear Algebra</td><td><code>NumPy</code></td><td>Matrix operations, covariance computation</td></tr>
+      <tr><td>Data</td><td><code>Pandas</code></td><td>Time-series returns, CSV I/O, indexing</td></tr>
+      <tr><td>Optimization</td><td><code>SciPy (SLSQP)</code></td><td>Constrained optimization for ERC and min-variance</td></tr>
+      <tr><td>HRP</td><td><code>riskfolio-lib</code></td><td>Hierarchical Risk Parity via DePrado's algorithm</td></tr>
+      <tr><td>Visualization</td><td><code>Matplotlib</code></td><td>Cumulative performance plots</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>PortfolioOptimizer.py    Main orchestrator: load data, compute weights, backtest
+erc.py                   Roncalli ERC optimizer (SLSQP, pairwise RC diff objective)
+erc_lib.py               ERC utility functions and risk contribution helpers
+mv.py                    Markowitz minimum-variance optimizer (SLSQP, w^T Sigma w)
+hrp.py                   DePrado HRP via riskfolio-lib (hierarchical clustering)
+hrp_lib.py               HRP helper functions
+returns_slices/          Sliced return CSVs per period (PP_252, TR_252, PP_105, TR_105)
+clean_cov_matrices/
+  covs/                  Cleaned sample covariance matrices
+  ewma_covs/             EWMA-smoothed covariance matrices
+orig_cov_matrices/
+  covs/                  Original (uncleaned) covariance matrices
+  ewma_covs/             Original EWMA covariance matrices
+ex3/
+  cumulative_performance.png   Output: strategy comparison chart
+requirements.txt         Python dependencies</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>ERC Sanity Checking</h3>
+    <div class="highlight-box success">
+      <p><strong>The Roncalli ERC optimizer includes a post-optimization sanity check.</strong> After SLSQP converges, it computes the spread between maximum and minimum absolute risk contributions. If the spread exceeds the tolerance (default 1e-6), it raises an assertion error. This catches silent optimization failures where the solver reports success but the solution is not truly equal-risk.</p>
+    </div>
+
+    <h3>EWMA vs Sample Covariance</h3>
+    <p>Both raw sample and exponentially-weighted moving average covariance matrices are pre-computed for each period. The ERC and Markowitz optimizers preferentially load EWMA matrices (which give more weight to recent observations), falling back to sample covariance if the EWMA file is not found. HRP uses the standard cleaned covariance for its correlation-based clustering.</p>
+
+    <h3>Out-of-Sample Framework</h3>
+    <div class="highlight-box">
+      <p>The <code>build_performance_slices()</code> function in the orchestrator carefully handles period boundaries. Weights computed at date key PP_252 are applied to returns from that date until the next rebalancing point. Boundary dates are deduplicated, and the full performance series is reindexed to the total returns timeline with zero fill for gaps.</p>
+    </div>
+
+    <h3>Modular Strategy Design</h3>
+    <p>Each optimization strategy is a self-contained class (Roncalli_pf, Markowitz_pf, DePrado_pf, Meucci_pf) that loads its own data, runs optimization, and exposes a <code>.weights</code> attribute. The orchestrator does not need to know how each optimizer works internally; it only calls the constructor and reads the result. This makes it trivial to add new strategies.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Optimization strategies</td><td>5 (1/N, Markowitz, ERC, Meucci, HRP)</td></tr>
+      <tr><td>Assets</td><td>14 (10 crypto-USD + 4 traditional indices)</td></tr>
+      <tr><td>Dataset period</td><td>Oct 2017 to Mar 2025</td></tr>
+      <tr><td>Covariance types</td><td>2 (sample + EWMA) x 2 (original + cleaned)</td></tr>
+      <tr><td>Period slices</td><td>4 (PP_252, TR_252, PP_105, TR_105)</td></tr>
+      <tr><td>Python modules</td><td>6 (orchestrator + 4 strategy files + lib)</td></tr>
+      <tr><td>Solver</td><td>SLSQP (SciPy) for ERC and Markowitz</td></tr>
+      <tr><td>Key event covered</td><td>SBF/FTX crash (Nov 2022)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

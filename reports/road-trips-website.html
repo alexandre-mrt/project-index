@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Road Trips Website — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Road Trips Website</h1>
+    <p class="subtitle">Immersive National Geographic-inspired showcase of 15 spiritual and cultural road trips with interactive MapLibre maps and day-by-day itineraries</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Next.js 15</span>
+      <span class="tag cyan">MapLibre GL JS</span>
+      <span class="tag orange">Tailwind CSS 4</span>
+      <span class="tag">Biome</span>
+      <span class="tag green">Bun</span>
+      <span class="tag">Static Export</span>
+      <span class="tag">Vercel</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Travel blogs are either walls of text or shallow photo galleries. Neither format conveys the day-by-day rhythm of a road trip.</strong></p>
+      <p>Planning a 15-day spiritual road trip through Ethiopia or Iran requires understanding distances, driving conditions, scenic ratings, accommodation types, budget breakdowns, and practical info (visas, road conditions, packing lists). No single travel site combines all of this with interactive maps and magazine-level visual design.</p>
+    </div>
+
+    <p>This website presents 15 handcrafted road trips as immersive editorial content. Each trip has a hero section, an interactive MapLibre map showing the route with day markers, a vertical day timeline, detailed activity cards with scenic ratings, budget estimates, and practical travel info. The design takes inspiration from National Geographic magazine layouts: full-bleed images, rich typography, and data-dense cards that reward exploration.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>15 trips across 12 countries and 7 regions</strong>: Morocco, Ethiopia, Iran, Turkey, Japan, South India, Mongolia, Peru-Bolivia, Romania, Madagascar, Oman, Ladakh, Guatemala, Senegal, Tajikistan-Kyrgyzstan.</li>
+      <li><strong>Deeply typed data model</strong>: every trip, day, activity, accommodation, and budget is a strict TypeScript interface with <code>readonly</code> properties. No runtime surprises.</li>
+      <li><strong>Each trip has a unique color palette</strong>: 15 distinct palettes (primary, secondary, accent, bg, text) ensure every trip page feels like a different magazine issue.</li>
+      <li><strong>Static export</strong>: the entire site compiles to static HTML at build time via Next.js static export. Zero runtime server, perfect Lighthouse scores, instant page loads.</li>
+      <li><strong>Interactive maps without API keys</strong>: MapLibre GL JS with free CartoDB Voyager tiles. No Mapbox key, no usage limits, no billing surprises.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Page Structure</h3>
+    <div class="ascii-diagram"><code><span class="dim">HOME PAGE (/)</span>                          <span class="dim">TRIP DETAIL (/trips/[slug])</span>
+
++---------------------------+            +---------------------------+
+| <span class="hi">HeroSection</span>               |            | <span class="hi">HeroSection</span>               |
+| (full-bleed image,        |            | (trip hero image,         |
+|  "Sacred Roads" title,    |            |  trip name + tagline)     |
+|  4 stats counters)        |            +---------------------------+
++---------------------------+            | <span class="cyn">StatsBar</span>                  |
+| <span class="cyn">Intro paragraph</span>           |            | (duration, distance,      |
++---------------------------+            |  best season, region)     |
+| <span class="grn">TripCard Gallery</span>          |            +---------------------------+
+| (15 cards, ScrollReveal)  |            | <span class="grn">TripExplorer</span> (client)     |
++---------------------------+            |  +-----+----------+      |
+| <span class="orn">WorldMapSection</span>           |            |  |Day  | TripMap  |      |
+| (15 destination markers   |            |  |Time |          |      |
+|  on interactive globe)    |            |  |line | DayDetail|      |
++---------------------------+            |  +-----+----------+      |
+| <span class="dim">Footer</span>                    |            +---------------------------+
++---------------------------+            | <span class="orn">BudgetSection</span>             |
+                                         +---------------------------+
+                                         | <span class="hi">PracticalInfo</span>             |
+                                         | (visa, roads, tips, pack) |
+                                         +---------------------------+</code></div>
+
+    <h3>Data Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="hi">15 Trip Data Files</span>
+  |  (src/data/trips/*.ts)
+  |  Each exports a Trip object: days[], budget, practicalInfo
+  |  All fields readonly, strictly typed
+  v
+<span class="cyn">index.ts</span>
+  |  getAllTrips() -> readonly Trip[]
+  |  getTripBySlug(slug) -> Trip | undefined
+  v
+<span class="orn">Static Site Generation</span>
+  |  Next.js generates /trips/[slug] for each of 15 slugs
+  |  getStaticParams() returns all slugs at build time
+  |  Zero API calls at runtime
+  v
+<span class="grn">Vercel CDN</span>
+  <span class="dim">(static HTML + CSS + JS, edge-cached globally)</span></code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Framework</td><td><code>Next.js 15 (App Router, Static Export)</code></td><td>SSG for all trip pages, file-based routing</td></tr>
+      <tr><td>Maps</td><td><code>MapLibre GL JS</code></td><td>Interactive route maps with free CartoDB Voyager tiles</td></tr>
+      <tr><td>Styling</td><td><code>Tailwind CSS v4</code></td><td>Utility-first styling with custom color tokens per trip</td></tr>
+      <tr><td>Runtime</td><td><code>Bun</code></td><td>Dev server, build, dependency management</td></tr>
+      <tr><td>Animations</td><td><code>Custom hooks (useInView, useCountUp)</code></td><td>Scroll-triggered reveals, animated stat counters</td></tr>
+      <tr><td>Linter</td><td><code>Biome</code></td><td>Lint + format in a single pass</td></tr>
+      <tr><td>Deploy</td><td><code>Vercel</code></td><td>Auto-deploy on push, static hosting</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>The 15 Trips</h2>
+
+    <table>
+      <tr><th>Trip</th><th>Region</th><th>Highlights</th></tr>
+      <tr><td>Morocco</td><td>Africa</td><td>Sufi zaouias, Atlas Mountains, desert camps</td></tr>
+      <tr><td>Ethiopia</td><td>Africa</td><td>Rock-hewn churches, highland monasteries</td></tr>
+      <tr><td>Iran</td><td>Middle East</td><td>Persian mosques, bazaars, desert cities</td></tr>
+      <tr><td>Turkey</td><td>Europe/Asia</td><td>Cappadocia, eastern Anatolia, Kurdish villages</td></tr>
+      <tr><td>Japan</td><td>Asia</td><td>Shinto shrines, rural onsen, mountain temples</td></tr>
+      <tr><td>South India</td><td>Asia</td><td>Temple towns, tea plantations, backwaters</td></tr>
+      <tr><td>Mongolia</td><td>Central Asia</td><td>Steppe, nomadic camps, Buddhist monasteries</td></tr>
+      <tr><td>Peru-Bolivia</td><td>South America</td><td>Inca trails, Altiplano, Lake Titicaca</td></tr>
+      <tr><td>Romania</td><td>Europe</td><td>Painted monasteries, Transylvanian villages</td></tr>
+      <tr><td>Madagascar</td><td>Africa</td><td>Tsingy, baobab alleys, rainforest</td></tr>
+      <tr><td>Oman</td><td>Middle East</td><td>Wadis, desert forts, frankincense trail</td></tr>
+      <tr><td>Ladakh</td><td>Asia</td><td>Himalayan passes, Buddhist gompas</td></tr>
+      <tr><td>Guatemala</td><td>Central America</td><td>Mayan ruins, highland markets, volcanoes</td></tr>
+      <tr><td>Senegal</td><td>Africa</td><td>Sufi brotherhoods, coastal villages</td></tr>
+      <tr><td>Tajikistan-Kyrgyzstan</td><td>Central Asia</td><td>Pamir Highway, yurt stays, silk road</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>src/
+  app/
+    page.tsx                      Home: hero + trip gallery + world map
+    _components/
+      WorldMapSection.tsx         Client-side MapLibre world map with 15 markers
+    trips/[slug]/
+      page.tsx                    Trip detail page (SSG via getStaticParams)
+      TripExplorer.tsx            Client: day timeline + interactive map + day detail
+    layout.tsx, globals.css
+  components/
+    Header.tsx                    Fixed navigation header
+    Footer.tsx                    Site footer
+    HeroSection.tsx               Full-bleed hero with title, subtitle, stats
+    TripCard.tsx                  Gallery card for home page
+    ScrollReveal.tsx              Intersection Observer scroll animation wrapper
+    StatsBar.tsx                  Duration, distance, season, region bar
+    DayTimeline.tsx               Vertical day selector
+    DayDetail.tsx                 Activity list, accommodation, meals, scenic rating
+    TripMap.tsx                   MapLibre route map per trip
+    BudgetSection.tsx             Budget breakdown (car, food, accommodation, total)
+    PracticalInfo.tsx             Visa, driving side, road conditions, tips, packing
+    PhotoCarousel.tsx             Day photo gallery
+  data/
+    types.ts                      Trip, Day, Activity, Budget, PracticalInfo types
+    trips/
+      index.ts                    getAllTrips(), getTripBySlug()
+      morocco.ts ... (15 files)   One typed Trip object per destination
+  lib/
+    colors.ts                     15 color palettes (TRIP_PALETTES)
+    hooks.ts                      useInView (scroll detection), useCountUp (counter animation)
+    map-utils.ts                  MapLibre helpers (route lines, markers, bounds)</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>One Color Palette Per Trip</h3>
+    <div class="highlight-box success">
+      <p><strong>Each of the 15 trips has a unique 5-color palette (primary, secondary, accent, bg, text).</strong> When you navigate from Morocco (terracotta and sand) to Iceland (volcanic black and glacier blue), the entire page transforms. This is managed through <code>TRIP_PALETTES</code> in colors.ts, injected as CSS custom properties per trip page.</p>
+    </div>
+
+    <h3>Rich Data Model</h3>
+    <p>The Trip type contains nested readonly structures: each Day has activities (typed: spiritual, cultural, nature, food, adventure, historical), accommodation (with type and price range), road conditions (highway, mountain, coastal, desert, village), and a 1-5 scenic rating. This depth means every trip detail page is data-rich without any free-form text ambiguity.</p>
+
+    <h3>Zero Runtime Dependencies</h3>
+    <div class="highlight-box">
+      <p>The site is statically exported at build time. All 15 trip pages are pre-rendered as HTML. There are no API calls, no database, no server. MapLibre uses free CartoDB Voyager tiles (no API key needed). The result is a site that loads instantly, works offline after first visit, and costs nothing to host on Vercel's free tier.</p>
+    </div>
+
+    <h3>Scroll-Driven Animations</h3>
+    <p>The <code>ScrollReveal</code> component wraps elements with an Intersection Observer that triggers fade-in animations on scroll. The <code>useCountUp</code> hook animates stat numbers (15 journeys, 12 countries, 200+ days, 15,000+ km) from zero to their final value when they enter the viewport. Subtle but effective for the magazine feel.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Road trips</td><td>15 destinations across 12 countries</td></tr>
+      <tr><td>Regions covered</td><td>7 (Africa, Asia, Middle East, South America, Central America, Europe, Central Asia)</td></tr>
+      <tr><td>Activity types</td><td>6 (spiritual, cultural, nature, food, adventure, historical)</td></tr>
+      <tr><td>Accommodation types</td><td>6 (guesthouse, monastery, yurt, desert camp, hotel, homestay)</td></tr>
+      <tr><td>Road types</td><td>5 (highway, mountain, coastal, desert track, village road)</td></tr>
+      <tr><td>Color palettes</td><td>15 unique palettes</td></tr>
+      <tr><td>Source files</td><td>37 TypeScript modules (15 trip data + 22 components/lib)</td></tr>
+      <tr><td>Map tiles</td><td>CartoDB Voyager (free, no API key)</td></tr>
+      <tr><td>Live</td><td><a href="https://road-trips-website.vercel.app">road-trips-website.vercel.app</a></td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

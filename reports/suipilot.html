@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuiPilot — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>SuiPilot</h1>
+    <p class="subtitle">AI-powered Chrome extension wallet for the Sui blockchain with natural language DeFi interactions</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">React 19</span>
+      <span class="tag cyan">Claude API</span>
+      <span class="tag">Sui SDK</span>
+      <span class="tag orange">Zustand</span>
+      <span class="tag">Chrome MV3</span>
+      <span class="tag green">Vite</span>
+      <span class="tag">Tailwind CSS 4</span>
+      <span class="tag cyan">Hono</span>
+      <span class="tag orange">Radix UI</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Crypto wallets are unusable for most people.</strong></p>
+      <p>Swapping tokens on a DEX requires understanding slippage, pool selection, and transaction signing. Lending on NAVI or providing liquidity on Cetus means navigating protocol-specific UIs. Even checking a portfolio's performance across DeFi positions demands visiting multiple dApps. The cognitive barrier to entry is enormous.</p>
+    </div>
+
+    <p>SuiPilot replaces the traditional wallet UI with a conversational AI agent. Users type "swap 10 SUI for USDC" or "lend 100 USDC on NAVI" in natural language, and Claude builds, simulates, and executes the transaction. Read-only queries like balance checks and price lookups auto-execute instantly, while state-modifying operations (sends, swaps, stakes) require explicit user confirmation before signing.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Natural language DeFi</strong>: Claude understands intent and maps it to the right protocol call. No need to learn each dApp's interface.</li>
+      <li><strong>Tool-use architecture</strong>: 7 agent tools (balance, prices, portfolio, history, send, swap, stake) give the AI precise on-chain capabilities without hallucinating transactions.</li>
+      <li><strong>Security-first keystore</strong>: AES-256-GCM encryption with PBKDF2 (600K iterations), auto-lock after 5 minutes, BIP39 mnemonic with Ed25519 derivation at <code>m/44'/784'</code>.</li>
+      <li><strong>Multi-protocol DeFi</strong>: Cetus DEX aggregator for optimal swap routing, NAVI Protocol for lending/borrowing, native SUI staking.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Agent Tool Loop</h3>
+    <div class="ascii-diagram"><code><span class="dim">USER (Side Panel)</span>             <span class="dim">BACKGROUND (Service Worker)</span>         <span class="dim">PROXY SERVER</span>
+
++------------------+          +-------------------------+          +--------------+
+| <span class="hi">Chat Input</span>       |--msg---->| <span class="cyn">Agent</span>                   |--HTTP---->| <span class="grn">Hono Proxy</span>   |
+| "swap 10 SUI     |          |   system prompt         |          | localhost    |
+|  for USDC"       |          |   + tool definitions    |          | :3001        |
++------------------+          +-------------------------+          +--------------+
+                                       |                                  |
+                                       v                                  v
+                              <span class="orn">Claude API Response</span>              <span class="cyn">Anthropic API</span>
+                              tool_use: swap_tokens              (messages.create)
+                              { from: SUI, to: USDC,
+                                amount: 10 }
+                                       |
+                                       v
+                              +-------------------------+
+                              | <span class="hi">Tool Handler</span>             |
+                              |   Cetus aggregator      |
+                              |   -> best route         |
+                              |   -> build Transaction  |
+                              +-------------------------+
+                                       |
+                                       v
+                              +-------------------------+
+                              | <span class="orn">Confirmation Modal</span>       |
+                              |   "Swap 10 SUI -> USDC" |
+                              |   Est. output: 3.82     |
+                              |   [Confirm] [Cancel]    |
+                              +-------------------------+
+                                       |
+                                       v
+                              +-------------------------+
+                              | <span class="grn">Sign + Execute</span>           |
+                              |   Ed25519Keypair.sign() |
+                              |   -> Sui RPC submit     |
+                              +-------------------------+</code></div>
+
+    <h3>Keystore Encryption Flow</h3>
+    <div class="ascii-diagram"><code><span class="hi">CREATE WALLET</span>
+  |
+  |  Generate BIP39 mnemonic (24 words)
+  |  Derive Ed25519 keypair at m/44'/784'/0'/0'/0'
+  |  Prompt user for password
+  v
+<span class="cyn">PBKDF2</span> (password, random salt, 600K iterations)
+  |  -> AES-256-GCM key
+  v
+<span class="orn">AES-GCM Encrypt</span> (mnemonic + accounts, random IV)
+  |  -> { version: 1, salt, iv, ciphertext }
+  v
+<span class="grn">chrome.storage.local</span>
+  |  Encrypted keystore persisted
+  |  Auto-lock after 5 min idle
+  v
+<span class="dim">UNLOCK</span>: password -> PBKDF2 -> AES-GCM decrypt -> session keypair</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Extension</td><td><code>Chrome Manifest V3</code></td><td>Side panel UI, background service worker, storage API</td></tr>
+      <tr><td>Frontend</td><td><code>React 19 + Vite</code></td><td>Multi-entry build: popup, sidepanel, background</td></tr>
+      <tr><td>Styling</td><td><code>Tailwind CSS 4 + Radix UI</code></td><td>Component system with shadcn patterns</td></tr>
+      <tr><td>State</td><td><code>Zustand</code></td><td>3 stores: wallet, chat, portfolio</td></tr>
+      <tr><td>AI</td><td><code>Claude API</code> (@anthropic-ai/sdk)</td><td>Tool-use agent with streaming responses</td></tr>
+      <tr><td>Proxy</td><td><code>Hono</code></td><td>Local proxy server to forward API calls (CORS + key isolation)</td></tr>
+      <tr><td>Blockchain</td><td><code>@mysten/sui v2</code></td><td>Transaction building, signing, RPC queries</td></tr>
+      <tr><td>Crypto</td><td><code>@noble/ed25519 + bip39</code></td><td>Key derivation, mnemonic generation, PBKDF2+AES keystore</td></tr>
+      <tr><td>DeFi</td><td><code>Cetus + NAVI</code></td><td>DEX aggregator (swap routing) + lending/borrowing protocol</td></tr>
+      <tr><td>Charts</td><td><code>Recharts</code></td><td>Portfolio allocation and performance visualization</td></tr>
+      <tr><td>Linter</td><td><code>Biome</code></td><td>Lint + format in a single pass</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Agent Tools</h2>
+
+    <table>
+      <tr><th>Tool</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>check_balance</code></td><td>Read</td><td>Fetch SUI and token balances for active account</td></tr>
+      <tr><td><code>get_token_prices</code></td><td>Read</td><td>Current prices from Cetus/aggregator</td></tr>
+      <tr><td><code>view_portfolio</code></td><td>Read</td><td>Full portfolio with allocation breakdown</td></tr>
+      <tr><td><code>get_transaction_history</code></td><td>Read</td><td>Recent transactions for the account</td></tr>
+      <tr><td><code>send_tokens</code></td><td>Write</td><td>Transfer SUI or tokens to an address</td></tr>
+      <tr><td><code>swap_tokens</code></td><td>Write</td><td>DEX swap via Cetus aggregator (best route)</td></tr>
+      <tr><td><code>stake_sui</code></td><td>Write</td><td>Stake SUI with a validator</td></tr>
+    </table>
+
+    <div class="highlight-box">
+      <p><strong>Read tools auto-execute</strong>. Write tools (<code>send_tokens</code>, <code>swap_tokens</code>, <code>stake_sui</code>) always trigger a confirmation modal before signing. The agent loops up to 10 tool iterations per message, and conversation history is capped at 50 messages.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>src/
+  app/               Unified sidebar app (Chrome Side Panel)
+    components/      21 UI components (wallet, chat, portfolio, DeFi)
+      ChatView       Message list + input + tool call display
+      PortfolioView  Allocation chart + DeFi positions
+      TransactionConfirmModal  Write-tool confirmation gate
+    pages/           8 tab views + sub-pages
+      WalletTab      Balance card + token list + quick actions
+      ChatTab        AI conversation interface
+      PortfolioTab   Charts + positions + performance
+      SettingsTab    Network, auto-lock, proxy config
+      Onboarding     7-step flow (welcome -> mnemonic -> password -> success)
+    stores/          Zustand state management
+      wallet-store   Accounts, balances, active account
+      chat-store     Messages, streaming state, agent calls
+      portfolio-store Positions, allocation, performance data
+  background/        Chrome extension service worker
+    agent/           Claude AI agent
+      agent.ts       Tool loop orchestrator (max 10 iterations)
+      prompts.ts     System prompt with Sui context
+      tools/         7 tool handlers (4 read, 3 write)
+  core/              Cryptographic foundation
+    keystore.ts      AES-256-GCM encrypted keystore (PBKDF2 600K)
+    passkey.ts       WebAuthn passkey support
+    sui-client.ts    Sui JSON-RPC client wrapper
+    types.ts         Wallet, Account, DeFi types
+  defi/              Protocol integrations
+    cetus.ts         Cetus DEX — swap routing + liquidity
+    navi.ts          NAVI Protocol — lending/borrowing (direct Move calls)
+    aggregator.ts    Multi-DEX route optimization
+    prices.ts        Token price feeds
+  shared/            Cross-module utilities
+    storage.ts       chrome.storage.local wrapper
+    messaging.ts     Chrome extension message passing
+    constants.ts     Package IDs, API URLs, coin types
+proxy/               Hono API proxy server (separate package)</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Tool-Use Agent over Prompt Engineering</h3>
+    <div class="highlight-box success">
+      <p><strong>The agent uses Claude's native tool-use capability rather than parsing free-text responses.</strong> Each tool has a typed JSON schema (amount, token, address), so the AI cannot hallucinate transaction parameters. The tool handler validates inputs before building any Transaction object.</p>
+    </div>
+
+    <h3>Confirmation Gate for Write Operations</h3>
+    <p>All state-modifying tools (<code>send_tokens</code>, <code>swap_tokens</code>, <code>stake_sui</code>) are classified as write operations. When the agent calls one, a modal shows the exact parameters (recipient, amount, estimated output) and the user must explicitly confirm. Read tools like <code>check_balance</code> execute silently.</p>
+
+    <h3>Direct Move Calls for NAVI</h3>
+    <div class="highlight-box">
+      <p>The official <code>navi-sdk</code> depends on <code>@mysten/sui v1</code>, which conflicts with this project's v2. Instead of downgrading, SuiPilot extracts NAVI's pool configs and builds raw Move call transactions directly via <code>Transaction.moveCall()</code>. This keeps the dependency tree clean while maintaining full lending/borrowing functionality.</p>
+    </div>
+
+    <h3>Proxy Architecture</h3>
+    <p>Chrome extensions cannot make direct API calls to Anthropic (CORS restrictions + API key exposure). A lightweight Hono server running on <code>localhost:3001</code> forwards requests, keeping the API key on the server side. The proxy also handles streaming responses for real-time chat output.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Source files</td><td>120 TypeScript/TSX modules</td></tr>
+      <tr><td>UI components</td><td>21 React components</td></tr>
+      <tr><td>Agent tools</td><td>7 (4 read-only, 3 write with confirmation)</td></tr>
+      <tr><td>Zustand stores</td><td>3 (wallet, chat, portfolio)</td></tr>
+      <tr><td>DeFi protocols</td><td>2 (Cetus DEX, NAVI lending)</td></tr>
+      <tr><td>Onboarding steps</td><td>7 (welcome, create/import, mnemonic, password, passkey, success)</td></tr>
+      <tr><td>Keystore encryption</td><td>AES-256-GCM, PBKDF2 600K iterations</td></tr>
+      <tr><td>Max tool iterations</td><td>10 per message</td></tr>
+      <tr><td>Runtime dependencies</td><td>14 (Claude SDK, Sui SDK, React, Zustand, Radix, Recharts, etc.)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

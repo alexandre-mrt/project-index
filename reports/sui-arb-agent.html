@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sui Arb Agent — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Sui Arb Agent</h1>
+    <p class="subtitle">Autonomous DeFi arbitrage agent detecting price discrepancies between DeepBook v3 and Cetus on Sui</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag cyan">Sui Move</span>
+      <span class="tag green">DeepBook v3</span>
+      <span class="tag orange">Cetus CLMM</span>
+      <span class="tag">Bun</span>
+      <span class="tag cyan">PTBs</span>
+      <span class="tag">Vitest</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <p>Multiple DEXs on Sui (DeepBook v3 as a central limit order book, Cetus as a concentrated liquidity AMM) regularly exhibit price discrepancies for the same token pairs. Manual arbitrage is too slow: by the time a human spots and executes, the opportunity vanishes. An autonomous agent that continuously scans prices and executes atomic cross-DEX swaps can capture these spreads in milliseconds.</p>
+
+    <div class="highlight-box">
+      <p><strong>Core problem:</strong> Price feeds across Sui DEXs diverge constantly, but opportunities close within seconds. Only an automated system with real-time monitoring and atomic execution can reliably capture them.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Market efficiency:</strong> Arbitrage bots are essential price correctors that keep DEX prices aligned across the Sui ecosystem</li>
+      <li><strong>MEV on Sui:</strong> Unlike EVM chains, Sui's object-centric model and Programmable Transaction Blocks enable a different MEV landscape with atomic multi-step transactions</li>
+      <li><strong>Atomic execution:</strong> PTBs guarantee all-or-nothing execution, eliminating partial fill risk that plagues multi-tx arbitrage on other chains</li>
+      <li><strong>Flash loan support:</strong> DeepBook v3 flash loans enable capital-free arbitrage, lowering the barrier to entry</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <div class="ascii-diagram"><code>
+  <span class="dim">Off-chain Keeper (TypeScript/Bun)            On-chain (Sui Move)</span>
+  <span class="dim">================================             ==================</span>
+
+  <span class="hi">+------------------+</span>
+  <span class="hi">|  Event Listener  |</span><span class="dim">--- WebSocket + polling -------+</span>
+  <span class="hi">+--------+---------+</span>                               <span class="dim">|</span>
+           <span class="dim">|</span>                                          <span class="dim">|</span>
+           <span class="dim">v</span>                                          <span class="dim">|</span>
+  <span class="grn">+------------------+</span>    <span class="grn">+--------------+</span>       <span class="dim">|</span>
+  <span class="grn">| Price Aggregator |</span><span class="dim">&lt;---</span><span class="grn">| DeepBook v3  |</span>       <span class="dim">|</span>
+  <span class="grn">|  spread in bps   |</span>    <span class="grn">|  mid_price   |</span>       <span class="dim">|</span>
+  <span class="grn">|  direction calc  |</span>    <span class="grn">|  level2 book |</span>       <span class="dim">|</span>
+  <span class="grn">|                  |</span>    <span class="grn">+--------------+</span>       <span class="dim">|</span>
+  <span class="grn">|                  |</span>                              <span class="dim">|</span>
+  <span class="grn">|                  |</span>    <span class="orn">+--------------+</span>       <span class="dim">|</span>
+  <span class="grn">|                  |</span><span class="dim">&lt;---</span><span class="orn">|    Cetus     |</span>       <span class="dim">|</span>
+  <span class="grn">+--------+---------+</span>    <span class="orn">| sqrt_price   |</span>       <span class="dim">|</span>
+           <span class="dim">|</span>               <span class="orn">| X64 fixed-pt |</span>       <span class="dim">|</span>
+           <span class="dim">v</span>               <span class="orn">+--------------+</span>       <span class="dim">|</span>
+  <span class="hi">+------------------+</span>                               <span class="dim">|</span>
+  <span class="hi">| Arb Detection    |</span><span class="dim">  spread &gt;= 30bps?</span>            <span class="dim">|</span>
+  <span class="hi">| optimal sizing   |</span><span class="dim">  sell &gt; buy + gas?</span>           <span class="dim">|</span>
+  <span class="hi">+--------+---------+</span>                               <span class="dim">|</span>
+           <span class="dim">|</span>                                          <span class="dim">|</span>
+           <span class="dim">v</span>                                          <span class="dim">|</span>
+  <span class="grn">+------------------+</span>    <span class="hi">+-----------------+</span>    <span class="dim">|</span>
+  <span class="grn">|  PTB Builder     |</span><span class="dim">---&gt;</span><span class="hi">|  Atomic Swap    |</span>    <span class="dim">|</span>
+  <span class="grn">| buy DEX A        |</span>    <span class="hi">| DeepBook + Cetus|</span>    <span class="dim">|</span>
+  <span class="grn">| sell DEX B       |</span>    <span class="hi">+-----------------+</span>    <span class="dim">|</span>
+  <span class="grn">| validate profit  |</span>           <span class="dim">|</span>                <span class="dim">|</span>
+  <span class="grn">+--------+---------+</span>           <span class="dim">v</span>                <span class="dim">|</span>
+           <span class="dim">|</span>               <span class="orn">+-----------------+</span>    <span class="dim">|</span>
+           <span class="dim">v</span>               <span class="orn">|  validator.move |</span>    <span class="dim">|</span>
+  <span class="hi">+------------------+</span>  <span class="orn">|  events.move   |</span><span class="dim">----+</span>
+  <span class="hi">|    Executor      |</span>  <span class="orn">|  vault.move    |</span>
+  <span class="hi">| sign + submit    |</span>  <span class="orn">|  strategy.move |</span>
+  <span class="hi">| parse events     |</span>  <span class="orn">+-----------------+</span>
+  <span class="hi">+------------------+</span>
+</code></div>
+
+    <div class="highlight-box success">
+      <p><strong>Key flow:</strong> Event listener detects price changes on DeepBook/Cetus &rarr; Price aggregator computes cross-DEX spread &rarr; Strategy validates profitability after gas &rarr; PTB builder constructs atomic swap (buy cheap, sell expensive, validate on-chain) &rarr; Executor signs and submits in a single transaction.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <h3>On-chain (Sui Move)</h3>
+    <table>
+      <tr><th>Module</th><th>Purpose</th></tr>
+      <tr><td><code>vault.move</code></td><td>Shared vault with <code>Bag</code>-based generic coin storage. AdminCap/KeeperCap capability-gated access for deposits and withdrawals.</td></tr>
+      <tr><td><code>strategy.move</code></td><td>On-chain strategy config (min spread, max trade size) with circuit breaker. Admin-only updates via shared object.</td></tr>
+      <tr><td><code>validator.move</code></td><td>Profitability validation: spread calculation in bps, profit estimation with gas cost deduction, trade direction logic. Uses u128 to prevent overflow.</td></tr>
+      <tr><td><code>events.move</code></td><td>Trade event structs (<code>TradeExecuted</code>, <code>ArbitrageFailed</code>) for transparent on-chain logging with timestamps.</td></tr>
+    </table>
+
+    <h3>Off-chain (TypeScript/Bun)</h3>
+    <table>
+      <tr><th>Module</th><th>Purpose</th></tr>
+      <tr><td><code>prices/deepbook.ts</code></td><td>DeepBook v3 price feed via <code>devInspectTransactionBlock</code>. Reads mid price and level2 order book (best bid/ask). Custom BCS parsing for u64 and vector&lt;u64&gt;.</td></tr>
+      <tr><td><code>prices/cetus.ts</code></td><td>Cetus CLMM price feed. Reads pool object, extracts <code>current_sqrt_price</code> (X64 fixed-point), converts to price via integer-only math. Newton's method for bigint sqrt.</td></tr>
+      <tr><td><code>prices/aggregator.ts</code></td><td>Cross-DEX spread calculation in basis points. Compares bid/ask across both DEXs, determines trade direction, estimates gross profit.</td></tr>
+      <tr><td><code>strategy/arbitrage.ts</code></td><td>Opportunity detection with gas-aware profitability check. Conservative sizing at 80% of max to account for slippage.</td></tr>
+      <tr><td><code>executor/builder.ts</code></td><td>PTB construction for direct and flash-loan arbitrage. Composes buy/sell/validate/emit in a single transaction block.</td></tr>
+      <tr><td><code>executor/executor.ts</code></td><td>Transaction signing, submission, and result parsing. Dry-run support for pre-flight validation. Gas computation from effects.</td></tr>
+      <tr><td><code>listener/events.ts</code></td><td>Dual-mode monitoring: WebSocket event subscriptions (real-time) + polling fallback (reliability). Debounced to prevent redundant checks.</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <div class="tags">
+      <span class="tag">TypeScript (strict)</span>
+      <span class="tag cyan">Sui Move (2024.beta)</span>
+      <span class="tag green">@mysten/sui ^1.21</span>
+      <span class="tag green">@mysten/deepbook ^0.9</span>
+      <span class="tag orange">Cetus CLMM SDK ^5.0</span>
+      <span class="tag">Bun runtime</span>
+      <span class="tag">Vitest</span>
+      <span class="tag">Biome</span>
+    </div>
+
+    <pre><code>contracts/              Sui Move smart contracts
+  sources/
+    vault.move            Capability-gated fund vault (Bag storage)
+    strategy.move         On-chain strategy config + circuit breaker
+    validator.move        Profitability validation (u128 safe math)
+    events.move           Trade event structs
+    mock_pool.move        Test mock for pool interactions
+  tests/                  Move unit tests
+
+keeper/                 TypeScript off-chain keeper
+  src/
+    index.ts              CLI entry point (start | config | status)
+    client.ts             SuiClient + Ed25519 keypair setup
+    config.ts             Env-based config with typed defaults
+    types.ts              Shared type definitions (bigint prices)
+    prices/               Price feeds (DeepBook + Cetus)
+    strategy/             Arb detection + profitability logic
+    executor/             PTB builder + tx executor
+    listener/             Event-driven price monitoring
+  tests/                  Vitest unit tests</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <div class="highlight-box">
+      <p><strong>Atomic swaps via PTBs.</strong> Sui's Programmable Transaction Blocks compose buy + sell + validate + emit as a single atomic transaction. If any step fails (price moved, spread too low), the entire transaction reverts with zero cost beyond gas.</p>
+    </div>
+
+    <div class="highlight-box success">
+      <p><strong>Zero-gas price reads.</strong> Both price feeds use gasless methods: DeepBook via <code>devInspectTransactionBlock</code> (simulated execution), Cetus via direct pool object reads. The agent scans continuously without spending SUI.</p>
+    </div>
+
+    <div class="highlight-box warning">
+      <p><strong>Flash loan arbitrage.</strong> The builder supports a capital-free mode: borrow from DeepBook v3 via flash loan, swap on Cetus, repay the loan, keep the profit. All within a single PTB, so the loan is guaranteed to be repaid or the entire transaction reverts.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Integer-only math.</strong> All price calculations use <code>bigint</code> (TypeScript) and <code>u128</code> (Move) to avoid floating-point precision issues. Cetus sqrt prices (X64 fixed-point, 2^64 scaling) are converted via pure integer arithmetic with Newton's method.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Dual monitoring.</strong> The listener combines WebSocket event subscriptions (low latency) with polling fallback (reliability). Events are debounced to prevent redundant price checks during high-activity periods.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Commands</h2>
+
+    <pre><code># Move contracts
+cd contracts &amp;&amp; sui move build
+cd contracts &amp;&amp; sui move test
+
+# TypeScript keeper
+cd keeper &amp;&amp; bun install
+cd keeper &amp;&amp; bun run dev          # Start the agent
+cd keeper &amp;&amp; bun test             # Run Vitest tests
+cd keeper &amp;&amp; bunx biome check --write .</code></pre>
+
+  </div>
+</body>
+</html>

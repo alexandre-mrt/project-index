@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChainLore — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>ChainLore</h1>
+    <p class="subtitle">Interactive visual encyclopedia of blockchain history with timelines, force graphs, and full-text search</p>
+
+    <div class="tags">
+      <span class="tag">TypeScript</span>
+      <span class="tag green">Next.js 16</span>
+      <span class="tag cyan">React 19</span>
+      <span class="tag orange">D3.js</span>
+      <span class="tag">Framer Motion</span>
+      <span class="tag green">Fuse.js</span>
+      <span class="tag">Tailwind CSS 4</span>
+      <span class="tag cyan">shadcn/ui</span>
+      <span class="tag orange">JSON Data</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Blockchain history is fragmented across thousands of sources with no unified narrative.</strong></p>
+      <p>The crypto space spans 15+ years, hundreds of projects, dozens of major hacks, regulatory events, and market cycles. Knowledge lives in scattered blog posts, Twitter threads, and court documents. There is no single place to explore how Bitcoin's genesis connects to DeFi Summer, how the FTX collapse rippled through the ecosystem, or who the key people behind each era were.</p>
+    </div>
+
+    <p>ChainLore organizes this history into a structured, browsable encyclopedia. Every project, person, event, and era is a JSON entity with typed fields (funding rounds, token data, key events, related entities). Three visualization modes let users explore the data: a scroll-driven animated timeline, a D3 force-directed relationship graph, and a fuzzy full-text search powered by Fuse.js.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>Structured data, not prose</strong>: 245 JSON entities with typed schemas (Project, Person, ChainEvent, Era) enable programmatic queries and cross-referencing that plain articles cannot.</li>
+      <li><strong>Visual exploration</strong>: a scroll-driven timeline shows events chronologically, while the force graph reveals hidden connections between founders, projects, and events.</li>
+      <li><strong>10 blockchain eras</strong>: from the Genesis era (2008-2011) through ICO Mania, DeFi Summer, NFT Boom, and into the AI-Crypto era (2024+), each with market context and cultural vibe.</li>
+      <li><strong>Full-text search</strong>: Fuse.js indexes all entities by name, description, and key fields, returning ranked results with relevance scores.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Data Model</h3>
+    <div class="ascii-diagram"><code><span class="dim">JSON FILES (data/)</span>                        <span class="dim">ENTITY RELATIONSHIPS</span>
+
++------------------+                     +------------------+
+| <span class="hi">eras/</span>            |                     |     <span class="cyn">Era</span>          |
+| 10 JSON files    |--defines--->        |  key_themes[]    |
+| genesis.json     |                     |  defining_projects[] --+
+| defi-summer.json |                     |  defining_people[]   --+---> references by ID
+| ...              |                     |  defining_events[]   --+
++------------------+                     +------------------+
+
++------------------+                     +------------------+
+| <span class="hi">projects/</span>        |                     |    <span class="grn">Project</span>       |
+| 147 JSON files   |--defines--->        |  founders[] ----------> Person.id
+| bitcoin.json     |                     |  related_projects[] --> Project.id
+| aave.json        |                     |  funding[]        |
+| uniswap.json     |                     |  token{}          |
++------------------+                     |  key_events[]     |
+                                         +------------------+
++------------------+
+| <span class="hi">people/</span>          |                     +------------------+
+| 40 JSON files    |--defines--->        |    <span class="orn">Person</span>        |
+| satoshi.json     |                     |  projects[] ----------> Project.id
+| vitalik.json     |                     |  key_events[]     |
++------------------+                     |  controversies[]  |
+                                         +------------------+
++------------------+
+| <span class="hi">events/</span>          |                     +------------------+
+| 48 JSON files    |--defines--->        |   <span class="cyn">ChainEvent</span>     |
+| ftx-collapse.json|                     |  projects_involved[] -> Project.id
+| ethereum-merge   |                     |  people_involved[]   -> Person.id
++------------------+                     |  amount_lost?     |
+                                         +------------------+</code></div>
+
+    <h3>Visualization Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="dim">SERVER (Next.js)</span>                <span class="dim">CLIENT (React 19)</span>
+
+<span class="hi">1. DATA LOADING</span>
+  |  fs.readdir(data/)
+  |  Parse all JSON files per entity type
+  |  Build TimelineNode[] (unified format)
+  v
+<span class="hi">2. ROUTE RENDERING</span>              <span class="cyn">3. TIMELINE VIEW</span>
+  |  /timeline -> sorted nodes      |  VisualTimeline component
+  |  /graph -> projects+people+     |  ScrollProgress (scroll-driven)
+  |            events               |  EraSection (grouped by era)
+  |  /search -> Fuse.js index       |  AnimatedNode (Framer Motion)
+  |  /eras/[slug] -> single era     |  DetailCard (hover/click)
+  |  /projects/[slug] -> detail     v
+  |  /people/[slug] -> detail
+  v                                 <span class="orn">4. FORCE GRAPH</span>
+                                      |  D3 force simulation
+<span class="grn">SEARCH</span>                              |  Nodes: projects + people + events
+  |  Fuse.js fuzzy matching          |  Links: founder->project,
+  |  Indexes: name, description,     |          event->project,
+  |           known_for, impact      |          event->person
+  |  Returns: SearchResult[]         |  Node radius ~ connection count
+  |  with relevance scores           |  Color-coded by type
+  v                                   v</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Framework</td><td><code>Next.js 16</code></td><td>App Router, SSR, dynamic routes ([slug])</td></tr>
+      <tr><td>UI</td><td><code>React 19</code></td><td>Server components + client interactivity</td></tr>
+      <tr><td>Styling</td><td><code>Tailwind CSS 4 + shadcn/ui</code></td><td>Dark theme, responsive layout, Base UI primitives</td></tr>
+      <tr><td>Graph</td><td><code>D3.js v7</code></td><td>Force-directed graph with drag, zoom, tooltips</td></tr>
+      <tr><td>Animation</td><td><code>Framer Motion</code></td><td>Scroll-driven timeline animations, page transitions</td></tr>
+      <tr><td>Search</td><td><code>Fuse.js</code></td><td>Client-side fuzzy full-text search with scoring</td></tr>
+      <tr><td>Data</td><td><code>JSON files</code></td><td>245 entity files loaded at build/request time via fs</td></tr>
+      <tr><td>Icons</td><td><code>Lucide</code></td><td>Consistent icon set across all views</td></tr>
+      <tr><td>Linter</td><td><code>Biome</code></td><td>Lint + format in a single pass</td></tr>
+      <tr><td>Tests</td><td><code>Vitest</code></td><td>Unit tests with Testing Library</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Eras Covered</h2>
+
+    <table>
+      <tr><th>Era</th><th>Period</th><th>Key Themes</th></tr>
+      <tr><td>Genesis</td><td>2008 - 2011</td><td>Cypherpunk origins, Satoshi, first transactions</td></tr>
+      <tr><td>Early Bitcoin</td><td>2011 - 2013</td><td>Mt. Gox, Silk Road, first exchanges</td></tr>
+      <tr><td>Altcoin Boom</td><td>2014 - 2015</td><td>Litecoin, Ripple, altcoin proliferation</td></tr>
+      <tr><td>Ethereum Launch</td><td>2015 - 2016</td><td>Smart contracts, The DAO, world computer vision</td></tr>
+      <tr><td>ICO Mania</td><td>2017 - 2018</td><td>Token sales, CryptoKitties, regulatory crackdowns</td></tr>
+      <tr><td>Crypto Winter</td><td>2018 - 2019</td><td>Market crash, builder era, DeFi primitives</td></tr>
+      <tr><td>DeFi Summer</td><td>2020 - 2021</td><td>Yield farming, AMMs, composability</td></tr>
+      <tr><td>NFT Boom</td><td>2021 - 2022</td><td>Bored Apes, OpenSea, digital art explosion</td></tr>
+      <tr><td>L2 Era</td><td>2022 - 2024</td><td>Rollups, Arbitrum, Base, scaling solutions</td></tr>
+      <tr><td>AI-Crypto</td><td>2024+</td><td>AI agents, on-chain AI, convergence</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>src/
+  app/
+    page.tsx                     Home / landing page
+    timeline/page.tsx            Visual timeline view
+    graph/page.tsx               Force-directed graph
+    search/page.tsx              Full-text search
+    eras/[slug]/page.tsx         Era detail (themes, projects, people)
+    projects/[slug]/page.tsx     Project detail (funding, token, events)
+    people/[slug]/page.tsx       Person detail (projects, quotes, controversies)
+    events/[slug]/page.tsx       Event detail (impact, aftermath)
+  components/
+    visual-timeline/             Scroll-driven animated timeline
+      VisualTimeline.tsx           Main timeline container
+      ScrollProgress.tsx           Scroll position indicator
+      EraSection.tsx               Era group with date range
+      AnimatedNode.tsx             Framer Motion node animation
+      DetailCard.tsx               Expandable entity card
+    graph/ForceGraph.tsx         D3 force simulation + SVG rendering
+    search/                      SearchBar + SearchPage components
+    cards/                       EntityCard + StatusBadge
+    layout/Header.tsx            Site header with navigation
+  lib/
+    data.ts                      JSON file loaders (fs-based)
+    types.ts                     11 entity types + enums
+    search.ts                    Fuse.js index configuration
+    routes.ts                    Route helper functions
+    timeline-utils.ts            Date parsing, era color mapping
+data/
+  eras/       10 JSON files      (genesis through ai-crypto)
+  projects/   147 JSON files     (bitcoin, ethereum, uniswap, ...)
+  people/     40 JSON files      (satoshi, vitalik, cz, ...)
+  events/     48 JSON files      (ftx-collapse, ethereum-merge, ...)</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>JSON-First Data Architecture</h3>
+    <div class="highlight-box success">
+      <p><strong>No database, no CMS, no API.</strong> All 245 entities are plain JSON files loaded directly from the filesystem. This makes the data version-controllable, diffable, and trivially extensible. Adding a new project means creating one JSON file with the right schema. The <code>loadEntities</code> function reads an entire directory, parses all JSON files, and returns typed arrays.</p>
+    </div>
+
+    <h3>Force Graph Relationship Discovery</h3>
+    <p>The D3 force graph builds links from three relationship types: project founders (project -> person), event participants (event -> project, event -> person), and related projects (project -> project). Node radius scales with connection count, making influential entities like Vitalik Buterin or Ethereum visually prominent. The graph supports drag, zoom, and hover tooltips.</p>
+
+    <h3>Era-Based Timeline Segmentation</h3>
+    <div class="highlight-box">
+      <p>All entities are assigned an era (one of 10 defined periods). The timeline view groups nodes by era, with scroll-driven Framer Motion animations revealing each section as the user scrolls. People who do not have an explicit era get one resolved from their earliest key event date via the <code>resolvePersonEra</code> function.</p>
+    </div>
+
+    <h3>Rich Entity Schemas</h3>
+    <p>Each entity type carries structured metadata beyond basic descriptions. Projects have funding rounds with investors and valuations, token info with ATH prices, and GitHub metrics. People have project roles with time periods, notable quotes, and controversies. Events track financial impact (<code>amount_lost</code>), aftermath descriptions, and cross-references to involved projects and people.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Total entities</td><td>245 (147 projects, 48 events, 40 people, 10 eras)</td></tr>
+      <tr><td>Blockchain eras</td><td>10 (2008 - present)</td></tr>
+      <tr><td>Project categories</td><td>14 (L1, L2, DeFi, NFT, Exchange, Stablecoin, ...)</td></tr>
+      <tr><td>Person roles</td><td>7 (founder, developer, investor, researcher, ...)</td></tr>
+      <tr><td>Event types</td><td>9 (hack, regulation, milestone, crash, fork, ...)</td></tr>
+      <tr><td>Visualization modes</td><td>3 (timeline, force graph, search)</td></tr>
+      <tr><td>Source files</td><td>32 TypeScript/TSX modules</td></tr>
+      <tr><td>Entity type fields</td><td>11 TypeScript interfaces, 6 enum types</td></tr>
+      <tr><td>Dependencies</td><td>10 runtime (Next.js, React, D3, Framer Motion, Fuse.js, ...)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

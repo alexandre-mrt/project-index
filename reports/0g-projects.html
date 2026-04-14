@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>0G Projects — Ecosystem Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.12);
+      --orange: #f59e0b;
+      --orange-soft: rgba(245, 158, 11, 0.12);
+      --cyan: #06b6d4;
+      --cyan-soft: rgba(6, 182, 212, 0.12);
+      --purple: #a855f7;
+      --purple-soft: rgba(168, 85, 247, 0.12);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); line-height: 1.55; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box.green { border-left-color: var(--green); background: var(--green-soft); }
+    .highlight-box.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .highlight-box.cyan { border-left-color: var(--cyan); background: var(--cyan-soft); }
+    .highlight-box.purple { border-left-color: var(--purple); background: var(--purple-soft); }
+    .highlight-box p { margin-bottom: 0; }
+    .highlight-box strong { font-size: 0.85rem; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+    .tag.ts { background: var(--cyan-soft); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.25); }
+    .tag.storage { background: var(--green-soft); color: var(--green); border: 1px solid rgba(34, 197, 94, 0.25); }
+    .tag.ai { background: var(--purple-soft); color: var(--purple); border: 1px solid rgba(168, 85, 247, 0.25); }
+    .tag.solidity { background: var(--orange-soft); color: var(--orange); border: 1px solid rgba(245, 158, 11, 0.25); }
+    .tag.sdk { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.25); }
+    .tag.hono { background: rgba(239, 68, 68, 0.10); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.82rem; }
+    th { background: var(--surface); color: var(--text); font-weight: 600; }
+    td { color: var(--text-muted); }
+
+    .ascii-diagram {
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--accent);
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hl { color: var(--green); }
+    .ascii-diagram .warn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>0G Projects</h1>
+    <p class="subtitle">
+      7-project ecosystem for the 0G Network covering decentralized storage, AI agent tooling, and data marketplaces. Built for the $88.88M 0G ecosystem grant program.
+    </p>
+
+    <div class="tags">
+      <span class="tag ts">TypeScript</span>
+      <span class="tag storage">0G Storage</span>
+      <span class="tag ai">AI Agents</span>
+      <span class="tag solidity">Solidity</span>
+      <span class="tag sdk">0G SDK</span>
+      <span class="tag hono">Hono</span>
+    </div>
+
+    <!-- THE CHALLENGE -->
+    <h2>The Challenge</h2>
+    <p>
+      0G Network is a high-performance decentralized AI and storage chain, but the ecosystem lacks developer tools and reference applications. Builders need SDKs, gateways, and example apps to adopt the storage and compute primitives. Without these, the network stays empty.
+    </p>
+    <div class="highlight-box orange">
+      <p><strong>Gap:</strong> No "Pinata for 0G", no agent framework, no block explorer, no data marketplace. Every primitive needs tooling from scratch.</p>
+    </div>
+
+    <!-- WHY IT MATTERS -->
+    <h2>Why It Matters</h2>
+    <p>
+      This is not a single project but a full ecosystem play across three layers: storage infrastructure, AI agent primitives, and end-user tools. Each project fills a specific gap in the 0G developer experience, and together they form a coherent stack.
+    </p>
+    <div class="highlight-box green">
+      <p><strong>750+ tests across 6 projects.</strong> Each sub-project ships independently with its own CI, test suite, and documentation.</p>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <h2>How It Works</h2>
+    <pre><code class="ascii-diagram">
+<span class="dim">                    0G ECOSYSTEM ARCHITECTURE</span>
+<span class="dim">  ================================================================</span>
+
+<span class="dim">  TOOLS &amp; APPS</span>
+<span class="dim">  ─────────────────────────────────────────────────────────────</span>
+  <span class="warn">0gscope</span>             <span class="warn">zerodrop</span>              <span class="warn">datavault</span>
+  <span class="dim">Block explorer</span>      <span class="dim">File sharing</span>          <span class="dim">Data marketplace</span>
+  <span class="dim">121 tests</span>           <span class="dim">116 tests</span>             <span class="dim">97 tests</span>
+<span class="dim">  ─────────────────────────────────────────────────────────────</span>
+          |                   |                     |
+          v                   v                     v
+<span class="dim">  AGENT LAYER</span>
+<span class="dim">  ─────────────────────────────────────────────────────────────</span>
+  <span class="hl">0g-agent-kit</span>                      <span class="hl">agentbazaar</span>
+  <span class="dim">SDK: Agent + Memory +</span>             <span class="dim">Marketplace for AI</span>
+  <span class="dim">Inference + INFT mint</span>             <span class="dim">agents as INFTs</span>
+  <span class="dim">177 tests</span>                         <span class="dim">98 tests</span>
+<span class="dim">  ─────────────────────────────────────────────────────────────</span>
+          |                               |
+          v                               v
+<span class="dim">  STORAGE LAYER</span>
+<span class="dim">  ─────────────────────────────────────────────────────────────</span>
+  <span class="hl">zerostorage</span>
+  <span class="dim">REST API gateway + Dashboard + SDK for 0G Storage</span>
+  <span class="dim">"Pinata for 0G" — 141 tests</span>
+<span class="dim">  ─────────────────────────────────────────────────────────────</span>
+          |
+          v
+  ┌────────────────────────────────────────────┐
+  │          <span class="hl">0G NETWORK</span>  <span class="dim">(Galileo / Aristotle)</span>  │
+  │    <span class="dim">Decentralized Storage + AI Compute</span>       │
+  └────────────────────────────────────────────┘
+</code></pre>
+
+    <!-- PROJECT BREAKDOWN -->
+    <h2>Project Breakdown</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Role</th>
+          <th>Tests</th>
+          <th>Key Tech</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>zerostorage</strong></td>
+          <td>REST API gateway + dashboard + SDK for 0G Storage</td>
+          <td>141</td>
+          <td>Hono, Drizzle, React, Docker</td>
+        </tr>
+        <tr>
+          <td><strong>0g-agent-kit</strong></td>
+          <td>TypeScript SDK for building AI agents on 0G</td>
+          <td>177</td>
+          <td>ethers v6, Zod, ERC-7857</td>
+        </tr>
+        <tr>
+          <td><strong>agentbazaar</strong></td>
+          <td>Marketplace for buying/selling AI agents as INFTs</td>
+          <td>98</td>
+          <td>Hono, SQLite, Solidity</td>
+        </tr>
+        <tr>
+          <td><strong>datavault</strong></td>
+          <td>Decentralized data marketplace for AI training datasets</td>
+          <td>97</td>
+          <td>Hono, SQLite, Solidity</td>
+        </tr>
+        <tr>
+          <td><strong>0gscope</strong></td>
+          <td>Block explorer and analytics dashboard</td>
+          <td>121</td>
+          <td>Hono, ethers v6</td>
+        </tr>
+        <tr>
+          <td><strong>zerodrop</strong></td>
+          <td>Decentralized file sharing (WeTransfer on 0G)</td>
+          <td>116</td>
+          <td>Hono, 0G Storage SDK</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- TECH STACK -->
+    <h2>Tech Stack</h2>
+    <ul>
+      <li><strong>Runtime:</strong> Bun</li>
+      <li><strong>Language:</strong> TypeScript (strict mode across all projects)</li>
+      <li><strong>API framework:</strong> Hono (lightweight, Cloudflare Workers compatible)</li>
+      <li><strong>Storage:</strong> 0G SDK (<code>@0gfoundation/0g-ts-sdk</code>) + ethers v6</li>
+      <li><strong>Database:</strong> Bun SQLite / Drizzle ORM</li>
+      <li><strong>Smart Contracts:</strong> Solidity ^0.8.19, OpenZeppelin v5 (ERC-7857 INFT, marketplaces)</li>
+      <li><strong>Frontend:</strong> Server-rendered HTML (Hono) + React/Vite (zerostorage dashboard)</li>
+      <li><strong>CI:</strong> GitHub Actions on all repos</li>
+    </ul>
+
+    <!-- KEY PATTERNS -->
+    <h2>Key Patterns</h2>
+
+    <h3>Agent Kit API</h3>
+    <pre><code>import { quickAgent } from '0g-agent-kit';
+
+const agent = quickAgent({
+  name: 'TradingBot',
+  inferenceEndpoint: 'https://api.openai.com',
+  inferenceApiKey: process.env.OPENAI_API_KEY,
+});
+
+const result = await agent.run('Analyze ETH/USDC');</code></pre>
+
+    <h3>Storage Gateway SDK</h3>
+    <pre><code>import { ZeroStore } from 'zerostorage';
+
+const store = new ZeroStore({ apiKey: 'zs_xxx' });
+const { rootHash } = await store.upload(file);
+const data = await store.download(rootHash);</code></pre>
+
+    <!-- SMART CONTRACTS -->
+    <h2>Smart Contracts</h2>
+    <div class="highlight-box cyan">
+      <p><strong>ERC-7857 (INFT):</strong> Agent Kit mints AI agents as Intelligent NFTs with encrypted metadata, secure transfer, usage authorization, and cloning. AgentBazaar adds a 2.5% fee marketplace. DataVault uses a 5% fee data marketplace contract with subscription support.</p>
+    </div>
+
+    <!-- REVENUE MODELS -->
+    <h2>Revenue Models</h2>
+    <ul>
+      <li><strong>zerostorage:</strong> Freemium SaaS (1GB free, $9-199/mo tiers)</li>
+      <li><strong>0g-agent-kit:</strong> Open-source core + managed hosting ($29/mo per agent) + premium templates ($9-49)</li>
+      <li><strong>agentbazaar:</strong> 2.5% marketplace fee on agent sales</li>
+      <li><strong>datavault:</strong> 5% marketplace fee on dataset sales</li>
+    </ul>
+
+    <!-- KEY INSIGHTS -->
+    <h2>Key Insights</h2>
+    <div class="highlight-box">
+      <p><strong>Ecosystem strategy:</strong> Rather than building one product, this targets three complementary layers (storage, agents, tools) to become essential infrastructure for the 0G developer community. Each project is independently useful but gains network effects from the others.</p>
+    </div>
+    <ul>
+      <li><strong>Grant-aligned:</strong> Developer tooling and AI agents are 0G's top priorities for their $88.88M ecosystem program</li>
+      <li><strong>ERC-7857 bet:</strong> Early adoption of the INFT standard positions the agent-kit and marketplace as reference implementations</li>
+      <li><strong>Consistent architecture:</strong> All projects share Bun + Hono + TypeScript, reducing context switching and enabling code reuse</li>
+      <li><strong>Test coverage:</strong> 750+ tests total across the ecosystem, each project ships with CI</li>
+    </ul>
+
+  </div>
+</body>
+</html>

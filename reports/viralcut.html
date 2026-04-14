@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ViralCut — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .tag.red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .ascii-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .ascii-diagram code {
+      color: var(--text);
+      font-size: 0.78rem;
+      white-space: pre;
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>ViralCut</h1>
+    <p class="subtitle">Automated viral video editing pipeline with beat-sync, captions, face tracking, effects, and Final Cut Pro export</p>
+
+    <div class="tags">
+      <span class="tag">Python 3.11+</span>
+      <span class="tag green">MoviePy 2.x</span>
+      <span class="tag orange">YOLO</span>
+      <span class="tag cyan">librosa</span>
+      <span class="tag">faster-whisper</span>
+      <span class="tag red">FFmpeg</span>
+      <span class="tag">PySceneDetect</span>
+      <span class="tag orange">SAM2</span>
+      <span class="tag green">OpenTimelineIO</span>
+      <span class="tag">Pydantic</span>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>The Challenge</h2>
+
+    <div class="highlight-box warning">
+      <p><strong>Editing viral short-form video is tedious, repetitive, and formulaic.</strong></p>
+      <p>Viral content on TikTok, Reels, and Shorts follows predictable patterns: beat-synced cuts, zooms on faces, word-by-word captions, sound effects on transitions, silence removal, and speed ramps. Manually applying these edits in Final Cut Pro or Premiere takes hours per video, yet the rules are mechanical enough to automate.</p>
+    </div>
+
+    <p>A typical viral editing workflow involves: detecting scene boundaries, analyzing audio for beats and BPM, transcribing speech for captions, tracking faces for auto-zoom, choosing transitions and SFX, rendering the final video, and optionally exporting an FCPXML for further tweaking in Final Cut Pro. Each step requires a different tool or library. ViralCut unifies them into a single CLI pipeline.</p>
+
+    <!-- ================================================ -->
+    <h2>Why It Matters</h2>
+
+    <ul>
+      <li><strong>One-command editing</strong>: drop a raw video and an optional music track, get a fully edited MP4 and FCPXML in one pass. <code>viralcut process input.mp4 --music track.mp3 --style viral-shorts</code></li>
+      <li><strong>Beat-synced cuts</strong>: librosa extracts BPM and beat positions, then the decision engine places cuts on strong beats for rhythmic editing.</li>
+      <li><strong>AI-powered analysis</strong>: YOLO detects faces for auto-zoom, faster-whisper transcribes speech for captions, PySceneDetect finds shot boundaries.</li>
+      <li><strong>Style presets</strong>: YAML files define transition types, caption styles, SFX mappings, and cut rules. Swap a preset to change the entire edit aesthetic.</li>
+      <li><strong>Dual export</strong>: renders a finished MP4 and exports FCPXML for Final Cut Pro, so editors can fine-tune the automated output.</li>
+    </ul>
+
+    <!-- ================================================ -->
+    <h2>How It Works</h2>
+
+    <h3>Full Pipeline</h3>
+    <div class="ascii-diagram"><code><span class="dim">INPUT</span>                      <span class="dim">ANALYSIS (parallel stages)</span>              <span class="dim">OUTPUT</span>
+
++------------------+       +----------------------+              +------------------+
+| <span class="hi">Raw Video</span>        |       | <span class="cyn">Audio Analysis</span>       |              | <span class="grn">Edited MP4</span>       |
+| (any format)     |--+    | BPM, beats, onsets,  |--+           | (MoviePy render) |
++------------------+  |    | silence intervals    |  |           +------------------+
+                      |    +----------------------+  |
++------------------+  |    +----------------------+  |   +-----+  +------------------+
+| <span class="hi">Music Track</span>      |--+--->| <span class="cyn">Speech Transcription</span> |--+-->|<span class="orn">EDL</span>  |->| <span class="grn">FCPXML</span>           |
+| (optional)       |  |    | words, segments,     |  |   |<span class="orn">make</span> |  | (OpenTimelineIO) |
++------------------+  |    | language detection    |  |   +-----+  +------------------+
+                      |    +----------------------+  |      |
++------------------+  |    +----------------------+  |      v
+| <span class="hi">Style Preset</span>     |--+    | <span class="cyn">Scene Detection</span>      |--+   <span class="orn">EditDecisionList</span>
+| (YAML config)    |       | shot boundaries,     |      cuts, zooms, speed,
++------------------+       | confidence scores    |      SFX, captions, segments
+                           +----------------------+
+                           +----------------------+
+                           | <span class="cyn">Face Detection</span>       |
+                           | YOLO bboxes + tracks |
+                           +----------------------+</code></div>
+
+    <h3>Pipeline Stages</h3>
+    <div class="ascii-diagram"><code><span class="dim">viralcut process input.mp4 --music track.mp3 --style viral-shorts</span>
+      |
+      v
+<span class="hi">1. ANALYSIS</span> <span class="dim">(Step 1/4)</span>
+      |  Audio:  librosa -> BPM, beat timestamps, onset detection, silence intervals
+      |  Speech: faster-whisper -> word-level timestamps, language, confidence
+      |  Scene:  PySceneDetect -> shot boundaries with change scores
+      |  Faces:  YOLO ultralytics -> bounding boxes, track IDs per frame
+      |  Result: <span class="cyn">AnalysisResult</span> (Pydantic model, cacheable as JSON)
+      v
+<span class="hi">2. DECISION</span> <span class="dim">(Step 2/4)</span>
+      |  Load StylePreset (YAML: transitions, caption config, SFX mappings)
+      |  Place cuts on beat positions (strength &gt; threshold)
+      |  Remove silence segments below -40dB threshold
+      |  Auto-zoom on detected faces (1.3x scale)
+      |  Assign transitions with probability distribution
+      |  Map SFX to transition types (whoosh, impact, bass drop)
+      |  Result: <span class="orn">EditDecisionList</span> (cuts, zooms, speed, SFX, captions, segments)
+      v
+<span class="hi">3. RENDER</span> <span class="dim">(Step 3/4)</span>
+      |  Apply effects: transitions, zoom keyframes, speed ramps
+      |  Render captions: word-by-word, sentence, or karaoke style
+      |  Composite: MoviePy 2.x (with_* API) + Pillow for text overlays
+      |  Mix audio: original track + music at configurable volumes
+      |  Output: <span class="grn">MP4</span> via FFmpeg
+      v
+<span class="hi">4. EXPORT</span> <span class="dim">(Step 4/4)</span>
+      |  Convert EDL to FCPXML via OpenTimelineIO
+      |  Time values: float seconds -> rational numbers for frame accuracy
+      |  Output: <span class="grn">.fcpxml</span> importable in Final Cut Pro</code></div>
+
+    <!-- ================================================ -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Language</td><td><code>Python 3.11+</code></td><td>Type-annotated, Pydantic models, no Any types</td></tr>
+      <tr><td>CLI</td><td><code>Typer + Rich</code></td><td>Commands: process, analyze, caption, export, styles</td></tr>
+      <tr><td>Audio</td><td><code>librosa</code></td><td>Beat detection, BPM, onset analysis, silence detection</td></tr>
+      <tr><td>Speech</td><td><code>faster-whisper</code></td><td>Word-level transcription with timestamps and confidence</td></tr>
+      <tr><td>Video</td><td><code>MoviePy 2.x</code></td><td>Clip compositing, effects, rendering (with_* API)</td></tr>
+      <tr><td>Scene</td><td><code>PySceneDetect</code></td><td>Shot boundary detection with content-aware analysis</td></tr>
+      <tr><td>Faces</td><td><code>ultralytics YOLO</code></td><td>Face detection and tracking per frame</td></tr>
+      <tr><td>Segmentation</td><td><code>SAM2</code> (optional)</td><td>Object segmentation for background removal</td></tr>
+      <tr><td>Captions</td><td><code>Pillow</code></td><td>Text rendering with stroke, highlight, positioning</td></tr>
+      <tr><td>Export</td><td><code>OpenTimelineIO</code></td><td>FCPXML generation for Final Cut Pro</td></tr>
+      <tr><td>Config</td><td><code>Pydantic + YAML</code></td><td>Immutable style presets with validated parameters</td></tr>
+      <tr><td>Sound</td><td><code>Freesound API</code></td><td>SFX library (whoosh, impact, riser, bass drop)</td></tr>
+      <tr><td>Linter</td><td><code>Ruff</code></td><td>Lint + format in a single pass</td></tr>
+    </table>
+
+    <!-- ================================================ -->
+    <h2>Edit Decision Models</h2>
+
+    <div class="highlight-box">
+      <p><strong>12 transition types</strong>: cut, flash_white, flash_black, whip_left, whip_right, zoom_in, zoom_out, dissolve, glitch, shake, slide_left, slide_right.</p>
+      <p><strong>4 caption styles</strong>: word_by_word (TikTok style), sentence, karaoke (highlight active word), none.</p>
+      <p><strong>7 SFX types</strong>: whoosh, impact, riser, bass_drop, click, swoosh, notification.</p>
+      <p><strong>3 output formats</strong>: 16:9 landscape, 9:16 portrait (shorts), 1:1 square.</p>
+    </div>
+
+    <!-- ================================================ -->
+    <h2>Architecture</h2>
+
+    <pre><code>viralcut/
+  cli.py              Typer entry point (process, analyze, caption, export, styles)
+  config.py           Constants and settings
+  models.py           Pydantic models (AnalysisResult, EditDecisionList, StylePreset)
+  pipeline.py         4-stage orchestrator (analyze -> decide -> render -> export)
+  analysis/
+    audio.py            librosa: BPM, beats, onsets, silence intervals
+    speech.py           faster-whisper: word-level transcription
+    scene.py            PySceneDetect: shot boundary detection
+    faces.py            YOLO ultralytics: face detection + tracking
+  engine/
+    decision.py         Edit decision logic: beat-sync cuts, silence removal, zoom
+    sound_design.py     SFX placement engine (map transitions to sound effects)
+    sound_design_defaults.py   Default SFX file mappings
+    styles/             YAML style preset files (viral-shorts, etc.)
+  render/
+    compositor.py       MoviePy 2.x video compositing and rendering
+    effects.py          Transition effects, zoom, speed ramps, glitch
+    captions.py         Word-by-word, sentence, karaoke caption rendering
+  export/
+    fcpxml.py           OpenTimelineIO FCPXML generation
+    mp4.py              FFmpeg MP4 export wrapper
+  ui/
+    templates/          FastAPI + HTMX tracking point-and-click UI
+  utils/
+    media.py            Video info extraction, format detection
+    cache.py            Analysis result JSON serialization
+    styles.py           YAML style preset loader
+tests/                  pytest test suite</code></pre>
+
+    <!-- ================================================ -->
+    <h2>Key Insights</h2>
+
+    <h3>Immutable Data Pipeline</h3>
+    <div class="highlight-box success">
+      <p><strong>Every stage produces a new Pydantic model, never mutating the previous one.</strong> Analysis produces <code>AnalysisResult</code>, decision produces <code>EditDecisionList</code>, and each can be serialized to JSON for caching or inspection. This makes every pipeline stage independently testable and debuggable.</p>
+    </div>
+
+    <h3>Beat-Sync Algorithm</h3>
+    <p>Cuts are placed on beat positions where <code>beat.strength &gt; threshold</code> (default 0.5). Non-cut transitions (flash, whip, zoom) are randomly assigned with configurable probability (default 30%). This creates the rhythmic "on the beat" editing style that defines viral short-form content.</p>
+
+    <h3>Graceful Optional Dependencies</h3>
+    <div class="highlight-box">
+      <p>Heavy ML dependencies are optional: <code>faster-whisper</code> (speech), <code>ultralytics</code> (faces), <code>SAM2 + torch</code> (tracking), <code>rembg</code> (background removal). Each analysis stage catches <code>ImportError</code> and logs a yellow "skipped" message. The pipeline degrades gracefully rather than failing.</p>
+    </div>
+
+    <h3>Apple Silicon Aware</h3>
+    <p>SAM2 runs on CPU only (MPS is broken for this model). YOLO uses MPS acceleration when available. The pipeline auto-detects the platform and routes each model to the optimal compute backend.</p>
+
+    <h3>Dual Output Strategy</h3>
+    <p>Rendering produces both a finished MP4 (for immediate publishing) and an FCPXML (for Final Cut Pro import). The FCPXML preserves all edit decisions as non-destructive metadata, so editors can tweak timing, swap transitions, or adjust captions without re-running the pipeline.</p>
+
+    <!-- ================================================ -->
+    <h2>Project Stats</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Analysis stages</td><td>4 (audio, speech, scene, faces)</td></tr>
+      <tr><td>Transition types</td><td>12</td></tr>
+      <tr><td>Caption styles</td><td>4 (word-by-word, sentence, karaoke, none)</td></tr>
+      <tr><td>SFX types</td><td>7</td></tr>
+      <tr><td>Output formats</td><td>3 (MP4, FCPXML, both)</td></tr>
+      <tr><td>Video format presets</td><td>3 (16:9, 9:16, 1:1)</td></tr>
+      <tr><td>Source files</td><td>27 Python modules</td></tr>
+      <tr><td>Core dependencies</td><td>7 (moviepy, librosa, scenedetect, typer, rich, pydantic, opentimelineio)</td></tr>
+      <tr><td>Optional ML deps</td><td>4 (faster-whisper, ultralytics, SAM2, rembg)</td></tr>
+      <tr><td>CLI commands</td><td>5 (process, analyze, caption, export, styles)</td></tr>
+    </table>
+
+  </div>
+</body>
+</html>

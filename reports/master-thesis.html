@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Thesis — Anonymous Credentials + ZKP + TEE</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.12);
+      --orange: #f59e0b;
+      --orange-soft: rgba(245, 158, 11, 0.12);
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.10);
+      --cyan: #06b6d4;
+      --cyan-soft: rgba(6, 182, 212, 0.12);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--green); }
+    pre code { color: var(--text-muted); line-height: 1.55; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .highlight-box.green { border-left-color: var(--green); background: var(--green-soft); }
+    .highlight-box.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .highlight-box.red { border-left-color: var(--red); background: var(--red-soft); }
+    .highlight-box.cyan { border-left-color: var(--cyan); background: var(--cyan-soft); }
+    .highlight-box p { margin-bottom: 0; }
+    .highlight-box strong { font-size: 0.85rem; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+    .tag.rust { background: var(--orange-soft); color: var(--orange); border: 1px solid rgba(245, 158, 11, 0.25); }
+    .tag.zkp { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.25); }
+    .tag.tee { background: var(--cyan-soft); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.25); }
+    .tag.sui { background: var(--green-soft); color: var(--green); border: 1px solid rgba(34, 197, 94, 0.25); }
+    .tag.latex { background: var(--red-soft); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.2); }
+    .tag.crypto { background: rgba(168, 85, 247, 0.12); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.25); }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.82rem; }
+    th { background: var(--surface); color: var(--text); font-weight: 600; }
+    td { color: var(--text-muted); }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .status-badge.active { background: var(--green-soft); color: var(--green); }
+    .status-badge.early { background: var(--orange-soft); color: var(--orange); }
+
+    .ascii-diagram {
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--accent);
+    }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hl { color: var(--green); }
+    .ascii-diagram .warn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Master Thesis</h1>
+    <p class="subtitle">
+      Design of an Anonymous Credential System Leveraging Zero-Knowledge Proofs
+      and Trusted Execution Environments for Identity Management and Low-Value
+      Private Payments
+    </p>
+
+    <div class="tags">
+      <span class="tag rust">Rust</span>
+      <span class="tag zkp">ZKP</span>
+      <span class="tag tee">TEE</span>
+      <span class="tag sui">Sui</span>
+      <span class="tag crypto">BLS12-381</span>
+      <span class="tag latex">LaTeX</span>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>EPFL MSc Thesis &middot; Mysten Labs, Zurich</strong></p>
+      <p>Sep 2026 &ndash; Mar 2027 &nbsp; <span class="status-badge early">Early Research</span></p>
+    </div>
+
+    <!-- ===== THE CHALLENGE ===== -->
+    <h2>The Challenge</h2>
+    <p>
+      Digital identity systems force users to reveal their <strong>full identity</strong>
+      for every interaction. Proving you are over 18 requires showing your name, address,
+      and date of birth. Paying for a service links your real identity to transaction history.
+      There is no selective disclosure, no unlinkability, no privacy.
+    </p>
+    <div class="highlight-box red">
+      <p><strong>Core tension:</strong> EU eIDAS 2.0 rejected ZKPs for the EUDI Wallet
+      (mobile performance, protocol immaturity). The industry needs compliant privacy,
+      but no formal framework exists for it.</p>
+    </div>
+    <p>
+      Meanwhile, TEE-based solutions (Intel TDX, AMD SEV-SNP) are being broken with
+      <strong>&lt;$1000 hardware</strong> (TEE.Fail, TDXdown). Neither ZKP nor TEE alone
+      is sufficient. A hybrid model is needed.
+    </p>
+
+    <!-- ===== WHY IT MATTERS ===== -->
+    <h2>Why It Matters</h2>
+    <ul>
+      <li><strong>Privacy as a right</strong> &mdash; users should prove attributes (age, residency, solvency)
+        without revealing the underlying data</li>
+      <li><strong>Regulatory alignment</strong> &mdash; selective disclosure satisfies KYC/AML
+        without mass surveillance</li>
+      <li><strong>Mysten Labs / Sui integration</strong> &mdash; builds on zkLogin (ACM CCS 2024)
+        and Seal for a production-grade privacy layer</li>
+      <li><strong>Bridging two worlds</strong> &mdash; ZKP provides cryptographic guarantees,
+        TEE provides performance; combining them gives graceful degradation when either fails</li>
+    </ul>
+
+    <!-- ===== HOW IT WORKS ===== -->
+    <h2>How It Works</h2>
+
+    <pre><code class="ascii-diagram">
+<span class="dim">  ISSUER                    USER                     VERIFIER           SUI CHAIN</span>
+<span class="dim">  (Gov/Bank)               (Mobile)                 (Service)          (L1)</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>                        <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span><span class="dim">--- BBS+ credential ---&gt;</span><span class="hl">|</span>                        <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>    <span class="dim">(signed attrs:</span>       <span class="hl">|</span>                        <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>    <span class="dim"> name, dob, country)</span> <span class="hl">|</span>                        <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>                        <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                    <span class="warn">+----+----+</span>                  <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                    <span class="warn">| TEE     |</span>  <span class="dim">fast proof</span>     <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                    <span class="warn">| enclave |</span>  <span class="dim">generation</span>     <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                    <span class="warn">+----+----+</span>                  <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>                        <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span><span class="dim">-- ZK proof ----------&gt;</span><span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>  <span class="dim">"I am &gt;18 AND</span>        <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>  <span class="dim"> EU resident"</span>         <span class="hl">|</span><span class="dim">-- verify on-chain &gt;</span><span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>  <span class="dim">(nothing else</span>         <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>  <span class="dim"> revealed)</span>            <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>                        <span class="hl">|</span>                   <span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span><span class="dim">-- confidential tx ---&gt;</span><span class="hl">|</span><span class="dim">-- settle ---------&gt;</span><span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>  <span class="dim">(Pedersen commit,</span>     <span class="hl">|</span>  <span class="dim">(on-chain verify)</span>  <span class="hl">|</span>
+    <span class="hl">|</span>                         <span class="hl">|</span>  <span class="dim"> range proof)</span>         <span class="hl">|</span>                   <span class="hl">|</span>
+</code></pre>
+
+    <div class="highlight-box cyan">
+      <p><strong>Hybrid model:</strong> TEE accelerates proof generation on mobile.
+      If the TEE is compromised, the system falls back to pure ZKP &mdash;
+      slower but cryptographically sound. Privacy never depends on hardware trust alone.</p>
+    </div>
+
+    <h3>Protocol Layers</h3>
+    <pre><code class="ascii-diagram">
+<span class="dim">+---------------------------------------------------------------+</span>
+<span class="dim">|</span>  <span class="hl">Application Layer</span>                                             <span class="dim">|</span>
+<span class="dim">|</span>  Credential issuance, selective disclosure, payments           <span class="dim">|</span>
+<span class="dim">+---------------------------------------------------------------+</span>
+<span class="dim">|</span>  <span class="warn">Protocol Layer</span>        (utt-protocol)                         <span class="dim">|</span>
+<span class="dim">|</span>  Coins, wallets, transactions, bank registration              <span class="dim">|</span>
+<span class="dim">+---------------------------------------------------------------+</span>
+<span class="dim">|</span>  <span class="hl">Crypto Layer</span>          (utt-crypto)                           <span class="dim">|</span>
+<span class="dim">|</span>  Pedersen commitments, PS signatures, sigma-protocols,        <span class="dim">|</span>
+<span class="dim">|</span>  IBE, range proofs, PRF, Fiat-Shamir transcripts              <span class="dim">|</span>
+<span class="dim">+---------------------------------------------------------------+</span>
+<span class="dim">|</span>  <span class="warn">BFT Layer</span>             (utt-node)                             <span class="dim">|</span>
+<span class="dim">|</span>  Threshold crypto (Feldman VSS DKG), Byzantine Consistent     <span class="dim">|</span>
+<span class="dim">|</span>  Broadcast (Bracha), sharding, n=3f+1                         <span class="dim">|</span>
+<span class="dim">+---------------------------------------------------------------+</span>
+<span class="dim">|</span>  <span class="hl">Curve</span>: BLS12-381  &middot;  Type III pairings  &middot;  128-bit security   <span class="dim">|</span>
+<span class="dim">+---------------------------------------------------------------+</span>
+</code></pre>
+
+    <!-- ===== TECH STACK ===== -->
+    <h2>Tech Stack</h2>
+
+    <table>
+      <tr>
+        <th>Component</th>
+        <th>Technology</th>
+        <th>Purpose</th>
+      </tr>
+      <tr>
+        <td>Cryptography</td>
+        <td><code>arkworks</code> (ark-ec, ark-ff, ark-bls12-381, ark-poly)</td>
+        <td>Elliptic curve operations, pairings, field arithmetic</td>
+      </tr>
+      <tr>
+        <td>Signatures</td>
+        <td>BBS+ / Pointcheval-Sanders</td>
+        <td>Rerandomizable multi-message signatures, selective disclosure</td>
+      </tr>
+      <tr>
+        <td>Proofs</td>
+        <td>Sigma-protocols, Groth16/Nova (planned)</td>
+        <td>ZK proofs for attribute predicates and range proofs</td>
+      </tr>
+      <tr>
+        <td>Transcripts</td>
+        <td><code>merlin</code> + blake2/sha2</td>
+        <td>Fiat-Shamir transform, domain separation</td>
+      </tr>
+      <tr>
+        <td>Networking</td>
+        <td><code>tokio</code> (async)</td>
+        <td>BFT broadcast, node communication</td>
+      </tr>
+      <tr>
+        <td>Report</td>
+        <td>LaTeX (IEEEtran, <code>cryptocode</code>)</td>
+        <td>Formal thesis document with crypto notation</td>
+      </tr>
+      <tr>
+        <td>Target chain</td>
+        <td>Sui (Move)</td>
+        <td>On-chain verification, confidential transactions</td>
+      </tr>
+    </table>
+
+    <!-- ===== CODEBASE ===== -->
+    <h2>Codebase</h2>
+
+    <h3>anon-creds (src/)</h3>
+    <p>Core anonymous credential library. Modules:</p>
+    <pre><code>src/
+  credentials/   # Credential issuance, presentation, selective disclosure
+  crypto/        # Low-level crypto primitives
+  protocol/      # Issuance and verification protocols
+  types/         # Shared types and error definitions
+  lib.rs
+  main.rs</code></pre>
+
+    <h3>utt-rs (UTT implementation)</h3>
+    <p>Full implementation of the UTT (UnTraceable Transactions) paper
+    <a href="https://eprint.iacr.org/2022/452">IACR 2022/452</a>. Workspace with 3 crates, 96 tests.</p>
+    <pre><code>utt-rs/
+  utt-crypto/    # Pedersen, PS sigs, sigma-protocols, IBE, range proofs, PRF
+  utt-protocol/  # Coins, wallets, transactions, bank, registration
+  utt-node/      # Threshold crypto, Bracha BCB, sharding (n=3f+1)</code></pre>
+
+    <h3>Report (LaTeX)</h3>
+    <p>IEEE double-column format (EPFL/HexHive template). 9 sections planned:</p>
+    <pre><code>report/
+  main.tex           # Master document
+  init.tex           # Custom commands & notation
+  references.bib     # 10+ references (BBS+, SAAC, zkLogin, TEE.Fail...)
+  sections/
+    0-abstract       4-protocol-design    8-conclusion
+    1-introduction   5-implementation     Acknowledgments
+    2-background     6-evaluation
+    3-threat-model   7-discussion</code></pre>
+
+    <!-- ===== KEY INSIGHTS ===== -->
+    <h2>Key Insights</h2>
+
+    <div class="highlight-box green">
+      <p><strong>ZKP + TEE = graceful degradation.</strong>
+      TEE compromise does not break privacy &mdash; the system falls back to pure ZKP.
+      ZKP alone is too slow for mobile; TEE accelerates it. Neither is sufficient alone,
+      but together they cover each other's weaknesses.</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>SAAC (CRYPTO 2025)</strong> is the closest related work: pairing-free,
+      mobile-friendly anonymous credentials. Our construction extends this with
+      TEE-assisted proving and Sui on-chain settlement.</p>
+    </div>
+
+    <div class="highlight-box orange">
+      <p><strong>Open problems:</strong> efficient revocation without breaking unlinkability
+      (UPPR is promising but unproven at scale), and bridging the regulatory gap
+      where eIDAS 2.0 demands selective disclosure but rejects the ZKP tooling that enables it.</p>
+    </div>
+
+    <!-- ===== RESEARCH LANDSCAPE ===== -->
+    <h2>Research Landscape</h2>
+
+    <table>
+      <tr>
+        <th>Area</th>
+        <th>Key References</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>Anonymous Credentials</td>
+        <td>BBS+ (Tessaro-Zhu), SAAC (CRYPTO 2025), zk-creds, Coconut</td>
+        <td>Core foundation</td>
+      </tr>
+      <tr>
+        <td>TEE Security</td>
+        <td>TEE.Fail (2025), TDXdown (CCS 2024)</td>
+        <td>Motivates hybrid model</td>
+      </tr>
+      <tr>
+        <td>Private Payments</td>
+        <td>Zcash (Halo 2), Aztec (Noir), Penumbra, UTT (IACR 2022/452)</td>
+        <td>Benchmark systems</td>
+      </tr>
+      <tr>
+        <td>Sui / Mysten</td>
+        <td>zkLogin (CCS 2024), ZK Authenticator (AFT 2025), Seal</td>
+        <td>Direct building blocks</td>
+      </tr>
+      <tr>
+        <td>Regulation</td>
+        <td>eIDAS 2.0 ARF, BIS Working Paper 1242</td>
+        <td>Compliance framing</td>
+      </tr>
+      <tr>
+        <td>Revocation</td>
+        <td>UPPR (ePrint 2025/1919), Revocable TACO (AsiaCCS 2024)</td>
+        <td>Open problem</td>
+      </tr>
+    </table>
+
+    <!-- ===== PROJECT STATUS ===== -->
+    <h2>Project Status</h2>
+
+    <table>
+      <tr>
+        <th>Milestone</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>Literature survey</td>
+        <td><span class="status-badge active">Done</span></td>
+        <td>25+ papers tracked, key references identified</td>
+      </tr>
+      <tr>
+        <td>UTT implementation (utt-rs)</td>
+        <td><span class="status-badge active">Done</span></td>
+        <td>96 tests passing across 3 crates</td>
+      </tr>
+      <tr>
+        <td>anon-creds scaffold</td>
+        <td><span class="status-badge early">WIP</span></td>
+        <td>Module structure, arkworks deps</td>
+      </tr>
+      <tr>
+        <td>Protocol design</td>
+        <td><span class="status-badge early">WIP</span></td>
+        <td>Sections outlined, formal descriptions pending</td>
+      </tr>
+      <tr>
+        <td>TEE integration</td>
+        <td>Planned</td>
+        <td>Proof generation acceleration</td>
+      </tr>
+      <tr>
+        <td>Sui on-chain verifier</td>
+        <td>Planned</td>
+        <td>Move smart contract for proof verification</td>
+      </tr>
+      <tr>
+        <td>Evaluation / benchmarks</td>
+        <td>Planned</td>
+        <td>Proving time, verification cost, mobile perf</td>
+      </tr>
+      <tr>
+        <td>LaTeX report</td>
+        <td><span class="status-badge early">Outline</span></td>
+        <td>9 sections scaffolded, abstract pending</td>
+      </tr>
+    </table>
+
+  </div>
+</body>
+</html>
