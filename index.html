@@ -374,12 +374,12 @@
       },
       {
         name: "Master Thesis",
-        desc: "Master thesis at Mysten Labs: anonymous credentials + ZKP + TEE for identity management and private payments on Sui.",
-        stack: ["Rust", "LaTeX"],
+        desc: "Master thesis at Mysten Labs: anonymous credentials + ZKP + TEE for identity management and private payments on Sui. Includes utt-rs, a full Rust implementation of UTT (IACR 2022/452).",
+        stack: ["Rust", "arkworks", "BLS12-381", "LaTeX"],
         tags: ["privacy", "blockchain"],
-        features: ["Cryptographic implementations", "LaTeX report with research log", "Nova/Groth16 experiments"],
-        date: "2026-03-25",
-        location: "~/project/",
+        features: ["utt-rs workspace: utt-crypto + utt-protocol + utt-node (96 tests)", "Pedersen commitments, PS signatures, threshold BFT", "LaTeX report with research log + papers.md"],
+        date: "2026-04-17",
+        location: "~/projects/thesis/Master Thesis/",
         report: "reports/master-thesis.html"
       },
       {
@@ -666,12 +666,12 @@
       },
       {
         name: "thesis-study-plan",
-        desc: "Interactive study website for master thesis preparation. 6 chapters, 80+ papers with technical recaps, Pomodoro timer.",
-        stack: ["HTML", "CSS", "JavaScript"],
+        desc: "Interactive study website for master thesis preparation. 6 chapters + Rust track + ZK Deep Dive, 80+ papers with individual recap cards, evidence-based Method tab, Pomodoro timer.",
+        stack: ["HTML", "CSS", "Vanilla JS", "KaTeX"],
         tags: ["tool", "privacy"],
-        features: ["80+ papers with deep dive recaps", "Progress tracking (localStorage)", "Global concept search + Pomodoro timer"],
-        date: "2026-04-09",
-        location: "~/projects/thesis/",
+        features: ["Paper recap cards for all 44 thesis papers (intuitive + technical)", "Method tab: evidence-based reading methodology", "Dual-view content (intuitive/technical) with KaTeX math", "Global concept search, Pomodoro timer, localStorage progress"],
+        date: "2026-04-17",
+        location: "~/projects/thesis/thesis-study-plan/",
         url: "https://thesis-study-plan.vercel.app",
         report: "reports/thesis-study-plan.html"
       },
