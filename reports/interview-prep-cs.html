@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Prep CS — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+    .highlight-box { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; padding: 1rem 1.2rem; margin: 1rem 0; }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag { display: inline-block; font-size: 0.75rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 4px; background: var(--accent-soft); color: var(--accent); letter-spacing: 0.02em; }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .ascii-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; margin: 1rem 0; overflow-x: auto; line-height: 1.4; }
+    .ascii-diagram code { color: var(--text); font-size: 0.78rem; white-space: pre; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Interview Prep CS</h1>
+    <p class="subtitle">Mobile-first flashcards PWA with 657 hand-authored cards for senior engineering interviews. Primary target: Mysten Labs (master thesis employer, Sep 2026).</p>
+
+    <div class="tags">
+      <span class="tag">Next.js 16</span>
+      <span class="tag green">TypeScript strict</span>
+      <span class="tag cyan">Tailwind v4</span>
+      <span class="tag orange">shadcn/ui</span>
+      <span class="tag">Framer Motion</span>
+      <span class="tag green">Fuse.js</span>
+      <span class="tag">Zod</span>
+      <span class="tag cyan">PWA</span>
+      <span class="tag">Bun + Biome</span>
+    </div>
+
+    <h2>The Challenge</h2>
+    <div class="highlight-box warning">
+      <p><strong>Senior interview prep needs more than LeetCode grinds.</strong></p>
+      <p>Staff/senior engineering loops test judgment: distributed systems trade-offs, production horror stories, code review eye, communication. Generic LeetCode sites index coding questions, not the meta-skills. Nothing targets the specific company you want — in this case, Mysten Labs and its Sui stack.</p>
+    </div>
+
+    <p>Interview Prep CS is a curated corpus of 657 flashcards spanning algorithms, system design, backend/infra, blockchain, Mysten Labs specifics, ML/AI, OS/net/sec, senior signals, and behavioral. Every card ships with <code>front</code>, <code>back</code>, and optional <code>senior_nuance</code> + <code>quote_to_say</code> for verbal delivery.</p>
+
+    <h2>Why It Matters</h2>
+    <ul>
+      <li><strong>Mysten Labs dedicated section</strong>: 60 cards covering founders (Evan Cheng, Sam Blackshear, Niyi Abiodun, George Danezis, Kostas Chalkias), Sui architecture, Move, Narwhal/Bullshark/Mysticeti consensus, zkLogin, privacy roadmap. Backed by <code>MYSTEN_RESEARCH.md</code> with inline source citations.</li>
+      <li><strong>Senior signals framed explicitly</strong>: 50 dedicated cards on ambiguity handling, scope negotiation, technical disagreement, incident narrative.</li>
+      <li><strong>Mock interview mode</strong>: 387 mock-eligible cards feed a timed simulation — not just flip cards, but answer against the clock.</li>
+      <li><strong>SM-2 lite spaced repetition</strong>: localStorage-backed review scheduling — return to weak cards automatically.</li>
+      <li><strong>Offline-ready PWA</strong>: manual service worker — prep in planes, trains, subway.</li>
+    </ul>
+
+    <h2>Content Distribution</h2>
+    <table>
+      <tr><th>Topic</th><th>Cards</th><th>Mock-eligible</th></tr>
+      <tr><td>Algorithms & DS</td><td>120</td><td>yes</td></tr>
+      <tr><td>System Design</td><td>100</td><td>yes</td></tr>
+      <tr><td>Backend & Infra</td><td>80</td><td>yes</td></tr>
+      <tr><td>Blockchain</td><td>80</td><td>yes</td></tr>
+      <tr><td><strong>Mysten Labs</strong></td><td><strong>60</strong></td><td>yes</td></tr>
+      <tr><td>ML / AI</td><td>60</td><td>partial</td></tr>
+      <tr><td>Senior Signals</td><td>50</td><td>yes</td></tr>
+      <tr><td>OS / Net / Sec</td><td>50</td><td>yes</td></tr>
+      <tr><td>Behavioral</td><td>30</td><td>yes</td></tr>
+      <tr><td>Seed</td><td>27</td><td>no</td></tr>
+    </table>
+
+    <h2>How It Works</h2>
+    <div class="ascii-diagram"><code><span class="dim">CONTENT PIPELINE</span>                       <span class="dim">RUNTIME</span>
+
++---------------------------+            +------------------------+
+| <span class="hi">content/cs/flashcards/</span>   |            |   Next.js (Turbopack)  |
+|   algorithms/*.json       |-- Zod ---->|   SSG + client app     |
+|   system-design/*.json    |  validate  |                        |
+|   mysten-labs/*.json      |            |   + Framer swipe       |
+|   ...                     |            |   + Fuse.js cmd+K      |
++---------------------------+            |   + SM-2 scheduler     |
+                                         |   + Service Worker     |
++---------------------------+            +------------------------+
+| <span class="hi">MYSTEN_RESEARCH.md</span>        |                        |
+|   founders, papers,       |---feeds--->|    60 Mysten cards     |
+|   roadmap, sources        |            |                        |
++---------------------------+            +------------------------+</code></div>
+
+    <h2>Stack & Status</h2>
+    <div class="highlight-box success">
+      <p><strong>Live:</strong> <a href="https://interview-prep-cs.vercel.app" target="_blank">interview-prep-cs.vercel.app</a></p>
+      <p><strong>Status:</strong> Active. Last commit 2026-04-16 — structured learning path merged.</p>
+      <p><strong>Content swappable:</strong> change <code>CONTENT_SET</code> to switch corpus without touching UI code.</p>
+    </div>
+  </div>
+</body>
+</html>

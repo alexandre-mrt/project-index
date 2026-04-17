@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MA4 Catch-Up — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.85rem; }
+    th { background: var(--surface); color: var(--text); }
+    td { color: var(--text-muted); }
+    .highlight-box { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; padding: 1rem 1.2rem; margin: 1rem 0; }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag { display: inline-block; font-size: 0.75rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 4px; background: var(--accent-soft); color: var(--accent); letter-spacing: 0.02em; }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .ascii-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; margin: 1rem 0; overflow-x: auto; line-height: 1.4; }
+    .ascii-diagram code { color: var(--text); font-size: 0.78rem; white-space: pre; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>MA4 Catch-Up</h1>
+    <p class="subtitle">Consolidated study site for FIN-420 (Financial Intermediation) and FIN-424 (Macroeconomics and Monetary Policy), Spring 2026 at EPFL.</p>
+
+    <div class="tags">
+      <span class="tag">Next.js 15</span>
+      <span class="tag green">TypeScript</span>
+      <span class="tag cyan">Tailwind CSS</span>
+      <span class="tag orange">Biome</span>
+      <span class="tag green">Bun</span>
+      <span class="tag">Vercel</span>
+    </div>
+
+    <h2>The Challenge</h2>
+    <div class="highlight-box warning">
+      <p><strong>Two dense finance courses, 68 PDFs, and no unified entry point.</strong></p>
+      <p>FIN-420 and FIN-424 span hundreds of slides, lecture notes, and problem sets. Studying via the EPFL portal means hunting through filenames, losing track of progress, and never seeing how concepts interconnect across the two courses.</p>
+    </div>
+
+    <p>MA4 Catch-Up ingests every course artefact, produces typed concept and glossary JSON, and renders them as a navigable, anchor-linked site with formula legends. Progress, theme, and read-state persist in localStorage.</p>
+
+    <h2>Why It Matters</h2>
+    <ul>
+      <li><strong>Single catalogue</strong>: 68 PDFs indexed under two manifests (fin420-manifest, fin424-manifest), browsable by week and topic.</li>
+      <li><strong>Concept index with TOC</strong>: wave-5 feature — anchor navigation across every defined concept, so related ideas in FIN-420 and FIN-424 cross-link cleanly.</li>
+      <li><strong>Glossary + formula legends</strong>: every macro and intermediation formula ships with its variable legend, eliminating the "what does Xt stand for again?" friction.</li>
+      <li><strong>Built for exam velocity</strong>: this catch-up site targets efficient review during exam prep, not initial learning.</li>
+    </ul>
+
+    <h2>How It Works</h2>
+    <div class="ascii-diagram"><code><span class="dim">COURSE DATA (data/)</span>                <span class="dim">RENDER PIPELINE</span>
+
++----------------------+             +-----------------------+
+| <span class="hi">fin420-manifest</span>      |             |   Next.js App Router  |
+| fin424-manifest      |-->reads---->|   /course/[slug]      |
+| concepts-*.json      |             |   /concept/[slug]     |
+| content-*.json       |             |   /glossary/[slug]    |
+| glossary-*.json      |             +-----------------------+
++----------------------+                        |
++----------------------+                        v
+| <span class="hi">public/resources/</span>    |             +-----------------------+
+| 68 PDFs              |--linked---->|  Sidebar nav + TOC    |
++----------------------+             |  Dark mode toggle     |
+                                     |  localStorage progress|
+                                     +-----------------------+</code></div>
+
+    <h3>Data Pipeline</h3>
+    <ul>
+      <li><strong>Ingest</strong>: PDFs land in <code>public/resources/</code>, manifests in <code>data/</code>.</li>
+      <li><strong>Parse</strong>: loader reads manifests + concept/content/glossary JSON at build time.</li>
+      <li><strong>Render</strong>: App Router pages pull typed data, render anchor-linked sections.</li>
+      <li><strong>Persist</strong>: localStorage for progress + theme.</li>
+    </ul>
+
+    <h2>Structure</h2>
+    <table>
+      <tr><th>Directory</th><th>Contents</th></tr>
+      <tr><td><code>src/app/</code></td><td>Next.js App Router pages</td></tr>
+      <tr><td><code>src/components/</code></td><td>Sidebar, ThemeToggle</td></tr>
+      <tr><td><code>src/data/</code></td><td>Types, loader</td></tr>
+      <tr><td><code>src/lib/</code></td><td>localStorage utilities</td></tr>
+      <tr><td><code>data/</code></td><td>Manifests, concept/content/glossary JSON</td></tr>
+      <tr><td><code>public/resources/</code></td><td>68 PDFs</td></tr>
+    </table>
+
+    <h2>Stack & Status</h2>
+    <div class="highlight-box success">
+      <p><strong>Status:</strong> Active. Last commit 2026-04-16 — glossary schema and formula variable legends (wave-5).</p>
+      <p><strong>Context:</strong> MA4 financial engineering minor at EPFL. See also the FIN-420 group work (SVB case study) and the CS interview-prep site.</p>
+    </div>
+  </div>
+</body>
+</html>

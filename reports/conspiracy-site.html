@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SlopEncyclopedia — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    .highlight-box { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; padding: 1rem 1.2rem; margin: 1rem 0; }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag { display: inline-block; font-size: 0.75rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 4px; background: var(--accent-soft); color: var(--accent); letter-spacing: 0.02em; }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .ascii-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; margin: 1rem 0; overflow-x: auto; line-height: 1.4; }
+    .ascii-diagram code { color: var(--text); font-size: 0.78rem; white-space: pre; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>SlopEncyclopedia</h1>
+    <p class="subtitle">Conspiracy theory encyclopedia with terminal/classified-document aesthetic. Built as a night-shift project with 5/5 functional verification.</p>
+
+    <div class="tags">
+      <span class="tag">Next.js 14</span>
+      <span class="tag green">TypeScript strict</span>
+      <span class="tag cyan">Tailwind v4</span>
+      <span class="tag orange">D3.js</span>
+      <span class="tag">Biome</span>
+      <span class="tag green">Bun</span>
+      <span class="tag">Vercel</span>
+    </div>
+
+    <h2>The Challenge</h2>
+    <div class="highlight-box warning">
+      <p><strong>Conspiracy theories are scattered, sensationalized, and rarely cross-linked.</strong></p>
+      <p>Wikipedia sections are locked down, YouTube rabbit-holes autoplay ads, and no canonical browser exists for exploring how theories connect — who claims what, which actors recur, which events get reused across narratives.</p>
+    </div>
+
+    <p>SlopEncyclopedia presents a curated dataset as a browsable archive with a distinctive classified/terminal aesthetic. Records are linkable, a D3 force-directed graph surfaces cross-theory connections, and full-archive search makes exploration fast.</p>
+
+    <h2>Why It Matters</h2>
+    <ul>
+      <li><strong>Structured over prose</strong>: every theory is a record with typed fields, not a blog post.</li>
+      <li><strong>Force graph reveals connections</strong>: rectangle labeled nodes with interactive popups expose recurring actors, events, and themes.</li>
+      <li><strong>Classified aesthetic</strong>: terminal-style UI mirrors the content and helps readers treat entries as artefacts rather than statements of fact.</li>
+      <li><strong>Mobile-first</strong>: responsive popups, collapsible graph controls, depth meter — works on a phone during the commute.</li>
+    </ul>
+
+    <h2>How It Works</h2>
+    <div class="ascii-diagram"><code><span class="dim">DATA</span>                                   <span class="dim">VIEWS</span>
+
++------------------------+             +-------------------------+
+| <span class="hi">slop-encyclopedia-       </span>|             |   /                     |
+| data.json</span> (76 KB)        |--reads----->|   home + graph index    |
+|                        |             +-------------------------+
+| records[]              |             +-------------------------+
+| connections[]          |-- D3 ------>|   /theory/[slug]        |
+| actors[]               |  force-     |   classified record     |
++------------------------+  layout     +-------------------------+
+                                       +-------------------------+
+                                       |   D3 force graph        |
+                                       |   - rect labeled nodes  |
+                                       |   - hover popup         |
+                                       |   - depth meter         |
+                                       +-------------------------+</code></div>
+
+    <h3>Features Added (recent commits)</h3>
+    <ul>
+      <li><strong>Mobile</strong>: responsive popups, collapsible graph controls, unified depth meter (e28a5da).</li>
+      <li><strong>Graph + home</strong>: rectangle nodes with labels, interactive conspiracy popups (4c2c49a).</li>
+      <li><strong>Night-shift QA</strong>: functional verification passed 5/5 pages (124baf1).</li>
+    </ul>
+
+    <h2>Stack & Status</h2>
+    <div class="highlight-box success">
+      <p><strong>Status:</strong> Active. Last commit 2026-04-17 — mobile improvements + unified depth meter.</p>
+      <p><strong>Pipeline:</strong> generated via night-shift v3, with 5/5 pages passing functional verification in the last QA pass.</p>
+      <p><strong>Dataset source:</strong> <code>~/projects/misc/slop-encyclopedia-data.json</code> (76 KB, shared with this site).</p>
+    </div>
+  </div>
+</body>
+</html>

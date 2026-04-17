@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Index — Project Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .back { color: var(--accent); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; color: var(--accent); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p, li { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0.5rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    strong { color: var(--text); }
+    a { color: var(--accent); }
+    .highlight-box { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; padding: 1rem 1.2rem; margin: 1rem 0; }
+    .highlight-box p { margin-bottom: 0.3rem; }
+    .highlight-box p:last-child { margin-bottom: 0; }
+    .highlight-box.warning { border-left-color: var(--orange); }
+    .highlight-box.success { border-left-color: var(--green); }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+    .tag { display: inline-block; font-size: 0.75rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 4px; background: var(--accent-soft); color: var(--accent); letter-spacing: 0.02em; }
+    .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag.orange { background: rgba(245,158,11,0.12); color: var(--orange); }
+    .tag.cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
+    .ascii-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; margin: 1rem 0; overflow-x: auto; line-height: 1.4; }
+    .ascii-diagram code { color: var(--text); font-size: 0.78rem; white-space: pre; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .ascii-diagram .dim { color: var(--text-muted); }
+    .ascii-diagram .hi { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .orn { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../index.html">&larr; Back to Index</a>
+
+    <h1>Project Index</h1>
+    <p class="subtitle">This site. Single-file HTML catalog of all personal projects, with filters, search, and linked per-project reports. Self-maintained metadata for 50+ projects.</p>
+
+    <div class="tags">
+      <span class="tag">HTML</span>
+      <span class="tag green">CSS (inline)</span>
+      <span class="tag cyan">Vanilla JS</span>
+      <span class="tag orange">Vercel</span>
+    </div>
+
+    <h2>The Challenge</h2>
+    <div class="highlight-box warning">
+      <p><strong>Too many projects, no browsable overview.</strong></p>
+      <p>The portfolio spans blockchain, AI, web, travel sites, tools, and research across dozens of repos. README files are scattered, GitHub lists lack context, and "show me what you've built" is hard to answer without a canonical view.</p>
+    </div>
+
+    <p>Project Index is a single <code>index.html</code> file (no framework) that catalogs every project with metadata: description, stack, tags, features, date, repo location, optional live URL, optional GitHub link, and a linked HTML report. Filters by category, full-text search, auto-grouping into Blockchain / AI / Web / Travel / Tools / Games.</p>
+
+    <h2>Why It Matters</h2>
+    <ul>
+      <li><strong>Zero framework overhead</strong>: a single HTML file, no build step, instant Vercel deploy.</li>
+      <li><strong>Self-describing metadata</strong>: every card ships with stack, tags, features, and a deep-dive report link — not just a name.</li>
+      <li><strong>Deep reports on demand</strong>: clicking "Report" opens a standalone HTML page with ASCII architecture diagrams, challenge framing, and implementation notes.</li>
+      <li><strong>Living catalog</strong>: updated whenever new projects land; currently 50+ projects across 7 categories.</li>
+    </ul>
+
+    <h2>How It Works</h2>
+    <div class="ascii-diagram"><code><span class="dim">SINGLE FILE</span>                         <span class="dim">REPORT FOLDER</span>
+
++---------------------+                +--------------------------+
+| <span class="hi">index.html</span>          |                |  reports/                |
+|                     |                |                          |
+|  projects[] array   |---links------> |  ai-pulse.html           |
+|    name, desc, stack|                |  chainlore.html          |
+|    tags, features   |                |  conspiracy-site.html    |
+|    report url       |                |  interview-prep-cs.html  |
+|                     |                |  ma4-catchup.html        |
+|  render() groups    |                |  project-index.html      |
+|  by category        |                |  ... (50+ reports)       |
+|                     |                |                          |
+|  search + filters   |                |  each: standalone HTML   |
++---------------------+                |  with ASCII diagrams     |
+                                       +--------------------------+</code></div>
+
+    <h3>Card Schema</h3>
+    <div class="ascii-diagram"><code>{
+  <span class="hi">name</span>:     <span class="grn">"interview-prep-cs"</span>,
+  <span class="hi">desc</span>:     <span class="grn">"Flashcards PWA for senior eng interviews..."</span>,
+  <span class="hi">stack</span>:    [<span class="grn">"Next.js 16"</span>, <span class="grn">"TypeScript"</span>, <span class="grn">"shadcn/ui"</span>],
+  <span class="hi">tags</span>:     [<span class="orn">"tool"</span>, <span class="orn">"ai"</span>],
+  <span class="hi">features</span>: [<span class="grn">"657 cards"</span>, <span class="grn">"Mysten section"</span>, <span class="grn">"SM-2 + PWA"</span>],
+  <span class="hi">date</span>:     <span class="grn">"2026-04-17"</span>,
+  <span class="hi">location</span>: <span class="grn">"~/projects/misc/"</span>,
+  <span class="hi">url</span>:      <span class="grn">"https://interview-prep-cs.vercel.app"</span>,
+  <span class="hi">github</span>:   <span class="grn">"https://github.com/..."</span>,   <span class="dim">// optional</span>
+  <span class="hi">report</span>:   <span class="grn">"reports/interview-prep-cs.html"</span>
+}</code></div>
+
+    <h2>Categories</h2>
+    <ul>
+      <li><strong>Blockchain</strong> — Sui, Solana, Canton, ZK privacy, security research</li>
+      <li><strong>AI / ML</strong> — aggregators, agents, video pipelines</li>
+      <li><strong>Web Apps</strong> — dashboards, editorials, 3D portfolios</li>
+      <li><strong>Travel</strong> — interactive trip planners</li>
+      <li><strong>Tools & Infra</strong> — CI, orchestration, voice, Mac Mini setup</li>
+      <li><strong>Privacy / Research</strong> — master thesis study plan, ZK work</li>
+      <li><strong>Games</strong> — browser-game one-shots</li>
+      <li><strong>Study / Career</strong> — MA4 catch-up, interview prep CS</li>
+    </ul>
+
+    <h2>Stack & Status</h2>
+    <div class="highlight-box success">
+      <p><strong>Live:</strong> <a href="https://projectindex-lyart.vercel.app" target="_blank">projectindex-lyart.vercel.app</a></p>
+      <p><strong>Repo:</strong> <a href="https://github.com/alexandre-mrt/project-index" target="_blank">github.com/alexandre-mrt/project-index</a></p>
+      <p><strong>Status:</strong> Active. Updated 2026-04-18 — added ma4-catchup, interview-prep-cs, conspiracy-site, project-index itself.</p>
+    </div>
+  </div>
+</body>
+</html>
